@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alfaham Store</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        /* التنسيقات العامة */
+        body { 
+            font-family: 'Cairo', sans-serif !important; 
+            background: #f4f4f4; 
+            margin: 0; 
+            padding: 0; 
+        }
+
+        /* الهيدر باللون الأسود وبدون ظل */
+        .header-text {
+            background: #000000;
+            padding: 20px; 
+            text-align: center;
+            box-shadow: none;
+            margin-bottom: 30px;
+        }
+
+        /* تكبير الشعار بشكل أكبر */
+        .header-text img {
+            max-height: 140px;
+            width: auto;
+            display: inline-block;
+        }
+
+        /* حاوية الكروت */
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 0 20px 40px 20px;
+            max-width: 1100px;
+            margin: auto;
+        }
+
+        /* عنصر الكرت مع النص */
+        .card-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100px;
+            flex-shrink: 0;
+        }
+
+        .card {
+            display: block;
+            width: 100px;
+            height: 100px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: 0.3s;
+            background: #fff;
+        }
+
+        .card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: fill;
+        }
+
+        /* النص تحت الكرت - سطر واحد فقط بدون اقتصاص */
+        .card-label {
+            margin-top: 10px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 16px;
+            font-weight: 900;
+            color: #333;
+            text-align: center;
+            line-height: 1.4;
+            white-space: nowrap;
+            overflow: visible;
+            width: auto;
+            max-width: 100%;
+        }
+
+        /* تحسينات الموبايل */
+        @media (max-width: 480px) {
+            .header-text { padding: 15px; }
+            .header-text img { max-height: 85px; }
+            .card-container { gap: 15px; padding: 0 15px; }
+            .card-item {
+                width: 100px;
+            }
+            .card-label {
+                font-size: 14px;
+                font-weight: 900;
+                white-space: nowrap;
+                overflow: visible;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header-text">
+        <img src="https://b.top4top.io/p_3725z11nv0.png" alt="Alfaham Store Logo">
+    </header>
+
+    <div class="card-container" id="card-container"></div>
+
+    <script>
+        // قائمة الكروت - كل 3 أسطر = كرت واحد
+        // السطر 1: اسم الكرت
+        // السطر 2: رابط الصفحة
+        // السطر 3: رابط الصورة
+        const cardsData = `
+Alfaham TV
+https://alfahamtv.apk.com
+https://raw.githubusercontent.com/h-80/img/refs/heads/main/Apk%20(6).png
+
+KIDS TV
+https://tvkidstv.apk.com
+https://raw.githubusercontent.com/h-80/img/refs/heads/main/Apk%20(3).png
+
+Alfaham Tube
+https://alfahamtube.apk.com
+https://raw.githubusercontent.com/h-80/img/refs/heads/main/Apk%20(1).png
+
+Alfaham Sat
+https://alfahamsat.apk.com
+https://raw.githubusercontent.com/h-80/img/refs/heads/main/Apk%20(8).png
+
+Alfaham Box
+https://alfahambox.apk.com
+https://raw.githubusercontent.com/h-80/img/refs/heads/main/Apk%20(5).png
+
+IRAQ NET
+https://iraqnet.apk.com
+https://raw.githubusercontent.com/h-80/img/refs/heads/main/iraqnet.png
+
+Haider TV
+https://haidertv.apk.com
+https://raw.githubusercontent.com/h-80/img/refs/heads/main/Apk%20(9).png
+
+Drama Live
+https://dramalive.apk.com
+https://raw.githubusercontent.com/h-80/img/refs/heads/main/Apk%20(7).png
+
+Alfaham Store
+https://alfahamstore.apk.com
+https://raw.githubusercontent.com/h-80/img/refs/heads/main/Apk%20(4).png
+
+Oscar TV
+https://dramaramadan.net
+https://raw.githubusercontent.com/h-80/img/refs/heads/main/Oscar%20TV.png
+
+
+`;
+
+        // معالجة البيانات وإنشاء الكروت
+        const lines = cardsData.trim().split('\n');
+        const container = document.getElementById('card-container');
+        
+        for (let i = 0; i < lines.length; i += 4) {
+            const name = lines[i]?.trim();
+            const url = lines[i+1]?.trim();
+            const imgUrl = lines[i+2]?.trim();
+            
+            if (name && url && imgUrl) {
+                const cardItem = document.createElement('div');
+                cardItem.className = 'card-item';
+                cardItem.innerHTML = `
+                    <a href="${url}" class="card">
+                        <img src="${imgUrl}" alt="${name}">
+                    </a>
+                    <div class="card-label">${name}</div>
+                `;
+                container.appendChild(cardItem);
+            }
+        }
+    </script>
+
+</body>
+</html>
