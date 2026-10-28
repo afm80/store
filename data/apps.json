@@ -1,5 +1,24 @@
 [
   {
+    "packageName": "com.snaptube.premium",
+    "name": "Snaptube",
+    "category": "app",
+    "genre": "",
+    "shortDescription": "Snaptube هو تطبيق لتنزيل الوسائط يحفظ مقاطع الفيديو والموسيقى لتشغيلها دون اتصال بالإنترنت. قم بتنزيل الإصدار الأحدث من",
+    "longDescription": "الأسئلة الشائعة حول Snaptube\nهل Snaptube APK آمن للتنزيل؟\nيعتبر Snaptube APK آمنًا بشكل عام للتنزيل من APKPure. إذا كانت لديك مخاوف بشأن سلامة ملف APK، فيمكنك تحميل ملف Snaptube APK إلى VirusTotal لإجراء فحص الفيروسات.\n\nكيفية تنزيل Snaptube على iPhone؟\nلا يمكنك الحصول على Snaptube مباشرة على iPhone لأنه مصمم لنظام Android فقط. Snaptube غير موجود في Apple App Store أو Google Play بسبب القواعد التي تمنع تنزيل مقاطع الفيديو من YouTube.\n\nكيفية تنزيل أحدث إصدار من Snaptube على Android؟\nSnaptube APK غير متوفر على متجر Google Play. للحصول على Snaptube، ما عليك سوى زيارة موقع APKPure والبحث عن \"Snaptube\" واتباع الإرشادات المقدمة لتنزيل ملف APK وتثبيته مباشرة على جهازك.",
+    "version": "7.63",
+    "whatsNew": "",
+    "featured": false,
+    "icon": "data/media/com.snaptube.premium/icon-mvsfq1q6.webp",
+    "banner": "",
+    "screenshots": [],
+    "apkUrl": "https://github.com/afm80/store/releases/download/com.snaptube.premium-v7.63/Snaptube_7.63.0.76330810_APKPure.apk",
+    "size": 30085098,
+    "sha256": "b6b23d4f667d4662281bb2a8363d3821d36aa37ecc13e06384227dd96a45326b",
+    "createdAt": "2026-10-28T18:15:49.092Z",
+    "updatedAt": "2026-10-28T18:15:49.092Z"
+  },
+  {
     "packageName": "com.tdm.manager",
     "name": "TDM: Files Download Manager",
     "category": "app",
