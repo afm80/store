@@ -1116,7 +1116,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(() {
-      final shouldPin = _scrollController.offset > 420;
+      final shouldPin = _scrollController.offset > 240;
       if (shouldPin != _showPinnedInstall) {
         setState(() => _showPinnedInstall = shouldPin);
       }
@@ -1176,11 +1176,82 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
     setState(() => _playing = true);
   }
 
-  Widget _hero() {
+  // ─── شريط الوسائط على نمط Google Play ───
+  // أول عنصر: الفيديو (أو البنر إن لم يوجد فيديو) ثم لقطات الشاشة بجانبه.
+  Widget _mediaCarousel() {
+    final shots = app.screenshotUrls;
     final hasVideo = app.youtubeId.isNotEmpty;
     final hasBanner = app.banner.isNotEmpty;
-    if (!hasVideo && !hasBanner) return const SizedBox.shrink();
+    final hasLead = hasVideo || hasBanner;
+    if (!hasLead && shots.isEmpty) return const SizedBox.shrink();
 
+    // المعرض: لقطات الشاشة فقط، ومعها البنر إذا لم يكن هناك فيديو.
+    final bannerInGallery = hasBanner && !hasVideo;
+    final gallery = <String>[
+      if (bannerInGallery) app.bannerUrl,
+      ...shots,
+    ];
+    final offset = bannerInGallery ? 1 : 0;
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: LayoutBuilder(
+        builder: (context, c) {
+          final h = (c.maxWidth * 0.62).clamp(200.0, 340.0);
+          final leadW = h * 16 / 9;
+          final count = (hasLead ? 1 : 0) + shots.length;
+
+          return SizedBox(
+            height: h,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: count,
+              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              itemBuilder: (_, i) {
+                if (hasLead && i == 0) {
+                  return _leadMedia(h, leadW, hasVideo, hasBanner, gallery);
+                }
+                final si = hasLead ? i - 1 : i;
+                return GestureDetector(
+                  onTap: () => _openGallery(gallery, si + offset),
+                  child: _shotImage(shots[si], h),
+                );
+              },
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _shotImage(String url, double h) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: ConstrainedBox(
+        constraints: BoxConstraints(minWidth: h * 9 / 16),
+        child: Image.network(
+          url,
+          height: h,
+          fit: BoxFit.fitHeight,
+          loadingBuilder: (_, child, p) => p == null
+              ? child
+              : SizedBox(
+                  width: h * 9 / 16, height: h, child: _mediaPlaceholder()),
+          errorBuilder: (_, __, ___) => Container(
+            width: h * 9 / 16,
+            height: h,
+            color: Colors.grey.shade200,
+            child: const Icon(Icons.image_not_supported, color: Colors.grey),
+          ),
+        ),
+      ),
+    );
+  }
+
+  // العنصر الأول في الشريط: فيديو يوتيوب (يُشغَّل مكانه) أو صورة البنر.
+  Widget _leadMedia(double h, double w, bool hasVideo, bool hasBanner,
+      List<String> gallery) {
     final poster = hasBanner
         ? app.bannerUrl
         : 'https://img.youtube.com/vi/${app.youtubeId}/hqdefault.jpg';
@@ -1203,8 +1274,8 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
             Container(color: Colors.black26),
             Center(
               child: Container(
-                width: 64,
-                height: 64,
+                width: 56,
+                height: 56,
                 decoration: const BoxDecoration(
                   color: Colors.red,
                   shape: BoxShape.circle,
@@ -1213,77 +1284,21 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                   ],
                 ),
                 child: const Icon(Icons.play_arrow,
-                    color: Colors.white, size: 42),
+                    color: Colors.white, size: 38),
               ),
             ),
           ],
         ],
       );
-      if (hasVideo) {
-        content = GestureDetector(onTap: _startVideo, child: content);
-      }
+      content = GestureDetector(
+        onTap: hasVideo ? _startVideo : () => _openGallery(gallery, 0),
+        child: content,
+      );
     }
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: AspectRatio(
-          aspectRatio: hasVideo ? 16 / 9 : 1024 / 500,
-          child: content,
-        ),
-      ),
-    );
-  }
-
-  // ─── لقطات الشاشة: ارتفاع موحّد والعرض يتبع نسبة كل صورة ───
-  Widget _mediaCarousel() {
-    final shots = app.screenshotUrls;
-    if (shots.isEmpty) return const SizedBox.shrink();
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 20),
-      child: LayoutBuilder(
-        builder: (context, c) {
-          final h = (c.maxWidth * 0.62).clamp(200.0, 340.0);
-          return SizedBox(
-            height: h,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: shots.length,
-              separatorBuilder: (_, __) => const SizedBox(width: 10),
-              itemBuilder: (_, i) => GestureDetector(
-                onTap: () => _openGallery(shots, i),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(minWidth: h * 9 / 16),
-                    child: Image.network(
-                      shots[i],
-                      height: h,
-                      fit: BoxFit.fitHeight,
-                      loadingBuilder: (_, child, p) => p == null
-                          ? child
-                          : SizedBox(
-                              width: h * 9 / 16,
-                              height: h,
-                              child: _mediaPlaceholder()),
-                      errorBuilder: (_, __, ___) => Container(
-                        width: h * 9 / 16,
-                        height: h,
-                        color: Colors.grey.shade200,
-                        child: const Icon(Icons.image_not_supported,
-                            color: Colors.grey),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      child: SizedBox(width: w, height: h, child: content),
     );
   }
 
@@ -1535,9 +1550,6 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
         controller: _scrollController,
         padding: const EdgeInsets.only(bottom: 32),
         children: [
-          // ─── الغلاف: البانر / الفيديو ───
-          _hero(),
-
           // ─── هيدر: أيقونة + اسم + مطوّر + تصنيف ───
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
