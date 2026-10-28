@@ -48,12 +48,13 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: kSurface,
         textTheme: GoogleFonts.cairoTextTheme(),
         appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.white,
+          backgroundColor: kBrand,
           surfaceTintColor: Colors.transparent,
           elevation: 0.5,
-          iconTheme: IconThemeData(color: Colors.black87),
+          systemOverlayStyle: SystemUiOverlayStyle.light,
+          iconTheme: IconThemeData(color: Colors.white),
           titleTextStyle: TextStyle(
-            color: Colors.black87,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
@@ -1344,7 +1345,8 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: kBrand,
+        foregroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
         elevation: _showPinnedInstall ? 1 : 0,
         scrolledUnderElevation: 1,
@@ -1361,7 +1363,9 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white),
                 ),
               ),
             ],
@@ -1376,8 +1380,8 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                 height: 36,
                 child: FilledButton(
                   style: FilledButton.styleFrom(
-                    backgroundColor: kBrand,
-                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.white,
+                    foregroundColor: kBrand,
                     padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppRadius.pill),
