@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui' show PointerDeviceKind;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,8 +13,8 @@ import 'store_service.dart';
 // ═══════════════════════════════════════════════════════════════
 // ثوابت الهوية البصرية
 // ═══════════════════════════════════════════════════════════════
-const Color kBrand = Color(0xFF075C55);
-const Color kBrandLight = Color(0xFFD3E8E5);
+const Color kBrand = Color(0xFF08874A);      // أخضر الشعار (أغمق قليلًا لوضوح النص)
+const Color kBrandLight = Color(0xFFDDF5E7);
 const Color kSurface = Color(0xFFF8F9FA);
 
 class AppRadius {
@@ -48,18 +49,25 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: kSurface,
         textTheme: GoogleFonts.cairoTextTheme(),
         appBarTheme: const AppBarTheme(
-          backgroundColor: kBrand,
+          backgroundColor: Colors.white,
           surfaceTintColor: Colors.transparent,
-          elevation: 0.5,
-          systemOverlayStyle: SystemUiOverlayStyle.light,
-          iconTheme: IconThemeData(color: Colors.white),
+          scrolledUnderElevation: 1,
+          elevation: 0,
+          shadowColor: Colors.black26,
+          systemOverlayStyle: SystemUiOverlayStyle(
+            statusBarColor: Colors.transparent,
+            statusBarIconBrightness: Brightness.dark,
+            statusBarBrightness: Brightness.light,
+          ),
+          iconTheme: IconThemeData(color: Color(0xFF3C4043)),
           titleTextStyle: TextStyle(
-            color: Colors.white,
+            color: Color(0xFF202124),
             fontWeight: FontWeight.bold,
             fontSize: 18,
           ),
         ),
       ),
+      scrollBehavior: const _DragScrollBehavior(),
       home: const MainLayout(),
     );
   }
@@ -149,7 +157,7 @@ class _MainLayoutState extends State<MainLayout> {
               height: 180,
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
-                  colors: [kBrand, Color(0xFF0A7A71)],
+                  colors: [kBrand, Color(0xFF2FB765)],
                   begin: Alignment.topRight,
                   end: Alignment.bottomLeft,
                 ),
@@ -1142,80 +1150,153 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
     }
   }
 
-  Widget _videoCard() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
-      child: GestureDetector(
-        onTap: _openVideo,
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(AppRadius.md),
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                Image.network(
-                  'https://img.youtube.com/vi/${app.youtubeId}/hqdefault.jpg',
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => Container(color: Colors.black87),
-                ),
-                Container(color: Colors.black26),
-                Center(
-                  child: Container(
-                    width: 64,
-                    height: 64,
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Icon(Icons.play_arrow,
-                        color: Colors.white, size: 40),
-                  ),
-                ),
-                const Positioned(
-                  bottom: 10,
-                  right: 12,
-                  child: Text('شاهد الفيديو على يوتيوب',
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w600,
-                          fontSize: 13)),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
+  // ─── شريط الوسائط (على نمط Google Play): فيديو/بانر ثم لقطات الشاشة ───
+  void _openGallery(List<String> urls, int index) {
+    Navigator.of(context).push(PageRouteBuilder<void>(
+      opaque: false,
+      barrierColor: Colors.black,
+      transitionDuration: const Duration(milliseconds: 220),
+      pageBuilder: (_, __, ___) =>
+          MediaViewer(urls: urls, initialIndex: index),
+      transitionsBuilder: (_, anim, __, child) =>
+          FadeTransition(opacity: anim, child: child),
+    ));
   }
 
-  void _openImage(String url) {
-    showDialog<void>(
-      context: context,
-      barrierColor: Colors.black87,
-      builder: (_) => Dialog(
-        backgroundColor: Colors.transparent,
-        insetPadding: const EdgeInsets.all(8),
-        child: Stack(
-          children: [
-            InteractiveViewer(
-              minScale: 1,
-              maxScale: 4,
+  Widget _mediaPlaceholder() => Container(
+        color: kSurface,
+        child: const Center(
+          child: CircularProgressIndicator(strokeWidth: 2, color: kBrand),
+        ),
+      );
+
+  Widget _mediaCarousel() {
+    final shots = app.screenshotUrls;
+    final hasVideo = app.youtubeId.isNotEmpty;
+    final hasBanner = app.banner.isNotEmpty;
+    if (!hasVideo && !hasBanner && shots.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    // صور المعرض: البانر (إذا لا يوجد فيديو) ثم اللقطات
+    final gallery = <String>[
+      if (!hasVideo && hasBanner) app.bannerUrl,
+      ...shots,
+    ];
+
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: LayoutBuilder(
+        builder: (context, c) {
+          // ارتفاع موحّد، والعرض يتبع نسبة كل صورة (كما في المتاجر)
+          final h = (c.maxWidth * 0.62).clamp(200.0, 340.0);
+          final wideTile = (h * 16 / 9).clamp(0.0, c.maxWidth - 48);
+          final items = <Widget>[];
+
+          if (hasVideo) {
+            final poster = hasBanner
+                ? app.bannerUrl
+                : 'https://img.youtube.com/vi/${app.youtubeId}/hqdefault.jpg';
+            items.add(GestureDetector(
+              onTap: _openVideo,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(AppRadius.md),
-                child: Image.network(url, fit: BoxFit.contain),
+                child: SizedBox(
+                  width: wideTile,
+                  height: h,
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      Image.network(
+                        poster,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) =>
+                            Container(color: Colors.black87),
+                      ),
+                      Container(color: Colors.black26),
+                      Center(
+                        child: Container(
+                          width: 60,
+                          height: 60,
+                          decoration: const BoxDecoration(
+                            color: Colors.red,
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(Icons.play_arrow,
+                              color: Colors.white, size: 38),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: IconButton(
-                icon: const Icon(Icons.close, color: Colors.white),
-                onPressed: () => Navigator.pop(context),
+            ));
+          } else if (hasBanner) {
+            items.add(GestureDetector(
+              onTap: () => _openGallery(gallery, 0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                child: SizedBox(
+                  width: wideTile,
+                  height: h,
+                  child: Image.network(
+                    app.bannerUrl,
+                    fit: BoxFit.cover,
+                    loadingBuilder: (_, child, p) =>
+                        p == null ? child : _mediaPlaceholder(),
+                    errorBuilder: (_, __, ___) => Container(
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.image_not_supported,
+                          color: Colors.grey),
+                    ),
+                  ),
+                ),
               ),
+            ));
+          }
+
+          final offset = (!hasVideo && hasBanner) ? 1 : 0;
+          for (var i = 0; i < shots.length; i++) {
+            items.add(GestureDetector(
+              onTap: () => _openGallery(gallery, i + offset),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: h * 9 / 16),
+                  child: Image.network(
+                    shots[i],
+                    height: h,
+                    fit: BoxFit.fitHeight,
+                    loadingBuilder: (_, child, p) => p == null
+                        ? child
+                        : SizedBox(
+                            width: h * 9 / 16,
+                            height: h,
+                            child: _mediaPlaceholder()),
+                    errorBuilder: (_, __, ___) => Container(
+                      width: h * 9 / 16,
+                      height: h,
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.image_not_supported,
+                          color: Colors.grey),
+                    ),
+                  ),
+                ),
+              ),
+            ));
+          }
+
+          return SizedBox(
+            height: h,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: items.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 10),
+              itemBuilder: (_, i) => items[i],
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }
@@ -1405,14 +1486,13 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
     final description = app.longDescription.isNotEmpty
         ? app.longDescription
         : app.shortDescription;
-    final shots = app.screenshotUrls;
     final kind = app.isGame ? 'لعبة' : 'تطبيق';
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: kBrand,
-        foregroundColor: Colors.white,
+        backgroundColor: Colors.white,
+        foregroundColor: const Color(0xFF3C4043),
         surfaceTintColor: Colors.transparent,
         elevation: _showPinnedInstall ? 1 : 0,
         scrolledUnderElevation: 1,
@@ -1431,7 +1511,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                   style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white),
+                      color: Color(0xFF202124)),
                 ),
               ),
             ],
@@ -1446,8 +1526,8 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                 height: 36,
                 child: FilledButton(
                   style: FilledButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: kBrand,
+                    backgroundColor: kBrand,
+                    foregroundColor: Colors.white,
                     padding: EdgeInsets.zero,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(AppRadius.pill),
@@ -1532,58 +1612,8 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
             child: _installButton(),
           ),
 
-          // ─── فيديو يوتيوب (اختياري) ───
-          if (app.youtubeId.isNotEmpty) _videoCard(),
-
-          // ─── لقطات الشاشة (مقاس موحّد يتكيف مع عرض الشاشة) ───
-          if (shots.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: LayoutBuilder(
-                builder: (context, c) {
-                  final w = (c.maxWidth * 0.42).clamp(130.0, 210.0);
-                  final h = w * 16 / 9;
-                  return SizedBox(
-                    height: h,
-                    child: ListView.separated(
-                      scrollDirection: Axis.horizontal,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      itemCount: shots.length,
-                      separatorBuilder: (_, __) => const SizedBox(width: 10),
-                      itemBuilder: (_, i) => GestureDetector(
-                        onTap: () => _openImage(shots[i]),
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(AppRadius.md),
-                          child: SizedBox(
-                            width: w,
-                            height: h,
-                            child: Image.network(
-                              shots[i],
-                              fit: BoxFit.cover,
-                              loadingBuilder: (context, child, progress) {
-                                if (progress == null) return child;
-                                return Container(
-                                  color: kSurface,
-                                  child: const Center(
-                                    child: CircularProgressIndicator(
-                                        strokeWidth: 2, color: kBrand),
-                                  ),
-                                );
-                              },
-                              errorBuilder: (_, __, ___) => Container(
-                                color: Colors.grey.shade200,
-                                child: const Icon(Icons.image_not_supported,
-                                    color: Colors.grey),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
+          // ─── الوسائط: فيديو/بانر + لقطات الشاشة ───
+          _mediaCarousel(),
 
           // ─── عن هذا التطبيق ───
           _section(
@@ -1776,6 +1806,289 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
           ),
         ],
       ),
+        ),
+      ),
+    );
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// سحب بالماوس/اللمس لكل القوائم الأفقية (مهم لنسخة الويب)
+// ═══════════════════════════════════════════════════════════════
+class _DragScrollBehavior extends MaterialScrollBehavior {
+  const _DragScrollBehavior();
+
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+        PointerDeviceKind.stylus,
+        PointerDeviceKind.trackpad,
+      };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// عارض الصور بملء الشاشة: تمرير بين الصور + تكبير بالقرصة/الدبل-تاب/العجلة
+// ═══════════════════════════════════════════════════════════════
+class MediaViewer extends StatefulWidget {
+  final List<String> urls;
+  final int initialIndex;
+
+  const MediaViewer({super.key, required this.urls, this.initialIndex = 0});
+
+  @override
+  State<MediaViewer> createState() => _MediaViewerState();
+}
+
+class _MediaViewerState extends State<MediaViewer> {
+  late final PageController _pc;
+  late int _index;
+  bool _zoomed = false;
+
+  int get _count => widget.urls.length;
+
+  @override
+  void initState() {
+    super.initState();
+    _index = widget.initialIndex.clamp(0, widget.urls.length - 1);
+    _pc = PageController(initialPage: _index);
+  }
+
+  @override
+  void dispose() {
+    _pc.dispose();
+    super.dispose();
+  }
+
+  void _go(int delta) {
+    final t = _index + delta;
+    if (t < 0 || t >= _count) return;
+    _pc.animateToPage(t,
+        duration: const Duration(milliseconds: 250), curve: Curves.easeOut);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final rtl = Directionality.of(context) == TextDirection.rtl;
+    final wide = MediaQuery.of(context).size.width >= 700;
+
+    Widget arrow(IconData icon, int delta, bool enabled) {
+      return Material(
+        color: Colors.black45,
+        shape: const CircleBorder(),
+        child: IconButton(
+          icon: Icon(icon, color: enabled ? Colors.white : Colors.white24),
+          onPressed: enabled ? () => _go(delta) : null,
+        ),
+      );
+    }
+
+    return Focus(
+      autofocus: true,
+      onKeyEvent: (node, e) {
+        if (e is! KeyDownEvent) return KeyEventResult.ignored;
+        if (e.logicalKey == LogicalKeyboardKey.escape) {
+          Navigator.pop(context);
+          return KeyEventResult.handled;
+        }
+        if (e.logicalKey == LogicalKeyboardKey.arrowRight) {
+          _go(rtl ? -1 : 1);
+          return KeyEventResult.handled;
+        }
+        if (e.logicalKey == LogicalKeyboardKey.arrowLeft) {
+          _go(rtl ? 1 : -1);
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        body: Stack(
+          children: [
+            PageView.builder(
+              controller: _pc,
+              physics: _zoomed
+                  ? const NeverScrollableScrollPhysics()
+                  : const PageScrollPhysics(),
+              itemCount: _count,
+              onPageChanged: (i) => setState(() {
+                _index = i;
+                _zoomed = false;
+              }),
+              itemBuilder: (_, i) => _ZoomableImage(
+                key: ValueKey(widget.urls[i]),
+                url: widget.urls[i],
+                onZoomChanged: (z) {
+                  if (z != _zoomed) setState(() => _zoomed = z);
+                },
+              ),
+            ),
+            // الشريط العلوي: إغلاق + العدّاد
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: SafeArea(
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        tooltip: 'إغلاق',
+                        icon: const Icon(Icons.close, color: Colors.white),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                      const Spacer(),
+                      if (_count > 1)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.black45,
+                            borderRadius: BorderRadius.circular(AppRadius.pill),
+                          ),
+                          child: Text('${_index + 1} / $_count',
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 13)),
+                        ),
+                      const SizedBox(width: 8),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            // أسهم التنقل لشاشات الكمبيوتر
+            if (wide && _count > 1) ...[
+              Positioned(
+                left: 16,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: rtl
+                      ? arrow(Icons.chevron_left, 1, _index < _count - 1)
+                      : arrow(Icons.chevron_left, -1, _index > 0),
+                ),
+              ),
+              Positioned(
+                right: 16,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: rtl
+                      ? arrow(Icons.chevron_right, -1, _index > 0)
+                      : arrow(Icons.chevron_right, 1, _index < _count - 1),
+                ),
+              ),
+            ],
+            // نقاط المؤشر
+            if (_count > 1 && _count <= 12)
+              Positioned(
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 14),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        _count,
+                        (i) => AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          margin: const EdgeInsets.symmetric(horizontal: 3),
+                          width: i == _index ? 18 : 6,
+                          height: 6,
+                          decoration: BoxDecoration(
+                            color: i == _index ? Colors.white : Colors.white38,
+                            borderRadius: BorderRadius.circular(3),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ZoomableImage extends StatefulWidget {
+  final String url;
+  final ValueChanged<bool> onZoomChanged;
+
+  const _ZoomableImage({super.key, required this.url, required this.onZoomChanged});
+
+  @override
+  State<_ZoomableImage> createState() => _ZoomableImageState();
+}
+
+class _ZoomableImageState extends State<_ZoomableImage> {
+  final TransformationController _tc = TransformationController();
+  Offset _tapPos = Offset.zero;
+  bool _zoomed = false;
+
+  @override
+  void dispose() {
+    _tc.dispose();
+    super.dispose();
+  }
+
+  void _setZoomed(bool z) {
+    if (z == _zoomed) return;
+    setState(() => _zoomed = z);
+    widget.onZoomChanged(z);
+  }
+
+  void _toggleZoom() {
+    if (_zoomed) {
+      _tc.value = Matrix4.identity();
+      _setZoomed(false);
+    } else {
+      const s = 2.5;
+      final m = Matrix4.identity();
+      m.setEntry(0, 0, s);
+      m.setEntry(1, 1, s);
+      m.setEntry(0, 3, -_tapPos.dx * (s - 1));
+      m.setEntry(1, 3, -_tapPos.dy * (s - 1));
+      _tc.value = m;
+      _setZoomed(true);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onDoubleTapDown: (d) => _tapPos = d.localPosition,
+      onDoubleTap: _toggleZoom,
+      child: InteractiveViewer(
+        transformationController: _tc,
+        minScale: 1,
+        maxScale: 5,
+        panEnabled: _zoomed,
+        onInteractionUpdate: (_) =>
+            _setZoomed(_tc.value.getMaxScaleOnAxis() > 1.02),
+        onInteractionEnd: (_) =>
+            _setZoomed(_tc.value.getMaxScaleOnAxis() > 1.02),
+        child: SizedBox.expand(
+          child: Image.network(
+            widget.url,
+            fit: BoxFit.contain,
+            loadingBuilder: (_, child, p) => p == null
+                ? child
+                : const Center(
+                    child: CircularProgressIndicator(
+                        strokeWidth: 2, color: Colors.white),
+                  ),
+            errorBuilder: (_, __, ___) => const Center(
+              child: Icon(Icons.image_not_supported,
+                  color: Colors.white54, size: 48),
+            ),
+          ),
         ),
       ),
     );
