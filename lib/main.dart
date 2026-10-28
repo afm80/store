@@ -1617,6 +1617,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
   Widget build(BuildContext context) {
     final shortD = app.shortDescription.trim();
     final longD = app.longDescription.trim();
+    final preview = shortD.isNotEmpty ? shortD : longD;
     final description = [
       if (shortD.isNotEmpty) shortD,
       if (longD.isNotEmpty) longD,
@@ -1778,7 +1779,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                     onTap: () => setState(
                         () => _expandedDescription = !_expandedDescription),
                     child: Text(
-                      description,
+                      preview,
                       maxLines: _expandedDescription ? null : 5,
                       overflow: _expandedDescription
                           ? TextOverflow.visible
