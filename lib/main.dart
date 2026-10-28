@@ -1346,9 +1346,9 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
           ),
         ),
         onPressed: app.apkUrl.isEmpty ? null : _download,
-        child: const Text(
-          'تثبيت',
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        child: Text(
+          app.apkUrl.isEmpty ? 'غير متاح حالياً' : 'تثبيت',
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
     );
@@ -1467,21 +1467,6 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
     );
   }
 
-  Widget _tag(String text) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(
-        color: kBrandLight.withOpacity(0.5),
-        borderRadius: BorderRadius.circular(AppRadius.pill),
-      ),
-      child: Text(text,
-          style: const TextStyle(
-              fontSize: 12,
-              color: kBrand,
-              fontWeight: FontWeight.w600)),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final description = app.longDescription.isNotEmpty
@@ -1519,7 +1504,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
           ),
         ),
         actions: [
-          if (_showPinnedInstall)
+          if (_showPinnedInstall && app.apkUrl.isNotEmpty)
             Padding(
               padding: const EdgeInsetsDirectional.only(end: 12),
               child: SizedBox(
@@ -1644,21 +1629,6 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                   ),
           ),
 
-          // ─── وسوم ───
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-            child: Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                if (app.genre.isNotEmpty) _tag(app.genre),
-                _tag(kind),
-                if (app.rating > 0) _tag('⭐ ${app.ratingLabel}'),
-                if (app.ageRating.isNotEmpty) _tag(app.ageRating),
-              ],
-            ),
-          ),
-
           // ─── بيانات التطبيق ───
           _section(
             'بيانات التطبيق',
@@ -1668,7 +1638,6 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
               children: [
                 if (app.version.isNotEmpty)
                   _infoChip(Icons.system_update, 'الإصدار', app.version),
-                _infoChip(Icons.straighten, 'الحجم', app.sizeLabel),
                 if (app.dateLabel.isNotEmpty)
                   _infoChip(Icons.update, 'آخر تحديث', app.dateLabel),
                 if (app.packageName.isNotEmpty)
@@ -1778,33 +1747,6 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
               ),
             ),
 
-          // ─── بطاقة معلومات الأمان الإضافية ───
-          const SizedBox(height: 20),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: kSurface,
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.shield_outlined,
-                      color: kBrand, size: 22),
-                  const SizedBox(width: 12),
-                  const Expanded(
-                    child: Text(
-                      'هذا التطبيق يتبع سياسة الأمان لدينا. لا يتم جمع أي بيانات شخصية.',
-                      style: TextStyle(
-                          fontSize: 12, color: Colors.black54, height: 1.4),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
         ],
       ),
         ),
