@@ -1151,6 +1151,8 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
   bool _showPinnedInstall = false;
   bool _playing = false;
   YoutubePlayerController? _yt;
+  StreamSubscription<YoutubePlayerValue>? _ytSub;
+  bool _ytFailed = false;
   double? _dl;           // تقدّم التنزيل (0..1) أو null إذا لا يوجد تنزيل
   bool _cancelDl = false;
 
@@ -1169,6 +1171,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
 
   @override
   void dispose() {
+    _ytSub?.cancel();
     _yt?.close();
     _scrollController.dispose();
     super.dispose();
@@ -1246,11 +1249,21 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
       autoPlay: true,
       params: const YoutubePlayerParams(
         showControls: true,
-        showFullscreenButton: true,
+        showFullscreenButton: false,
         strictRelatedVideos: true,
+        origin: 'https://www.youtube-nocookie.com',
       ),
     );
-    setState(() => _playing = true);
+    _ytSub?.cancel();
+    _ytSub = _yt!.listen((v) {
+      if (v.hasError && !_ytFailed && mounted) {
+        setState(() => _ytFailed = true);
+      }
+    });
+    setState(() {
+      _playing = true;
+      _ytFailed = false;
+    });
   }
 
   // ─── شريط الوسائط على نمط Google Play ───
@@ -1335,7 +1348,21 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
 
     Widget content;
     if (hasVideo && _playing && _yt != null) {
-      content = YoutubePlayer(controller: _yt!, aspectRatio: 16 / 9);
+      content = _ytFailed
+          ? Container(
+              color: Colors.black,
+              alignment: Alignment.center,
+              child: TextButton.icon(
+                onPressed: () => launchUrl(
+                  Uri.parse('https://www.youtube.com/watch?v=${app.youtubeId}'),
+                  mode: LaunchMode.externalApplication,
+                ),
+                icon: const Icon(Icons.open_in_new, color: Colors.white),
+                label: const Text('فتح في يوتيوب',
+                    style: TextStyle(color: Colors.white)),
+              ),
+            )
+          : YoutubePlayer(controller: _yt!, aspectRatio: 16 / 9);
     } else {
       content = Stack(
         fit: StackFit.expand,
@@ -1588,9 +1615,12 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final description = app.longDescription.isNotEmpty
-        ? app.longDescription
-        : app.shortDescription;
+    final shortD = app.shortDescription.trim();
+    final longD = app.longDescription.trim();
+    final description = [
+      if (shortD.isNotEmpty) shortD,
+      if (longD.isNotEmpty) longD,
+    ].join('\n\n');
     final kind = app.isGame ? 'لعبة' : 'تطبيق';
 
     return Scaffold(
@@ -1770,91 +1800,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                   _infoChip(Icons.system_update, 'الإصدار', app.version),
                 if (app.dateLabel.isNotEmpty)
                   _infoChip(Icons.update, 'آخر تحديث', app.dateLabel),
-                if (app.packageName.isNotEmpty)
-                  _infoChip(Icons.android, 'الحزمة', app.packageName),
               ],
-            ),
-          ),
-
-          // ─── الأمان ───
-          _section(
-            'الأمان',
-            child: Container(
-              padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: kSurface,
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                border: Border.all(color: Colors.grey.shade200),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      const Icon(Icons.verified_user,
-                          size: 20, color: kBrand),
-                      const SizedBox(width: 8),
-                      const Expanded(
-                        child: Text(
-                          'تم التحقق من البيانات',
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  const Text(
-                    'يتم تحميل الملف من مصدر مباشر وموثوق. يمكنك التحقق من البصمة أدناه.',
-                    style: TextStyle(fontSize: 12, color: Colors.black54),
-                  ),
-                  if (app.sha256.isNotEmpty) ...[
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(AppRadius.sm),
-                        border: Border.all(color: Colors.grey.shade200),
-                      ),
-                      child: Row(
-                        children: [
-                          const Icon(Icons.fingerprint,
-                              size: 16, color: Colors.black45),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Directionality(
-                              textDirection: TextDirection.ltr,
-                              child: Text(
-                                app.sha256,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(
-                                    fontFamily: 'monospace',
-                                    fontSize: 11,
-                                    color: Colors.black54),
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                            tooltip: 'نسخ',
-                            icon: const Icon(Icons.copy, size: 16),
-                            onPressed: () {
-                              Clipboard.setData(
-                                  ClipboardData(text: app.sha256));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('تم نسخ البصمة')),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ],
-              ),
             ),
           ),
 
