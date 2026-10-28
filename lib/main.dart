@@ -84,6 +84,8 @@ class MainLayout extends StatefulWidget {
 
 class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
+  String _webQuery = '';
+  final TextEditingController _webSearch = TextEditingController();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late Future<List<AppItem>> _future;
 
@@ -101,6 +103,80 @@ class _MainLayoutState extends State<MainLayout> {
     } catch (_) {}
   }
 
+  @override
+  void dispose() {
+    _webSearch.dispose();
+    super.dispose();
+  }
+
+  Widget _navItem(String label, int index) {
+    final selected = _currentIndex == index && _webQuery.trim().isEmpty;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+        onTap: () => setState(() {
+          _currentIndex = index;
+          _webQuery = '';
+          _webSearch.clear();
+        }),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+          decoration: BoxDecoration(
+            border: Border(
+              bottom: BorderSide(
+                color: selected ? Colors.white : Colors.transparent,
+                width: 3,
+              ),
+            ),
+          ),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: selected ? Colors.white : Colors.white70,
+              fontWeight: selected ? FontWeight.bold : FontWeight.w500,
+              fontSize: 15,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _webSearchField() {
+    return SizedBox(
+      width: 320,
+      height: 40,
+      child: TextField(
+        controller: _webSearch,
+        onChanged: (v) => setState(() => _webQuery = v),
+        style: const TextStyle(color: Colors.white, fontSize: 14),
+        cursorColor: Colors.white,
+        decoration: InputDecoration(
+          hintText: 'البحث عن التطبيقات والألعاب',
+          hintStyle: const TextStyle(color: Colors.white70, fontSize: 14),
+          prefixIcon: const Icon(Icons.search, color: Colors.white70, size: 20),
+          suffixIcon: _webQuery.isEmpty
+              ? null
+              : IconButton(
+                  icon: const Icon(Icons.close, color: Colors.white70, size: 18),
+                  onPressed: () => setState(() {
+                    _webQuery = '';
+                    _webSearch.clear();
+                  }),
+                ),
+          filled: true,
+          fillColor: Colors.white.withOpacity(0.15),
+          contentPadding: EdgeInsets.zero,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+            borderSide: BorderSide.none,
+          ),
+        ),
+      ),
+    );
+  }
+
   void _push(Widget page) {
     Navigator.pop(context);
     Navigator.push(context, MaterialPageRoute(builder: (_) => page));
@@ -108,9 +184,12 @@ class _MainLayoutState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
+    final wide = MediaQuery.of(context).size.width >= 1000;
+    final index = (wide && _currentIndex == 3) ? 0 : _currentIndex;
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
+        toolbarHeight: wide ? 64 : null,
         title: Row(
           children: [
             ClipRRect(
@@ -129,6 +208,15 @@ class _MainLayoutState extends State<MainLayout> {
             ),
             const SizedBox(width: 10),
             const Text('Alfaham Store'),
+            if (wide) ...[
+              const SizedBox(width: 32),
+              _navItem('الرئيسية', 0),
+              _navItem('تطبيقات', 1),
+              _navItem('ألعاب', 2),
+              const Spacer(),
+              _webSearchField(),
+              const SizedBox(width: 8),
+            ],
           ],
         ),
         actions: [
@@ -257,7 +345,18 @@ class _MainLayoutState extends State<MainLayout> {
               ),
               SearchScreen(apps: apps),
             ];
-            return screens[_currentIndex];
+            Widget page = screens[index];
+            if (wide && _webQuery.trim().isNotEmpty) {
+              page = SearchScreen(apps: apps, query: _webQuery);
+            }
+            if (!wide) return page;
+            return Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 1200),
+                child: page,
+              ),
+            );
           }
           if (snapshot.hasError) {
             return ErrorView(
@@ -269,7 +368,9 @@ class _MainLayoutState extends State<MainLayout> {
           return const Center(child: CircularProgressIndicator());
         },
       ),
-      bottomNavigationBar: NavigationBar(
+      bottomNavigationBar: wide
+          ? null
+          : NavigationBar(
         selectedIndex: _currentIndex,
         onDestinationSelected: (i) => setState(() => _currentIndex = i),
         backgroundColor: Colors.white,
@@ -887,8 +988,9 @@ class _CatalogScreenState extends State<CatalogScreen> {
 
 class SearchScreen extends StatefulWidget {
   final List<AppItem> apps;
+  final String? query; // عند تمريره (نسخة الويب) يُخفى حقل البحث الداخلي
 
-  const SearchScreen({super.key, required this.apps});
+  const SearchScreen({super.key, required this.apps, this.query});
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -906,7 +1008,7 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final q = _query.trim().toLowerCase();
+    final q = (widget.query ?? _query).trim().toLowerCase();
     final results = q.isEmpty
         ? <AppItem>[]
         : widget.apps.where((a) {
@@ -920,6 +1022,7 @@ class _SearchScreenState extends State<SearchScreen> {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
+          if (widget.query == null)
           TextField(
             controller: _controller,
             onChanged: (v) => setState(() => _query = v),
@@ -953,7 +1056,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: widget.query == null ? 16 : 0),
           Expanded(
             child: q.isEmpty
                 ? const Center(
