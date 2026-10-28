@@ -16,7 +16,17 @@ class StoreConfig {
       '$storeUrl/?app=${Uri.encodeQueryComponent(packageName)}';
 
   /// اسم الحزمة القادم من الرابط (?app=...) أو '' إذا لم يوجد.
-  static String get sharedPackage => Uri.base.queryParameters['app'] ?? '';
+  static String get sharedPackage {
+    final q = Uri.base.queryParameters['app'];
+    if (q != null && q.isNotEmpty) return q;
+    // رابط بنمط hash: https://site/#/?app=...
+    final f = Uri.base.fragment;
+    if (f.isNotEmpty) {
+      final u = Uri.tryParse(f.startsWith('/') ? f : '/$f');
+      return u?.queryParameters['app'] ?? '';
+    }
+    return '';
+  }
 
   /// مفاتيح التفعيل: غيّرها إلى true عند الجاهزية.
   static const bool showDownloads = false; // عدد التحميلات

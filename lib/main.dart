@@ -76,6 +76,10 @@ class MyApp extends StatelessWidget {
       ),
       scrollBehavior: const _DragScrollBehavior(),
       home: const MainLayout(),
+      // دائماً نبدأ من الرئيسية؛ صفحة التطبيق تُفتح من ?app=... في _initLinks
+      onGenerateInitialRoutes: (_) => [
+        MaterialPageRoute(builder: (_) => const MainLayout()),
+      ],
     );
   }
 }
@@ -83,7 +87,12 @@ class MyApp extends StatelessWidget {
 void openApp(BuildContext context, AppItem app) {
   Navigator.push(
     context,
-    MaterialPageRoute(builder: (_) => AppDetailsScreen(app: app)),
+    MaterialPageRoute(
+      // الاسم يُحدّث رابط المتصفح، فيبقى التحديث (F5) على نفس الصفحة
+      settings: RouteSettings(
+          name: '/?app=${Uri.encodeQueryComponent(app.packageName)}'),
+      builder: (_) => AppDetailsScreen(app: app),
+    ),
   );
 }
 
