@@ -47,8 +47,8 @@ class StoreConfig {
   }
 
   /// مفاتيح التفعيل: غيّرها إلى true عند الجاهزية.
-  static const bool showDownloads = false; // عدد التحميلات
-  static const bool showRating = false; // التقييم
+  static const bool showDownloads = true; // عدد التحميلات
+  static const bool showRating = true; // التقييم
 
   static String get owner {
     final host = Uri.base.host;
