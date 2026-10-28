@@ -1165,9 +1165,28 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
 
   AppItem get app => widget.app;
 
+  List<AppItem> _similar = const [];
+
+  Future<void> _loadSimilar() async {
+    try {
+      final all = await StoreService.fetchApps();
+      final others =
+          all.where((a) => a.packageName != app.packageName).toList();
+      final sameGenre = app.genre.isEmpty
+          ? <AppItem>[]
+          : others.where((a) => a.genre == app.genre).toList();
+      final sameCategory = others
+          .where((a) => a.category == app.category && !sameGenre.contains(a))
+          .toList();
+      final list = [...sameGenre, ...sameCategory].take(10).toList();
+      if (mounted) setState(() => _similar = list);
+    } catch (_) {}
+  }
+
   @override
   void initState() {
     super.initState();
+    _loadSimilar();
     _scrollController.addListener(() {
       final shouldPin = _scrollController.offset > 240;
       if (shouldPin != _showPinnedInstall) {
@@ -1839,6 +1858,22 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                 overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                     fontSize: 14, height: 1.6, color: Colors.black87),
+              ),
+            ),
+
+          // ─── تطبيقات مشابهة ───
+          if (_similar.isNotEmpty)
+            _section(
+              'تطبيقات مشابهة',
+              child: SizedBox(
+                height: 195,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  clipBehavior: Clip.none,
+                  itemCount: _similar.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 14),
+                  itemBuilder: (_, i) => AppSquareCard(app: _similar[i]),
+                ),
               ),
             ),
 
