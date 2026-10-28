@@ -118,20 +118,22 @@
     "version": "0.1",
     "whatsNew": "تلفزيون الأطفال هو منصة آمنة وممتعة تقدم باقة منوعة من برامج الكرتون، الأناشيد، والقصص التعليمية المناسبة لجميع الأعمار، في بيئة خالية من الإعلانات والمحتوى غير المناسب، لتعزيز التعلم والترفيه في وقت واحد.<br>",
     "featured": true,
-    "icon": "data/media/app.kidstv.com/icon-mvsdhzzy.png",
-    "banner": "data/media/app.kidstv.com/banner-mvsdhzzy.png",
+    "icon": "data/media/app.kidstv.com/icon-mvsoppzq.png",
+    "banner": "data/media/app.kidstv.com/banner-mvsoppzq.jpg",
     "screenshots": [
-      "data/media/app.kidstv.com/shot1-mvsdhzzy.png",
-      "data/media/app.kidstv.com/shot2-mvsdhzzy.png",
-      "data/media/app.kidstv.com/shot3-mvsdhzzy.png",
-      "data/media/app.kidstv.com/shot4-mvsdhzzy.png",
-      "data/media/app.kidstv.com/shot5-mvsdhzzy.png"
+      "data/media/app.kidstv.com/shot1-mvsoppzq.webp",
+      "data/media/app.kidstv.com/shot2-mvsoppzq.webp",
+      "data/media/app.kidstv.com/shot3-mvsoppzq.webp",
+      "data/media/app.kidstv.com/shot4-mvsoppzq.webp",
+      "data/media/app.kidstv.com/shot5-mvsoppzq.webp",
+      "data/media/app.kidstv.com/shot6-mvsoppzq.webp"
     ],
+    "youtubeUrl": "https://youtu.be/uLPJIuevODY?si=Tfp9M25RrKsCH-VF",
     "apkUrl": "https://github.com/afm80/store/releases/download/app.kidstv.com-v0.1/KIDS%2BTV_1.0_APKPure.apk",
     "size": 32727484,
     "sha256": "be4188a881eb30ea106cb213f80cf61e483a8558f8a5abfb68404cd150009fc8",
     "createdAt": "2026-10-28T17:13:38.884Z",
-    "updatedAt": "2026-10-28T17:13:38.884Z"
+    "updatedAt": "2026-10-28T22:27:15.590Z"
   },
   {
     "packageName": "app.alfaham.store",
