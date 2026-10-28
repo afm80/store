@@ -1,0 +1,53 @@
+name: Build and deploy store
+
+on:
+  push:
+    branches: [main]
+    # نشر تطبيقات من لوحة التحكم يغيّر ملفات data فقط، ولا يحتاج إعادة بناء.
+    paths-ignore:
+      - 'data/**'
+      - '**.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  checks: write
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # يولّد ملفات الويب الناقصة داخل السيرفر، فلا تحتاج Flutter على جهازك.
+      - name: Prepare web platform files
+        run: |
+          mkdir -p /tmp/keep
+          cp -r lib assets /tmp/keep/
+          cp pubspec.yaml /tmp/keep/pubspec.yaml
+          flutter create . --platforms web --project-name apps_store
+          rm -rf lib assets
+          cp -r /tmp/keep/lib /tmp/keep/assets .
+          cp /tmp/keep/pubspec.yaml pubspec.yaml
+          cp brand/favicon.png web/favicon.png
+          cp brand/icons/*.png web/icons/
+
+      - run: flutter pub get
+
+      - run: flutter build web --release
+
+      # النشر على https://alfahamstore.web.app
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: alfahamstore
+          channelId: live
