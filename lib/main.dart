@@ -284,6 +284,11 @@ class _MainLayoutState extends State<MainLayout> {
               onTap: () => _push(const ContactScreen()),
             ),
             ListTile(
+              leading: const Icon(Icons.person_outline, color: kBrand),
+              title: const Text('المطوّر'),
+              onTap: () => _push(const DeveloperScreen()),
+            ),
+            ListTile(
               leading: const Icon(Icons.privacy_tip_outlined, color: Colors.orange),
               title: const Text('سياسة الخصوصية'),
               onTap: () => _push(const InfoPage(
@@ -1761,12 +1766,19 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                       ),
                       if (app.developer.trim().isNotEmpty) ...[
                         const SizedBox(height: 4),
-                        Text(
-                          app.developer.trim(),
-                          style: const TextStyle(
-                              fontSize: 13,
-                              color: kBrand,
-                              fontWeight: FontWeight.w600),
+                        InkWell(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => const DeveloperScreen()),
+                          ),
+                          child: Text(
+                            app.developer.trim(),
+                            style: const TextStyle(
+                                fontSize: 13,
+                                color: kBrand,
+                                fontWeight: FontWeight.w600),
+                          ),
                         ),
                       ],
                       const SizedBox(height: 2),
@@ -2243,6 +2255,187 @@ function onYouTubeIframeAPIReady(){
             ),
           ),
       ],
+    );
+  }
+}
+
+
+// ═══════════════════════════════════════════════════════════════
+// صفحة المطوّر (الملف الشخصي) — تُدار من لوحة التحكم
+// ═══════════════════════════════════════════════════════════════
+class DeveloperScreen extends StatefulWidget {
+  const DeveloperScreen({super.key});
+
+  @override
+  State<DeveloperScreen> createState() => _DeveloperScreenState();
+}
+
+class _DeveloperScreenState extends State<DeveloperScreen> {
+  late final Future<DeveloperProfile?> _profile = StoreService.fetchDeveloper();
+  late final Future<List<AppItem>> _apps = StoreService.fetchApps();
+
+  Future<void> _open(String url) async {
+    final ok = await launchUrl(Uri.parse(url),
+        mode: LaunchMode.externalApplication);
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('تعذّر فتح الرابط')));
+    }
+  }
+
+  Widget _avatar(DeveloperProfile p) {
+    Widget fallback() => Container(
+          color: kBrandLight,
+          alignment: Alignment.center,
+          child: const Icon(Icons.person, color: kBrand, size: 48),
+        );
+    return Container(
+      width: 96,
+      height: 96,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 4),
+        boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 6)],
+      ),
+      child: ClipOval(
+        child: p.avatarUrl.isEmpty
+            ? fallback()
+            : Image.network(p.avatarUrl,
+                fit: BoxFit.cover, errorBuilder: (_, __, ___) => fallback()),
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('المطوّر')),
+      body: FutureBuilder<DeveloperProfile?>(
+        future: _profile,
+        builder: (context, ps) {
+          if (ps.connectionState != ConnectionState.done) {
+            return const Center(
+                child: CircularProgressIndicator(color: kBrand));
+          }
+          final p = ps.data;
+          if (p == null) {
+            return const EmptyView(text: 'لم يتم إعداد ملف المطوّر بعد');
+          }
+          final links = <MapEntry<IconData, MapEntry<String, String>>>[
+            if (p.websiteLink.isNotEmpty)
+              MapEntry(Icons.language, MapEntry('الموقع', p.websiteLink)),
+            if (p.telegramLink.isNotEmpty)
+              MapEntry(Icons.send, MapEntry('تيليجرام', p.telegramLink)),
+            if (p.youtubeLink.isNotEmpty)
+              MapEntry(Icons.smart_display, MapEntry('يوتيوب', p.youtubeLink)),
+            if (p.facebookLink.isNotEmpty)
+              MapEntry(Icons.facebook, MapEntry('فيسبوك', p.facebookLink)),
+            if (p.instagramLink.isNotEmpty)
+              MapEntry(Icons.camera_alt_outlined,
+                  MapEntry('إنستغرام', p.instagramLink)),
+            if (p.emailLink.isNotEmpty)
+              MapEntry(Icons.email_outlined,
+                  MapEntry('البريد الإلكتروني', p.emailLink)),
+          ];
+          return Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 760),
+              child: ListView(
+                padding: const EdgeInsets.only(bottom: 32),
+                children: [
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      AspectRatio(
+                        aspectRatio: 1024 / 400,
+                        child: p.coverUrl.isEmpty
+                            ? Container(
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: [kBrand, Color(0xFF2FB765)],
+                                    begin: Alignment.topRight,
+                                    end: Alignment.bottomLeft,
+                                  ),
+                                ),
+                              )
+                            : Image.network(p.coverUrl,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, __, ___) =>
+                                    Container(color: kBrandLight)),
+                      ),
+                      PositionedDirectional(
+                        start: 16,
+                        bottom: -48,
+                        child: _avatar(p),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 56),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(p.name,
+                            style: const TextStyle(
+                                fontSize: 22, fontWeight: FontWeight.w700)),
+                        if (p.bio.isNotEmpty) ...[
+                          const SizedBox(height: 8),
+                          Text(p.bio,
+                              style: const TextStyle(
+                                  fontSize: 14,
+                                  height: 1.6,
+                                  color: Colors.black87)),
+                        ],
+                        if (links.isNotEmpty) ...[
+                          const SizedBox(height: 14),
+                          Wrap(
+                            spacing: 8,
+                            runSpacing: 8,
+                            children: [
+                              for (final l in links)
+                                ActionChip(
+                                  avatar: Icon(l.key, size: 18, color: kBrand),
+                                  label: Text(l.value.key),
+                                  backgroundColor: Colors.white,
+                                  side: BorderSide(color: Colors.grey.shade300),
+                                  onPressed: () => _open(l.value.value),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  FutureBuilder<List<AppItem>>(
+                    future: _apps,
+                    builder: (context, asn) {
+                      final apps = asn.data ?? const <AppItem>[];
+                      if (apps.isEmpty) return const SizedBox.shrink();
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('تطبيقات ${p.name} (${apps.length})',
+                                style: const TextStyle(
+                                    fontSize: 17,
+                                    fontWeight: FontWeight.w700)),
+                            const SizedBox(height: 10),
+                            for (final a in apps) AppTile(app: a),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }

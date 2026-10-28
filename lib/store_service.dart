@@ -37,4 +37,20 @@ class StoreService {
     });
     return apps;
   }
+
+  /// يقرأ الملف الشخصي للمطوّر (data/developer.json)، أو null إن لم يوجد.
+  static Future<DeveloperProfile?> fetchDeveloper() async {
+    try {
+      final stamp = DateTime.now().millisecondsSinceEpoch ~/ 60000;
+      final res =
+          await http.get(Uri.parse('${StoreConfig.developerJsonUrl}?t=$stamp'));
+      if (res.statusCode != 200) return null;
+      final decoded = jsonDecode(utf8.decode(res.bodyBytes));
+      if (decoded is! Map<String, dynamic>) return null;
+      final p = DeveloperProfile.fromJson(decoded);
+      return p.name.isEmpty ? null : p;
+    } catch (_) {
+      return null;
+    }
+  }
 }

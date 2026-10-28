@@ -145,3 +145,63 @@ class AppItem {
   /// نص التقييم (مثل "4.5")، أو "—" إذا غير متوفر.
   String get ratingLabel => rating > 0 ? rating.toStringAsFixed(1) : '—';
 }
+
+
+/// الملف الشخصي للمطوّر (data/developer.json) — يُدار من لوحة التحكم.
+class DeveloperProfile {
+  final String name;
+  final String bio;
+  final String avatar;
+  final String cover;
+  final String website;
+  final String telegram;
+  final String youtube;
+  final String facebook;
+  final String instagram;
+  final String email;
+
+  const DeveloperProfile({
+    this.name = '',
+    this.bio = '',
+    this.avatar = '',
+    this.cover = '',
+    this.website = '',
+    this.telegram = '',
+    this.youtube = '',
+    this.facebook = '',
+    this.instagram = '',
+    this.email = '',
+  });
+
+  factory DeveloperProfile.fromJson(Map<String, dynamic> j) {
+    String s(String k) => (j[k] ?? '').toString().trim();
+    return DeveloperProfile(
+      name: s('name'),
+      bio: s('bio'),
+      avatar: s('avatar'),
+      cover: s('cover'),
+      website: s('website'),
+      telegram: s('telegram'),
+      youtube: s('youtube'),
+      facebook: s('facebook'),
+      instagram: s('instagram'),
+      email: s('email'),
+    );
+  }
+
+  String get avatarUrl => StoreConfig.media(avatar);
+  String get coverUrl => StoreConfig.media(cover);
+
+  static String _link(String v, String base) {
+    if (v.isEmpty) return '';
+    if (v.startsWith('http://') || v.startsWith('https://')) return v;
+    return base + v.replaceFirst(RegExp(r'^@'), '');
+  }
+
+  String get websiteLink => _link(website, 'https://');
+  String get telegramLink => _link(telegram, 'https://t.me/');
+  String get youtubeLink => _link(youtube, 'https://');
+  String get facebookLink => _link(facebook, 'https://');
+  String get instagramLink => _link(instagram, 'https://instagram.com/');
+  String get emailLink => email.isEmpty ? '' : 'mailto:$email';
+}

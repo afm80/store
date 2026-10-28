@@ -70,6 +70,7 @@ class StoreConfig {
       'https://raw.githubusercontent.com/$owner/$repo/$branch/$path';
 
   static String get appsJsonUrl => raw('data/apps.json');
+  static String get developerJsonUrl => raw('data/developer.json');
 
   /// يحوّل مسار صورة محفوظ في apps.json إلى رابط كامل.
   static String media(String pathOrUrl) {
