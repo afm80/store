@@ -7,8 +7,19 @@ import 'package:url_launcher/url_launcher.dart';
 import 'models.dart';
 import 'store_service.dart';
 
+// ═══════════════════════════════════════════════════════════════
+// ثوابت الهوية البصرية
+// ═══════════════════════════════════════════════════════════════
 const Color kBrand = Color(0xFF075C55);
 const Color kBrandLight = Color(0xFFD3E8E5);
+const Color kSurface = Color(0xFFF8F9FA);
+
+class AppRadius {
+  static const double sm = 8;
+  static const double md = 12;
+  static const double lg = 16;
+  static const double pill = 24;
+}
 
 void main() {
   runApp(const MyApp());
@@ -32,8 +43,19 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         useMaterial3: true,
         colorSchemeSeed: kBrand,
-        scaffoldBackgroundColor: const Color(0xFFF8F9FA),
+        scaffoldBackgroundColor: kSurface,
         textTheme: GoogleFonts.cairoTextTheme(),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Colors.white,
+          surfaceTintColor: Colors.transparent,
+          elevation: 0.5,
+          iconTheme: IconThemeData(color: Colors.black87),
+          titleTextStyle: TextStyle(
+            color: Colors.black87,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
       ),
       home: const MainLayout(),
     );
@@ -47,9 +69,9 @@ void openApp(BuildContext context, AppItem app) {
   );
 }
 
-// -------------------------------------------------------------
-// الهيكل الأساسي: الهيدر، الشريط السفلي، القائمة الجانبية
-// -------------------------------------------------------------
+// ═══════════════════════════════════════════════════════════════
+// الهيكل الأساسي
+// ═══════════════════════════════════════════════════════════════
 class MainLayout extends StatefulWidget {
   const MainLayout({super.key});
 
@@ -72,9 +94,7 @@ class _MainLayoutState extends State<MainLayout> {
     setState(() => _future = next);
     try {
       await next;
-    } catch (_) {
-      // يظهر الخطأ في الواجهة.
-    }
+    } catch (_) {}
   }
 
   void _push(Widget page) {
@@ -86,31 +106,30 @@ class _MainLayoutState extends State<MainLayout> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        surfaceTintColor: Colors.transparent,
-        elevation: 1,
-        iconTheme: const IconThemeData(color: Colors.black87),
         title: Row(
           children: [
             ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.asset('assets/logo.png', width: 34, height: 34),
-            ),
-            const SizedBox(width: 10),
-            const Text(
-              'Alfaham Store',
-              style: TextStyle(
-                color: Colors.black87,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+              borderRadius: BorderRadius.circular(AppRadius.sm),
+              child: Image.asset(
+                'assets/logo.png',
+                width: 34,
+                height: 34,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 34,
+                  height: 34,
+                  color: kBrandLight,
+                  child: const Icon(Icons.storefront, size: 20, color: kBrand),
+                ),
               ),
             ),
+            const SizedBox(width: 10),
+            const Text('Alfaham Store'),
           ],
         ),
         actions: [
           IconButton(
             tooltip: 'تحديث القائمة',
-            icon: const Icon(Icons.refresh, color: Colors.black87),
+            icon: const Icon(Icons.refresh),
             onPressed: _reload,
           ),
         ],
@@ -119,34 +138,53 @@ class _MainLayoutState extends State<MainLayout> {
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
-              decoration: BoxDecoration(color: kBrand),
-              child: const Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.all(Radius.circular(14)),
-                    child: Image(
-                      image: AssetImage('assets/logo.png'),
-                      width: 60,
-                      height: 60,
-                    ),
+            Container(
+              height: 180,
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [kBrand, Color(0xFF0A7A71)],
+                  begin: Alignment.topRight,
+                  end: Alignment.bottomLeft,
+                ),
+              ),
+              child: SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        child: Image.asset(
+                          'assets/logo.png',
+                          width: 60,
+                          height: 60,
+                          errorBuilder: (_, __, ___) => Container(
+                            width: 60,
+                            height: 60,
+                            color: Colors.white24,
+                            child: const Icon(Icons.storefront,
+                                size: 34, color: Colors.white),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+                      const Text(
+                        'Alfaham Store',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const Text(
+                        'تحميل مباشر وآمن',
+                        style: TextStyle(color: Colors.white70, fontSize: 12),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 10),
-                  Text(
-                    'Alfaham Store',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Text(
-                    'تحميل مباشر وآمن',
-                    style: TextStyle(color: Colors.white70, fontSize: 12),
-                  ),
-                ],
+                ),
               ),
             ),
             ListTile(
@@ -208,37 +246,40 @@ class _MainLayoutState extends State<MainLayout> {
           }
           if (snapshot.hasError) {
             return ErrorView(
-              message: snapshot.error.toString().replaceFirst('Exception: ', ''),
+              message:
+                  snapshot.error.toString().replaceFirst('Exception: ', ''),
               onRetry: _reload,
             );
           }
           return const Center(child: CircularProgressIndicator());
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        type: BottomNavigationBarType.fixed,
-        selectedItemColor: kBrand,
-        unselectedItemColor: Colors.grey,
-        items: const [
-          BottomNavigationBarItem(
+      bottomNavigationBar: NavigationBar(
+        selectedIndex: _currentIndex,
+        onDestinationSelected: (i) => setState(() => _currentIndex = i),
+        backgroundColor: Colors.white,
+        indicatorColor: kBrandLight,
+        elevation: 3,
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        destinations: const [
+          NavigationDestination(
             icon: Icon(Icons.home_outlined),
-            activeIcon: Icon(Icons.home),
+            selectedIcon: Icon(Icons.home, color: kBrand),
             label: 'الرئيسية',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.apps_outlined),
-            activeIcon: Icon(Icons.apps),
+            selectedIcon: Icon(Icons.apps, color: kBrand),
             label: 'تطبيقات',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.sports_esports_outlined),
-            activeIcon: Icon(Icons.sports_esports),
+            selectedIcon: Icon(Icons.sports_esports, color: kBrand),
             label: 'ألعاب',
           ),
-          BottomNavigationBarItem(
+          NavigationDestination(
             icon: Icon(Icons.search),
+            selectedIcon: Icon(Icons.search, color: kBrand),
             label: 'بحث',
           ),
         ],
@@ -247,9 +288,9 @@ class _MainLayoutState extends State<MainLayout> {
   }
 }
 
-// -------------------------------------------------------------
+// ═══════════════════════════════════════════════════════════════
 // عناصر مشتركة
-// -------------------------------------------------------------
+// ═══════════════════════════════════════════════════════════════
 class AppIcon extends StatelessWidget {
   final AppItem app;
   final double size;
@@ -266,16 +307,32 @@ class AppIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final url = app.iconUrl;
     return ClipRRect(
       borderRadius: BorderRadius.circular(size * 0.22),
       child: SizedBox(
         width: size,
         height: size,
-        child: app.icon.isEmpty
+        child: url.isEmpty
             ? _fallback()
             : Image.network(
-                app.iconUrl,
+                url,
                 fit: BoxFit.cover,
+                loadingBuilder: (context, child, progress) {
+                  if (progress == null) return child;
+                  return Container(
+                    color: kBrandLight,
+                    alignment: Alignment.center,
+                    child: const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: kBrand,
+                      ),
+                    ),
+                  );
+                },
                 errorBuilder: (_, __, ___) => _fallback(),
               ),
       ),
@@ -299,30 +356,60 @@ class AppTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       elevation: 0,
       color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ListTile(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        side: BorderSide(color: Colors.grey.shade200),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.md),
         onTap: () => openApp(context, app),
-        contentPadding: const EdgeInsetsDirectional.only(start: 12, end: 12),
-        leading: AppIcon(app: app, size: 50),
-        title: Text(
-          app.name,
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
-        subtitle: Text(
-          app.shortDescription.isEmpty ? subtitle : '${app.shortDescription}\n$subtitle',
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
-        trailing: ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: kBrand,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              AppIcon(app: app, size: 50),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      app.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      app.shortDescription.isEmpty
+                          ? subtitle
+                          : '${app.shortDescription}\n$subtitle',
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 8),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: kBrand,
+                  foregroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
+                  ),
+                ),
+                onPressed: () => openApp(context, app),
+                child: const Text('عرض'),
+              ),
+            ],
           ),
-          onPressed: () => openApp(context, app),
-          child: const Text('عرض'),
         ),
       ),
     );
@@ -378,9 +465,9 @@ class EmptyView extends StatelessWidget {
   }
 }
 
-// -------------------------------------------------------------
-// الشاشات الأساسية (الرئيسية، تطبيقات/ألعاب، بحث)
-// -------------------------------------------------------------
+// ═══════════════════════════════════════════════════════════════
+// الشاشات الأساسية
+// ═══════════════════════════════════════════════════════════════
 class HomeScreen extends StatelessWidget {
   final List<AppItem> apps;
   final Future<void> Function() onRefresh;
@@ -392,7 +479,8 @@ class HomeScreen extends StatelessWidget {
     if (apps.isEmpty) {
       return RefreshIndicator(
         onRefresh: onRefresh,
-        child: const EmptyView(text: 'لا توجد تطبيقات بعد، أضف أول تطبيق من لوحة التحكم'),
+        child:
+            const EmptyView(text: 'لا توجد تطبيقات بعد، أضف أول تطبيق من لوحة التحكم'),
       );
     }
 
@@ -409,7 +497,7 @@ class HomeScreen extends StatelessWidget {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 12),
           SizedBox(
-            height: 180,
+            height: 190,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               itemCount: highlighted.length,
@@ -423,8 +511,8 @@ class HomeScreen extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(12),
-                      boxShadow: [BoxShadow(color: Colors.grey.shade200, blurRadius: 5)],
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      border: Border.all(color: Colors.grey.shade200),
                     ),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -437,8 +525,11 @@ class HomeScreen extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
-                        Text(app.sizeLabel,
-                            style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                        Text(
+                          app.sizeLabel,
+                          style: const TextStyle(
+                              color: Colors.grey, fontSize: 12),
+                        ),
                       ],
                     ),
                   ),
@@ -477,6 +568,14 @@ class _CatalogScreenState extends State<CatalogScreen> {
   String? _genre;
 
   @override
+  void didUpdateWidget(covariant CatalogScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_genre != null && !widget.apps.any((a) => a.genre == _genre)) {
+      _genre = null;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final genres = widget.apps
         .map((a) => a.genre)
@@ -484,8 +583,9 @@ class _CatalogScreenState extends State<CatalogScreen> {
         .toSet()
         .toList();
     final selected = genres.contains(_genre) ? _genre : null;
-    final shown =
-        selected == null ? widget.apps : widget.apps.where((a) => a.genre == selected).toList();
+    final shown = selected == null
+        ? widget.apps
+        : widget.apps.where((a) => a.genre == selected).toList();
 
     if (widget.apps.isEmpty) {
       return RefreshIndicator(
@@ -501,7 +601,8 @@ class _CatalogScreenState extends State<CatalogScreen> {
             height: 56,
             child: ListView(
               scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
               children: [
                 Padding(
                   padding: const EdgeInsetsDirectional.only(end: 8),
@@ -509,6 +610,19 @@ class _CatalogScreenState extends State<CatalogScreen> {
                     label: const Text('الكل'),
                     selected: selected == null,
                     onSelected: (_) => setState(() => _genre = null),
+                    selectedColor: kBrandLight,
+                    labelStyle: TextStyle(
+                      color: selected == null ? kBrand : Colors.black87,
+                      fontWeight: selected == null
+                          ? FontWeight.bold
+                          : FontWeight.normal,
+                    ),
+                    side: BorderSide(
+                      color: selected == null ? kBrand : Colors.grey.shade300,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
                   ),
                 ),
                 for (final g in genres)
@@ -518,6 +632,19 @@ class _CatalogScreenState extends State<CatalogScreen> {
                       label: Text(g),
                       selected: selected == g,
                       onSelected: (_) => setState(() => _genre = g),
+                      selectedColor: kBrandLight,
+                      labelStyle: TextStyle(
+                        color: selected == g ? kBrand : Colors.black87,
+                        fontWeight: selected == g
+                            ? FontWeight.bold
+                            : FontWeight.normal,
+                      ),
+                      side: BorderSide(
+                        color: selected == g ? kBrand : Colors.grey.shade300,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                      ),
                     ),
                   ),
               ],
@@ -550,6 +677,13 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   String _query = '';
+  final _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -568,15 +702,35 @@ class _SearchScreenState extends State<SearchScreen> {
       child: Column(
         children: [
           TextField(
+            controller: _controller,
             onChanged: (v) => setState(() => _query = v),
             decoration: InputDecoration(
               hintText: 'ابحث عن تطبيق أو لعبة...',
               prefixIcon: const Icon(Icons.search),
+              suffixIcon: _query.isEmpty
+                  ? null
+                  : IconButton(
+                      icon: const Icon(Icons.clear),
+                      onPressed: () {
+                        _controller.clear();
+                        setState(() => _query = '');
+                      },
+                    ),
               filled: true,
               fillColor: Colors.white,
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 0, horizontal: 12),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(AppRadius.md),
                 borderSide: BorderSide.none,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                borderSide: BorderSide(color: Colors.grey.shade200),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                borderSide: const BorderSide(color: kBrand, width: 1.5),
               ),
             ),
           ),
@@ -603,9 +757,9 @@ class _SearchScreenState extends State<SearchScreen> {
   }
 }
 
-// -------------------------------------------------------------
+// ═══════════════════════════════════════════════════════════════
 // صفحات القائمة الجانبية
-// -------------------------------------------------------------
+// ═══════════════════════════════════════════════════════════════
 class InfoPage extends StatelessWidget {
   final String title;
   final String text;
@@ -616,7 +770,7 @@ class InfoPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text(title)),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Text(text, style: const TextStyle(fontSize: 16, height: 1.6)),
       ),
@@ -627,23 +781,43 @@ class InfoPage extends StatelessWidget {
 class ContactScreen extends StatelessWidget {
   const ContactScreen({super.key});
 
+  Future<void> _open(BuildContext context, String url) async {
+    final ok = await launchUrl(
+      Uri.parse(url),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر فتح الرابط')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('اتصل بنا')),
-      body: const Padding(
-        padding: EdgeInsets.all(16),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('إذا كان لديك أي تطبيق تريد إضافته أو واجهتك مشكلة، تواصل معنا عبر:',
-                style: TextStyle(fontSize: 16)),
-            SizedBox(height: 15),
-            Text('• تليجرام: @YourChannel',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: kBrand)),
-            SizedBox(height: 10),
-            Text('• البريد الإلكتروني: support@store.com',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const Text(
+              'إذا كان لديك أي تطبيق تريد إضافته أو واجهتك مشكلة، تواصل معنا عبر:',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 20),
+            _ContactTile(
+              icon: Icons.send,
+              label: 'تليجرام: @YourChannel',
+              onTap: () => _open(context, 'https://t.me/YourChannel'),
+            ),
+            const SizedBox(height: 10),
+            _ContactTile(
+              icon: Icons.email_outlined,
+              label: 'البريد الإلكتروني: support@store.com',
+              onTap: () => _open(context, 'mailto:support@store.com'),
+            ),
           ],
         ),
       ),
@@ -651,33 +825,123 @@ class ContactScreen extends StatelessWidget {
   }
 }
 
-// -------------------------------------------------------------
-// صفحة تفاصيل التطبيق
-// -------------------------------------------------------------
-class AppDetailsScreen extends StatelessWidget {
+class _ContactTile extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _ContactTile({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        side: BorderSide(color: Colors.grey.shade200),
+      ),
+      child: ListTile(
+        leading: Icon(icon, color: kBrand),
+        title: Text(label,
+            style: const TextStyle(fontWeight: FontWeight.w600)),
+        trailing:
+            const Icon(Icons.arrow_forward_ios, size: 14, color: Colors.grey),
+        onTap: onTap,
+      ),
+    );
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// صفحة تفاصيل التطبيق — بنمط Google Play
+// ═══════════════════════════════════════════════════════════════
+class AppDetailsScreen extends StatefulWidget {
   final AppItem app;
 
   const AppDetailsScreen({super.key, required this.app});
 
-  Future<void> _download(BuildContext context) async {
+  @override
+  State<AppDetailsScreen> createState() => _AppDetailsScreenState();
+}
+
+class _AppDetailsScreenState extends State<AppDetailsScreen> {
+  final ScrollController _scrollController = ScrollController();
+  bool _expandedDescription = false;
+  bool _showPinnedInstall = false;
+
+  AppItem get app => widget.app;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      final shouldPin = _scrollController.offset > 420;
+      if (shouldPin != _showPinnedInstall) {
+        setState(() => _showPinnedInstall = shouldPin);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _download() async {
     final ok = await launchUrl(
       Uri.parse(app.apkUrl),
       mode: LaunchMode.externalApplication,
     );
-    if (!ok && context.mounted) {
+    if (!ok && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('تعذّر فتح رابط التحميل')),
       );
     }
   }
 
-  void _showFullText(BuildContext context, String title, String text) {
+  void _openImage(String url) {
+    showDialog<void>(
+      context: context,
+      barrierColor: Colors.black87,
+      builder: (_) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(8),
+        child: Stack(
+          children: [
+            InteractiveViewer(
+              minScale: 1,
+              maxScale: 4,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                child: Image.network(url, fit: BoxFit.contain),
+              ),
+            ),
+            Positioned(
+              top: 8,
+              right: 8,
+              child: IconButton(
+                icon: const Icon(Icons.close, color: Colors.white),
+                onPressed: () => Navigator.pop(context),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showFullText(String title, String text) {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.white,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(AppRadius.lg)),
       ),
       builder: (_) => DraggableScrollableSheet(
         expand: false,
@@ -689,141 +953,237 @@ class AppDetailsScreen extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           children: [
             Text(title,
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+                style: const TextStyle(
+                    fontSize: 20, fontWeight: FontWeight.w600)),
             const SizedBox(height: 12),
             Text(text,
-                style: const TextStyle(fontSize: 15, height: 1.6, color: Colors.black87)),
+                style: const TextStyle(
+                    fontSize: 15, height: 1.6, color: Colors.black87)),
           ],
         ),
       ),
     );
   }
 
-  Widget _sectionHeader(String title, {VoidCallback? onTap}) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(title,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-            ),
-            if (onTap != null) const Icon(Icons.arrow_forward, size: 22),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _stat(String value, String label) {
-    return Expanded(
-      child: Column(
-        children: [
-          Text(
-            value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87),
+  Widget _installButton() {
+    return SizedBox(
+      width: double.infinity,
+      height: 48,
+      child: FilledButton(
+        style: FilledButton.styleFrom(
+          backgroundColor: kBrand,
+          foregroundColor: Colors.white,
+          disabledBackgroundColor: Colors.grey.shade300,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppRadius.pill),
           ),
-          const SizedBox(height: 4),
-          Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+        ),
+        onPressed: app.apkUrl.isEmpty ? null : _download,
+        child: const Text(
+          'تثبيت',
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+        ),
+      ),
+    );
+  }
+
+  Widget _statsRow() {
+    final items = <Widget>[];
+
+    void addStat(IconData? icon, String value, String label) {
+      if (items.isNotEmpty) {
+        items.add(Container(width: 1, height: 32, color: Colors.black12));
+      }
+      items.add(
+        Expanded(
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  if (icon != null) ...[
+                    Icon(icon, size: 14, color: Colors.black54),
+                    const SizedBox(width: 4),
+                  ],
+                  Flexible(
+                    child: Text(
+                      value,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(label,
+                  style:
+                      const TextStyle(fontSize: 11, color: Colors.black54)),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (app.rating > 0) {
+      addStat(Icons.star, app.ratingLabel, 'التقييم');
+    }
+    if (app.downloads > 0) {
+      addStat(null, app.downloadsLabel, 'التحميلات');
+    }
+    addStat(null, app.sizeLabel, 'الحجم');
+    if (app.genre.isNotEmpty) {
+      addStat(null, app.genre, 'التصنيف');
+    }
+    if (app.ageRating.isNotEmpty) {
+      addStat(null, app.ageRating, 'العمر');
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      child: Row(children: items),
+    );
+  }
+
+  Widget _infoChip(IconData icon, String label, String value) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: kSurface,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 18, color: kBrand),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label,
+                  style: const TextStyle(
+                      fontSize: 11, color: Colors.black54)),
+              const SizedBox(height: 2),
+              Text(value,
+                  style: const TextStyle(
+                      fontSize: 13, fontWeight: FontWeight.w600)),
+            ],
+          ),
         ],
       ),
     );
   }
 
-  Widget _chip(String text) {
+  Widget _section(String title, {Widget? trailing, required Widget child}) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(title,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.w600)),
+              ),
+              if (trailing != null) trailing,
+            ],
+          ),
+          const SizedBox(height: 12),
+          child,
+        ],
+      ),
+    );
+  }
+
+  Widget _tag(String text) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black26),
-        borderRadius: BorderRadius.circular(8),
+        color: kBrandLight.withOpacity(0.5),
+        borderRadius: BorderRadius.circular(AppRadius.pill),
       ),
-      child: Text(text, style: const TextStyle(fontSize: 13, color: Colors.black87)),
-    );
-  }
-
-  Widget _infoRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SizedBox(
-            width: 90,
-            child: Text(label, style: const TextStyle(color: Colors.black54)),
-          ),
-          Expanded(
-            child: Directionality(
-              textDirection: TextDirection.ltr,
-              child: Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: SelectableText(value.isEmpty ? '—' : value),
-              ),
-            ),
-          ),
-        ],
-      ),
+      child: Text(text,
+          style: const TextStyle(
+              fontSize: 12,
+              color: kBrand,
+              fontWeight: FontWeight.w600)),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    final description =
-        app.longDescription.isNotEmpty ? app.longDescription : app.shortDescription;
-    final summary =
-        app.shortDescription.isNotEmpty ? app.shortDescription : app.longDescription;
+    final description = app.longDescription.isNotEmpty
+        ? app.longDescription
+        : app.shortDescription;
     final shots = app.screenshotUrls;
     final kind = app.isGame ? 'لعبة' : 'تطبيق';
-
-    final stats = <Widget>[
-      _stat(app.sizeLabel, 'الحجم'),
-      if (app.version.isNotEmpty) _stat(app.version, 'الإصدار'),
-      _stat(app.genre.isNotEmpty ? app.genre : kind, 'التصنيف'),
-    ];
-    final statsRow = <Widget>[];
-    for (var i = 0; i < stats.length; i++) {
-      if (i > 0) {
-        statsRow.add(Container(width: 1, height: 28, color: Colors.black12));
-      }
-      statsRow.add(stats[i]);
-    }
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         surfaceTintColor: Colors.transparent,
-        elevation: 0,
-        scrolledUnderElevation: 0,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.only(bottom: 32),
-        children: [
-          if (app.banner.isNotEmpty)
+        elevation: _showPinnedInstall ? 1 : 0,
+        scrolledUnderElevation: 1,
+        title: AnimatedOpacity(
+          opacity: _showPinnedInstall ? 1 : 0,
+          duration: const Duration(milliseconds: 200),
+          child: Row(
+            children: [
+              AppIcon(app: app, size: 30),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  app.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          if (_showPinnedInstall)
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: AspectRatio(
-                  aspectRatio: 2,
-                  child: Image.network(
-                    app.bannerUrl,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+              padding: const EdgeInsetsDirectional.only(end: 12),
+              child: SizedBox(
+                width: 100,
+                height: 36,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: kBrand,
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(AppRadius.pill),
+                    ),
                   ),
+                  onPressed: app.apkUrl.isEmpty ? null : _download,
+                  child: const Text('تثبيت',
+                      style: TextStyle(fontWeight: FontWeight.w600)),
                 ),
               ),
             ),
+        ],
+      ),
+      body: ListView(
+        controller: _scrollController,
+        padding: const EdgeInsets.only(bottom: 32),
+        children: [
+          // ─── هيدر: أيقونة + اسم + مطوّر + تصنيف ───
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppIcon(app: app, size: 72),
+                AppIcon(app: app, size: 80),
                 const SizedBox(width: 16),
                 Expanded(
                   child: Column(
@@ -834,155 +1194,282 @@ class AppDetailsScreen extends StatelessWidget {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.w600, height: 1.2),
+                            fontSize: 22,
+                            fontWeight: FontWeight.w600,
+                            height: 1.2),
                       ),
-                      if (app.genre.isNotEmpty) ...[
-                        const SizedBox(height: 4),
-                        Text(app.genre,
-                            style: const TextStyle(
-                                fontSize: 14,
-                                color: kBrand,
-                                fontWeight: FontWeight.w600)),
-                      ],
+                      const SizedBox(height: 4),
+                      if (app.developer.isNotEmpty)
+                        Text(
+                          app.developer,
+                          style: const TextStyle(
+                              fontSize: 13,
+                              color: kBrand,
+                              fontWeight: FontWeight.w600),
+                        )
+                      else if (app.genre.isNotEmpty)
+                        Text(
+                          app.genre,
+                          style: const TextStyle(
+                              fontSize: 13,
+                              color: kBrand,
+                              fontWeight: FontWeight.w600),
+                        ),
+                      const SizedBox(height: 2),
+                      Text(
+                        '$kind • ${app.sizeLabel}',
+                        style: const TextStyle(
+                            fontSize: 12, color: Colors.black54),
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
-            child: Row(children: statsRow),
-          ),
+
+          // ─── صف الإحصائيات ───
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SizedBox(
-              width: double.infinity,
-              height: 44,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: kBrand,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
-                ),
-                onPressed: app.apkUrl.isEmpty ? null : () => _download(context),
-                child: const Text('تثبيت',
-                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
-              ),
-            ),
+            child: _statsRow(),
           ),
-          if (shots.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            SizedBox(
-              height: 300,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                itemCount: shots.length,
-                itemBuilder: (_, i) => Padding(
-                  padding: const EdgeInsetsDirectional.only(end: 8),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Image.network(
-                      shots[i],
-                      height: 300,
-                      fit: BoxFit.contain,
-                      errorBuilder: (_, __, ___) => Container(
-                        width: 150,
-                        color: Colors.grey.shade200,
-                        child: const Icon(Icons.image_not_supported, color: Colors.grey),
+
+          // ─── زر التثبيت الرئيسي ───
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: _installButton(),
+          ),
+
+          // ─── لقطات الشاشة ───
+          if (shots.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: SizedBox(
+                height: 260,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: shots.length,
+                  itemBuilder: (_, i) => Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 10),
+                    child: GestureDetector(
+                      onTap: () => _openImage(shots[i]),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        child: Image.network(
+                          shots[i],
+                          height: 260,
+                          fit: BoxFit.contain,
+                          loadingBuilder: (context, child, progress) {
+                            if (progress == null) return child;
+                            return Container(
+                              width: 140,
+                              color: kSurface,
+                              child: const Center(
+                                child: CircularProgressIndicator(
+                                    strokeWidth: 2, color: kBrand),
+                              ),
+                            );
+                          },
+                          errorBuilder: (_, __, ___) => Container(
+                            width: 140,
+                            color: Colors.grey.shade200,
+                            child: const Icon(Icons.image_not_supported,
+                                color: Colors.grey),
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
             ),
-          ],
-          const SizedBox(height: 20),
-          _sectionHeader(
+
+          // ─── عن هذا التطبيق ───
+          _section(
             'عن هذا التطبيق',
-            onTap: description.isEmpty
-                ? null
-                : () => _showFullText(context, 'عن هذا التطبيق', description),
+            trailing: description.isNotEmpty
+                ? TextButton(
+                    onPressed: () =>
+                        _showFullText('عن هذا التطبيق', description),
+                    child: const Text('اقرأ المزيد'),
+                  )
+                : null,
+            child: description.isEmpty
+                ? const Text('—', style: TextStyle(color: Colors.black54))
+                : GestureDetector(
+                    onTap: () => setState(
+                        () => _expandedDescription = !_expandedDescription),
+                    child: Text(
+                      description,
+                      maxLines: _expandedDescription ? null : 5,
+                      overflow: _expandedDescription
+                          ? TextOverflow.visible
+                          : TextOverflow.ellipsis,
+                      style: const TextStyle(
+                          fontSize: 14, height: 1.6, color: Colors.black87),
+                    ),
+                  ),
           ),
-          if (summary.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
-              child: Text(
-                summary,
-                maxLines: 5,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 14, height: 1.5, color: Colors.black87),
-              ),
-            ),
+
+          // ─── وسوم ───
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
             child: Wrap(
               spacing: 8,
               runSpacing: 8,
               children: [
-                _chip(kind),
-                if (app.genre.isNotEmpty) _chip(app.genre),
+                if (app.genre.isNotEmpty) _tag(app.genre),
+                _tag(kind),
+                if (app.rating > 0) _tag('⭐ ${app.ratingLabel}'),
+                if (app.ageRating.isNotEmpty) _tag(app.ageRating),
               ],
             ),
           ),
-          if (app.dateLabel.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+
+          // ─── بيانات التطبيق ───
+          _section(
+            'بيانات التطبيق',
+            child: Wrap(
+              spacing: 10,
+              runSpacing: 10,
+              children: [
+                if (app.version.isNotEmpty)
+                  _infoChip(Icons.system_update, 'الإصدار', app.version),
+                _infoChip(Icons.straighten, 'الحجم', app.sizeLabel),
+                if (app.dateLabel.isNotEmpty)
+                  _infoChip(Icons.update, 'آخر تحديث', app.dateLabel),
+                if (app.packageName.isNotEmpty)
+                  _infoChip(Icons.android, 'الحزمة', app.packageName),
+              ],
+            ),
+          ),
+
+          // ─── الأمان ───
+          _section(
+            'الأمان',
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: kSurface,
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('تم التحديث في',
-                      style: TextStyle(fontSize: 12, color: Colors.black54)),
-                  const SizedBox(height: 2),
-                  Text(app.dateLabel, style: const TextStyle(fontSize: 14)),
+                  Row(
+                    children: [
+                      const Icon(Icons.verified_user,
+                          size: 20, color: kBrand),
+                      const SizedBox(width: 8),
+                      const Expanded(
+                        child: Text(
+                          'تم التحقق من البيانات',
+                          style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    'يتم تحميل الملف من مصدر مباشر وموثوق. يمكنك التحقق من البصمة أدناه.',
+                    style: TextStyle(fontSize: 12, color: Colors.black54),
+                  ),
+                  if (app.sha256.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                        border: Border.all(color: Colors.grey.shade200),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.fingerprint,
+                              size: 16, color: Colors.black45),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: Text(
+                                app.sha256,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                    fontFamily: 'monospace',
+                                    fontSize: 11,
+                                    color: Colors.black54),
+                              ),
+                            ),
+                          ),
+                          IconButton(
+                            tooltip: 'نسخ',
+                            icon: const Icon(Icons.copy, size: 16),
+                            onPressed: () {
+                              Clipboard.setData(
+                                  ClipboardData(text: app.sha256));
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('تم نسخ البصمة')),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
-          if (app.whatsNew.isNotEmpty) ...[
-            const SizedBox(height: 20),
-            _sectionHeader(
+          ),
+
+          // ─── ما الجديد ───
+          if (app.whatsNew.isNotEmpty)
+            _section(
               'ما الجديد',
-              onTap: () => _showFullText(context, 'ما الجديد', app.whatsNew),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              trailing: TextButton(
+                onPressed: () =>
+                    _showFullText('ما الجديد', app.whatsNew),
+                child: const Text('اقرأ المزيد'),
+              ),
               child: Text(
                 app.whatsNew,
                 maxLines: 4,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 14, height: 1.5, color: Colors.black87),
+                style: const TextStyle(
+                    fontSize: 14, height: 1.6, color: Colors.black87),
               ),
             ),
-          ],
+
+          // ─── بطاقة معلومات الأمان الإضافية ───
           const SizedBox(height: 20),
-          _sectionHeader('معلومات التطبيق'),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              children: [
-                _infoRow('الحزمة', app.packageName),
-                _infoRow('الإصدار', app.version),
-                _infoRow('الحجم', app.sizeLabel),
-                _infoRow('آخر تحديث', app.dateLabel),
-                if (app.sha256.isNotEmpty) ...[
-                  _infoRow('SHA-256', app.sha256),
-                  Align(
-                    alignment: AlignmentDirectional.centerStart,
-                    child: TextButton.icon(
-                      onPressed: () {
-                        Clipboard.setData(ClipboardData(text: app.sha256));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('تم نسخ البصمة')),
-                        );
-                      },
-                      icon: const Icon(Icons.copy, size: 18),
-                      label: const Text('نسخ البصمة للتحقق من الملف'),
+            child: Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: kSurface,
+                borderRadius: BorderRadius.circular(AppRadius.md),
+                border: Border.all(color: Colors.grey.shade200),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.shield_outlined,
+                      color: kBrand, size: 22),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'هذا التطبيق يتبع سياسة الأمان لدينا. لا يتم جمع أي بيانات شخصية.',
+                      style: TextStyle(
+                          fontSize: 12, color: Colors.black54, height: 1.4),
                     ),
                   ),
                 ],
-              ],
+              ),
             ),
           ),
         ],
