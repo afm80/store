@@ -1261,16 +1261,14 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
     final shots = app.screenshotUrls;
     final hasVideo = app.youtubeId.isNotEmpty;
     final hasBanner = app.banner.isNotEmpty;
-    final hasLead = hasVideo || hasBanner;
-    if (!hasLead && shots.isEmpty) return const SizedBox.shrink();
+    if (!hasVideo && !hasBanner && shots.isEmpty) return const SizedBox.shrink();
 
-    // المعرض: لقطات الشاشة فقط، ومعها البنر إذا لم يكن هناك فيديو.
-    final bannerInGallery = hasBanner && !hasVideo;
+    // المعرض (ملء الشاشة): البنر ثم لقطات الشاشة.
     final gallery = <String>[
-      if (bannerInGallery) app.bannerUrl,
+      if (hasBanner) app.bannerUrl,
       ...shots,
     ];
-    final offset = bannerInGallery ? 1 : 0;
+    final offset = hasBanner ? 1 : 0;
 
     return Padding(
       padding: const EdgeInsets.only(top: 20),
@@ -1278,7 +1276,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
         builder: (context, c) {
           final h = (c.maxWidth * 0.62).clamp(200.0, 340.0);
           final leadW = h * 16 / 9;
-          final count = (hasLead ? 1 : 0) + shots.length;
+          final count = (hasVideo ? 1 : 0) + (hasBanner ? 1 : 0) + shots.length;
 
           return SizedBox(
             height: h,
@@ -1288,13 +1286,39 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
               itemCount: count,
               separatorBuilder: (_, __) => const SizedBox(width: 10),
               itemBuilder: (_, i) {
-                if (hasLead && i == 0) {
-                  return _leadMedia(h, leadW, hasVideo, hasBanner, gallery);
+                var k = i;
+                if (hasVideo) {
+                  if (k == 0) {
+                    return _leadMedia(h, leadW, true, hasBanner, gallery);
+                  }
+                  k--;
                 }
-                final si = hasLead ? i - 1 : i;
+                if (hasBanner) {
+                  if (k == 0) {
+                    return GestureDetector(
+                      onTap: () => _openGallery(gallery, 0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(AppRadius.md),
+                        child: SizedBox(
+                          width: leadW,
+                          height: h,
+                          child: Image.network(
+                            app.bannerUrl,
+                            fit: BoxFit.cover,
+                            loadingBuilder: (_, child, p) =>
+                                p == null ? child : _mediaPlaceholder(),
+                            errorBuilder: (_, __, ___) =>
+                                Container(color: Colors.grey.shade200),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  k--;
+                }
                 return GestureDetector(
-                  onTap: () => _openGallery(gallery, si + offset),
-                  child: _shotImage(shots[si], h),
+                  onTap: () => _openGallery(gallery, k + offset),
+                  child: _shotImage(shots[k], h),
                 );
               },
             ),
@@ -1331,9 +1355,9 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
   // العنصر الأول في الشريط: فيديو يوتيوب (يُشغَّل مكانه) أو صورة البنر.
   Widget _leadMedia(double h, double w, bool hasVideo, bool hasBanner,
       List<String> gallery) {
-    final poster = hasBanner
-        ? app.bannerUrl
-        : 'https://img.youtube.com/vi/${app.youtubeId}/hqdefault.jpg';
+    final poster = hasVideo
+        ? 'https://img.youtube.com/vi/${app.youtubeId}/hqdefault.jpg'
+        : app.bannerUrl;
 
     Widget content;
     if (hasVideo && _playing) {
