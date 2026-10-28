@@ -13,19 +13,37 @@ class StoreConfig {
 
   /// رابط مباشر لصفحة تطبيق معيّن.
   static String shareUrl(String packageName) =>
-      '$storeUrl/?app=${Uri.encodeQueryComponent(packageName)}';
+      '$storeUrl/#/app/${Uri.encodeComponent(packageName)}';
 
-  /// اسم الحزمة القادم من الرابط (?app=...) أو '' إذا لم يوجد.
-  static String get sharedPackage {
-    final q = Uri.base.queryParameters['app'];
-    if (q != null && q.isNotEmpty) return q;
-    // رابط بنمط hash: https://site/#/?app=...
-    final f = Uri.base.fragment;
-    if (f.isNotEmpty) {
-      final u = Uri.tryParse(f.startsWith('/') ? f : '/$f');
-      return u?.queryParameters['app'] ?? '';
+  /// مسار الصفحة داخل الرابط (بعد #)، مثل: /games أو /app/اسم.الحزمة
+  static Uri? _fragmentUri(Uri u) {
+    final f = u.fragment;
+    if (f.isEmpty) return null;
+    return Uri.tryParse(f.startsWith('/') ? f : '/$f');
+  }
+
+  /// يستخرج اسم الحزمة من رابط (يدعم #/app/pkg و ?app=pkg القديم).
+  static String packageFromUri(Uri u) {
+    final fu = _fragmentUri(u);
+    if (fu != null) {
+      final segs = fu.pathSegments;
+      if (segs.length >= 2 && segs.first == 'app') return segs[1];
+      return fu.queryParameters['app'] ?? '';
     }
-    return '';
+    return u.queryParameters['app'] ?? '';
+  }
+
+  /// اسم الحزمة القادم من رابط الصفحة الحالية أو '' إذا لم يوجد.
+  static String get sharedPackage => packageFromUri(Uri.base);
+
+  /// مسارات التبويبات الرئيسية (للتحديث على نفس التبويب).
+  static const List<String> tabPaths = ['/', '/apps', '/games', '/search'];
+
+  static int get initialTab {
+    final fu = _fragmentUri(Uri.base);
+    if (fu == null) return 0;
+    final i = tabPaths.indexOf(fu.path);
+    return i < 0 ? 0 : i;
   }
 
   /// مفاتيح التفعيل: غيّرها إلى true عند الجاهزية.

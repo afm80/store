@@ -84,16 +84,23 @@ class MyApp extends StatelessWidget {
   }
 }
 
+// مسار التبويب الحالي (يُكتب في رابط المتصفح ليبقى التحديث على نفس الصفحة)
+String _currentTabPath = '/';
+
+void _reportUrl(String path) {
+  if (!kIsWeb) return;
+  SystemNavigator.routeInformationUpdated(uri: Uri.parse(path), replace: true);
+}
+
 void openApp(BuildContext context, AppItem app) {
+  final path = '/app/${Uri.encodeComponent(app.packageName)}';
   Navigator.push(
     context,
     MaterialPageRoute(
-      // الاسم يُحدّث رابط المتصفح، فيبقى التحديث (F5) على نفس الصفحة
-      settings: RouteSettings(
-          name: '/?app=${Uri.encodeQueryComponent(app.packageName)}'),
+      settings: RouteSettings(name: path),
       builder: (_) => AppDetailsScreen(app: app),
     ),
-  );
+  ).then((_) => _reportUrl(_currentTabPath));
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -107,13 +114,20 @@ class MainLayout extends StatefulWidget {
 }
 
 class _MainLayoutState extends State<MainLayout> {
-  int _currentIndex = 0;
+  int _currentIndex = StoreConfig.initialTab;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late Future<List<AppItem>> _future;
+
+  void _setTab(int i) {
+    setState(() => _currentIndex = i);
+    _currentTabPath = StoreConfig.tabPaths[i];
+    _reportUrl(_currentTabPath);
+  }
 
   @override
   void initState() {
     super.initState();
+    _currentTabPath = StoreConfig.tabPaths[_currentIndex];
     _future = StoreService.fetchApps();
     _initLinks();
   }
@@ -146,10 +160,10 @@ class _MainLayoutState extends State<MainLayout> {
       final links = AppLinks();
       final initial = await links.getInitialLink();
       if (initial != null) {
-        await _openPackage(initial.queryParameters['app'] ?? '');
+        await _openPackage(StoreConfig.packageFromUri(initial));
       }
       _linkSub = links.uriLinkStream.listen(
-        (u) => _openPackage(u.queryParameters['app'] ?? ''),
+        (u) => _openPackage(StoreConfig.packageFromUri(u)),
       );
     } catch (_) {}
   }
@@ -300,8 +314,8 @@ class _MainLayoutState extends State<MainLayout> {
               HomeScreen(
                 apps: apps,
                 onRefresh: _reload,
-                onSeeApps: () => setState(() => _currentIndex = 1),
-                onSeeGames: () => setState(() => _currentIndex = 2),
+                onSeeApps: () => _setTab(1),
+                onSeeGames: () => _setTab(2),
               ),
               CatalogScreen(
                 apps: apps.where((a) => !a.isGame).toList(),
@@ -337,7 +351,7 @@ class _MainLayoutState extends State<MainLayout> {
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _currentIndex,
-        onDestinationSelected: (i) => setState(() => _currentIndex = i),
+        onDestinationSelected: _setTab,
         backgroundColor: Colors.white,
         indicatorColor: kBrandLight,
         elevation: 3,
