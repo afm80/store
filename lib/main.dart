@@ -671,6 +671,81 @@ class AppDetailsScreen extends StatelessWidget {
     }
   }
 
+  void _showFullText(BuildContext context, String title, String text) {
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      builder: (_) => DraggableScrollableSheet(
+        expand: false,
+        initialChildSize: 0.7,
+        minChildSize: 0.4,
+        maxChildSize: 0.95,
+        builder: (_, controller) => ListView(
+          controller: controller,
+          padding: const EdgeInsets.all(20),
+          children: [
+            Text(title,
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
+            const SizedBox(height: 12),
+            Text(text,
+                style: const TextStyle(fontSize: 15, height: 1.6, color: Colors.black87)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _sectionHeader(String title, {VoidCallback? onTap}) {
+    return InkWell(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(title,
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            ),
+            if (onTap != null) const Icon(Icons.arrow_forward, size: 22),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _stat(String value, String label) {
+    return Expanded(
+      child: Column(
+        children: [
+          Text(
+            value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(
+                fontSize: 14, fontWeight: FontWeight.w600, color: Colors.black87),
+          ),
+          const SizedBox(height: 4),
+          Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+        ],
+      ),
+    );
+  }
+
+  Widget _chip(String text) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black26),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Text(text, style: const TextStyle(fontSize: 13, color: Colors.black87)),
+    );
+  }
+
   Widget _infoRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -679,7 +754,7 @@ class AppDetailsScreen extends StatelessWidget {
         children: [
           SizedBox(
             width: 90,
-            child: Text(label, style: const TextStyle(color: Colors.grey)),
+            child: Text(label, style: const TextStyle(color: Colors.black54)),
           ),
           Expanded(
             child: Directionality(
@@ -699,91 +774,122 @@ class AppDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final description =
         app.longDescription.isNotEmpty ? app.longDescription : app.shortDescription;
+    final summary =
+        app.shortDescription.isNotEmpty ? app.shortDescription : app.longDescription;
     final shots = app.screenshotUrls;
+    final kind = app.isGame ? 'لعبة' : 'تطبيق';
+
+    final stats = <Widget>[
+      _stat(app.sizeLabel, 'الحجم'),
+      if (app.version.isNotEmpty) _stat(app.version, 'الإصدار'),
+      _stat(app.genre.isNotEmpty ? app.genre : kind, 'التصنيف'),
+    ];
+    final statsRow = <Widget>[];
+    for (var i = 0; i < stats.length; i++) {
+      if (i > 0) {
+        statsRow.add(Container(width: 1, height: 28, color: Colors.black12));
+      }
+      statsRow.add(stats[i]);
+    }
 
     return Scaffold(
-      appBar: AppBar(title: Text(app.name)),
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+      ),
       body: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.only(bottom: 32),
         children: [
-          if (app.banner.isNotEmpty) ...[
-            ClipRRect(
-              borderRadius: BorderRadius.circular(14),
-              child: AspectRatio(
-                aspectRatio: 2,
-                child: Image.network(
-                  app.bannerUrl,
-                  fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+          if (app.banner.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: AspectRatio(
+                  aspectRatio: 2,
+                  child: Image.network(
+                    app.bannerUrl,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => const SizedBox.shrink(),
+                  ),
                 ),
               ),
             ),
-            const SizedBox(height: 16),
-          ],
-          Row(
-            children: [
-              AppIcon(app: app, size: 80),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(app.name,
-                        style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                    const SizedBox(height: 4),
-                    Text(
-                      [
-                        if (app.version.isNotEmpty) 'الإصدار: ${app.version}',
-                        'الحجم: ${app.sizeLabel}',
-                      ].join(' • '),
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    if (app.genre.isNotEmpty) ...[
-                      const SizedBox(height: 4),
-                      Text(app.genre,
-                          style: TextStyle(color: kBrand, fontWeight: FontWeight.w600)),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppIcon(app: app, size: 72),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        app.name,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.w600, height: 1.2),
+                      ),
+                      if (app.genre.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text(app.genre,
+                            style: const TextStyle(
+                                fontSize: 14,
+                                color: kBrand,
+                                fontWeight: FontWeight.w600)),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(height: 20),
-          SizedBox(
-            width: double.infinity,
-            height: 50,
-            child: ElevatedButton.icon(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: kBrand,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 20),
+            child: Row(children: statsRow),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: SizedBox(
+              width: double.infinity,
+              height: 44,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: kBrand,
+                  foregroundColor: Colors.white,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22)),
+                ),
+                onPressed: app.apkUrl.isEmpty ? null : () => _download(context),
+                child: const Text('تثبيت',
+                    style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600)),
               ),
-              onPressed: app.apkUrl.isEmpty ? null : () => _download(context),
-              icon: const Icon(Icons.download),
-              label: const Text('تحميل ملف APK مباشرة',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
             ),
           ),
           if (shots.isNotEmpty) ...[
-            const SizedBox(height: 24),
-            const Text('لقطات الشاشة',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 10),
+            const SizedBox(height: 20),
             SizedBox(
-              height: 340,
+              height: 300,
               child: ListView.builder(
                 scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 itemCount: shots.length,
                 itemBuilder: (_, i) => Padding(
-                  padding: const EdgeInsetsDirectional.only(end: 10),
+                  padding: const EdgeInsetsDirectional.only(end: 8),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
                       shots[i],
-                      height: 340,
+                      height: 300,
                       fit: BoxFit.contain,
                       errorBuilder: (_, __, ___) => Container(
-                        width: 160,
+                        width: 150,
                         color: Colors.grey.shade200,
                         child: const Icon(Icons.image_not_supported, color: Colors.grey),
                       ),
@@ -793,44 +899,92 @@ class AppDetailsScreen extends StatelessWidget {
               ),
             ),
           ],
+          const SizedBox(height: 20),
+          _sectionHeader(
+            'عن هذا التطبيق',
+            onTap: description.isEmpty
+                ? null
+                : () => _showFullText(context, 'عن هذا التطبيق', description),
+          ),
+          if (summary.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+              child: Text(
+                summary,
+                maxLines: 5,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 14, height: 1.5, color: Colors.black87),
+              ),
+            ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _chip(kind),
+                if (app.genre.isNotEmpty) _chip(app.genre),
+              ],
+            ),
+          ),
+          if (app.dateLabel.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('تم التحديث في',
+                      style: TextStyle(fontSize: 12, color: Colors.black54)),
+                  const SizedBox(height: 2),
+                  Text(app.dateLabel, style: const TextStyle(fontSize: 14)),
+                ],
+              ),
+            ),
           if (app.whatsNew.isNotEmpty) ...[
-            const SizedBox(height: 24),
-            const Text('ما الجديد',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(app.whatsNew, style: const TextStyle(color: Colors.black87, height: 1.5)),
-          ],
-          if (description.isNotEmpty) ...[
-            const SizedBox(height: 24),
-            const Text('وصف التطبيق',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 8),
-            Text(description, style: const TextStyle(color: Colors.black54, height: 1.6)),
-          ],
-          const SizedBox(height: 24),
-          const Text('معلومات التطبيق',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 6),
-          _infoRow('الحزمة', app.packageName),
-          _infoRow('الإصدار', app.version),
-          _infoRow('الحجم', app.sizeLabel),
-          _infoRow('آخر تحديث', app.dateLabel),
-          if (app.sha256.isNotEmpty) ...[
-            _infoRow('SHA-256', app.sha256),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: TextButton.icon(
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: app.sha256));
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('تم نسخ البصمة')),
-                  );
-                },
-                icon: const Icon(Icons.copy, size: 18),
-                label: const Text('نسخ البصمة للتحقق من الملف'),
+            const SizedBox(height: 20),
+            _sectionHeader(
+              'ما الجديد',
+              onTap: () => _showFullText(context, 'ما الجديد', app.whatsNew),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                app.whatsNew,
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 14, height: 1.5, color: Colors.black87),
               ),
             ),
           ],
+          const SizedBox(height: 20),
+          _sectionHeader('معلومات التطبيق'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Column(
+              children: [
+                _infoRow('الحزمة', app.packageName),
+                _infoRow('الإصدار', app.version),
+                _infoRow('الحجم', app.sizeLabel),
+                _infoRow('آخر تحديث', app.dateLabel),
+                if (app.sha256.isNotEmpty) ...[
+                  _infoRow('SHA-256', app.sha256),
+                  Align(
+                    alignment: AlignmentDirectional.centerStart,
+                    child: TextButton.icon(
+                      onPressed: () {
+                        Clipboard.setData(ClipboardData(text: app.sha256));
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('تم نسخ البصمة')),
+                        );
+                      },
+                      icon: const Icon(Icons.copy, size: 18),
+                      label: const Text('نسخ البصمة للتحقق من الملف'),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
         ],
       ),
     );
