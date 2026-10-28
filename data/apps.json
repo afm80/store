@@ -247,8 +247,17 @@
     "version": "0.1",
     "whatsNew": "",
     "featured": true,
+    "hidden": false,
+    "developer": "Alfaham Net",
+    "ageRating": "الجميع",
+    "rating": 5,
+    "downloads": 1000000,
+    "history": [],
     "icon": "data/media/app.alfaham.tv/icon-mvs0yqum.png",
     "banner": "data/media/app.alfaham.tv/banner-mvsojagr.jpg",
+    "banners": [
+      "data/media/app.alfaham.tv/banner-mvsojagr.jpg"
+    ],
     "screenshots": [
       "data/media/app.alfaham.tv/shot1-mvsojagr.webp",
       "data/media/app.alfaham.tv/shot2-mvsojagr.webp",
@@ -262,8 +271,8 @@
     "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.tv-v0.1/AlfahamTV.apk",
     "size": 79898645,
     "sha256": "b307b6804743c3103a89cea07b4e09c30a29fa69ca224502784bfb07157f09a4",
+    "order": 10,
     "createdAt": "2026-10-28T11:26:29.531Z",
-    "updatedAt": "2026-10-28T22:22:16.161Z",
-    "order": 10
+    "updatedAt": "2026-10-28T23:11:07.396Z"
   }
 ]
