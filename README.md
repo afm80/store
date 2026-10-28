@@ -120,7 +120,7 @@ base64 -w0 store-key.jks   # انسخ الناتج
 **بناء محلي (اختياري):** مع Flutter مثبّت:
 
 ```bash
-flutter create . --platforms android --org com.alfaham --project-name apps_store
+flutter create . --platforms android --org app.alfaham --project-name store
 # أعد نسخ lib/ إن استبدلها الأمر، ثم:
 python3 tools/prepare_android.py
 flutter pub add --dev flutter_launcher_icons

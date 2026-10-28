@@ -1,4 +1,4 @@
-name: apps_store
+name: store
 description: متجري الرقمي - متجر تطبيقات أندرويد شخصي يشبه Google Play.
 publish_to: 'none'
 version: 1.0.0+1
