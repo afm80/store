@@ -1,5 +1,24 @@
 [
   {
+    "packageName": "com.oscartv.app",
+    "name": "Oscar TV",
+    "category": "app",
+    "genre": "ترفيه",
+    "shortDescription": "أوسكار تيفي\nمسلسلات، أفلام، أنمي، مصارعة، مباريات كرة القدم، وقنوات مباشرة — كل ذلك في تطبيق واحد بجودات متعددة ومجانًا",
+    "longDescription": "مجاني بالكامل\nكل الأقسام والمزايا متاحة دون اشتراك أو رسوم أو حساب\nتحميل بجودات متعددة\nحمّل أي حلقة أو فيلم أو عرض بالجودة التي تناسبك وشاهده دون اتصال بالإنترنت\nبث مباشر HD\nمباريات الكرة والقنوات المفتوحة والمشفرة بجودة عالية وسرعة فائقة\nإشعارات ذكية\nتنبّهك بكل حلقة جديدة، أو مباراة قادمة، أو عرض مصارعة قريب",
+    "version": "1.1",
+    "whatsNew": "",
+    "featured": false,
+    "icon": "data/media/com.oscartv.app/icon-mvsfxekh.png",
+    "banner": "data/media/com.oscartv.app/banner-mvsfxekh.png",
+    "screenshots": [],
+    "apkUrl": "https://github.com/afm80/store/releases/download/com.oscartv.app-v1.1/OscarTV_v1.1.6.apk",
+    "size": 10157455,
+    "sha256": "b6b23d4f667d4662281bb2a8363d3821d36aa37ecc13e06384227dd96a45326b",
+    "createdAt": "2026-10-28T18:21:33.988Z",
+    "updatedAt": "2026-10-28T18:21:33.988Z"
+  },
+  {
     "packageName": "com.snaptube.premium",
     "name": "Snaptube",
     "category": "app",
