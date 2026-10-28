@@ -1147,7 +1147,6 @@ class AppDetailsScreen extends StatefulWidget {
 
 class _AppDetailsScreenState extends State<AppDetailsScreen> {
   final ScrollController _scrollController = ScrollController();
-  bool _expandedDescription = false;
   bool _showPinnedInstall = false;
   bool _playing = false;
   YoutubePlayerController? _yt;
@@ -1617,7 +1616,6 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
   Widget build(BuildContext context) {
     final shortD = app.shortDescription.trim();
     final longD = app.longDescription.trim();
-    final preview = shortD.isNotEmpty ? shortD : longD;
     final description = [
       if (shortD.isNotEmpty) shortD,
       if (longD.isNotEmpty) longD,
@@ -1775,18 +1773,27 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                 : null,
             child: description.isEmpty
                 ? const Text('—', style: TextStyle(color: Colors.black54))
-                : GestureDetector(
-                    onTap: () => setState(
-                        () => _expandedDescription = !_expandedDescription),
-                    child: Text(
-                      preview,
-                      maxLines: _expandedDescription ? null : 5,
-                      overflow: _expandedDescription
-                          ? TextOverflow.visible
-                          : TextOverflow.ellipsis,
-                      style: const TextStyle(
-                          fontSize: 14, height: 1.6, color: Colors.black87),
-                    ),
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (shortD.isNotEmpty)
+                        Text(
+                          shortD,
+                          style: const TextStyle(
+                              fontSize: 14,
+                              height: 1.6,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87),
+                        ),
+                      if (shortD.isNotEmpty && longD.isNotEmpty)
+                        const SizedBox(height: 12),
+                      if (longD.isNotEmpty)
+                        Text(
+                          longD,
+                          style: const TextStyle(
+                              fontSize: 14, height: 1.6, color: Colors.black87),
+                        ),
+                    ],
                   ),
           ),
 
