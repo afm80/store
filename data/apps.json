@@ -74,19 +74,29 @@
     "version": "0.1",
     "whatsNew": "",
     "featured": true,
+    "hidden": false,
+    "developer": "Alfaham Net",
+    "ageRating": "",
+    "rating": 0,
+    "downloads": 0,
+    "history": [],
     "icon": "data/media/app.haider.tv/icon-mvsdqyuf.png",
     "banner": "data/media/app.haider.tv/banner-mvsdqyuf.png",
+    "banners": [
+      "data/media/app.haider.tv/banner-mvsdqyuf.png"
+    ],
     "screenshots": [
       "data/media/app.haider.tv/shot1-mvsdqyuf.png",
       "data/media/app.haider.tv/shot2-mvsdqyuf.png",
       "data/media/app.haider.tv/shot3-mvsdqyuf.png"
     ],
+    "youtubeUrl": "",
     "apkUrl": "https://github.com/afm80/store/releases/download/app.haider.tv-v0.1/Haider%2BTV_3.1x_APKPure.apk",
     "size": 11938712,
     "sha256": "df60bf753f37c221d68cb235ae834534c3edd3128fc3a0d97ad7477a99a4602e",
+    "order": 3,
     "createdAt": "2026-10-28T17:20:31.698Z",
-    "updatedAt": "2026-10-28T17:20:31.698Z",
-    "order": 3
+    "updatedAt": "2026-10-28T23:45:14.536Z"
   },
   {
     "packageName": "app.dramalive.com",
