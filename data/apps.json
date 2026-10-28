@@ -1,5 +1,29 @@
 [
   {
+    "packageName": "app.dramalive.com",
+    "name": "Drama Live",
+    "category": "app",
+    "genre": "ترفيه",
+    "shortDescription": "دراما لايف لمشاهدة جميع القنوات العالمية والعربية والرياضية",
+    "longDescription": "شاهد جميع القنوات العالمية والعربية والبث المباشر وشاهد جميع القنوات الرياضية والحصرية مجانأ وبدون أشتراك",
+    "version": "0.1",
+    "whatsNew": "",
+    "featured": true,
+    "icon": "data/media/app.dramalive.com/icon-mvsdm4k2.png",
+    "banner": "data/media/app.dramalive.com/banner-mvsdm4k2.png",
+    "screenshots": [
+      "data/media/app.dramalive.com/shot1-mvsdm4k2.png",
+      "data/media/app.dramalive.com/shot2-mvsdm4k2.png",
+      "data/media/app.dramalive.com/shot3-mvsdm4k2.png",
+      "data/media/app.dramalive.com/shot4-mvsdm4k2.png"
+    ],
+    "apkUrl": "https://github.com/afm80/store/releases/download/app.dramalive.com-v0.1/Drama%2BLive_13.0.3_APKPure.apk",
+    "size": 16107633,
+    "sha256": "0c56090a112466dc792b771c3fdb757323df1420dc3af8fc2fcc99216a9b5215",
+    "createdAt": "2026-10-28T17:16:45.977Z",
+    "updatedAt": "2026-10-28T17:16:45.977Z"
+  },
+  {
     "packageName": "app.kidstv.com",
     "name": "KIDS TV",
     "category": "app",
