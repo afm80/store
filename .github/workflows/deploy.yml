@@ -3,7 +3,6 @@ name: Build and deploy store
 on:
   push:
     branches: [main]
-    # نشر تطبيقات من لوحة التحكم يغيّر ملفات data فقط، ولا يحتاج إعادة بناء.
     paths-ignore:
       - 'data/**'
       - '**.md'
@@ -11,15 +10,14 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
+  checks: write
 
 concurrency:
-  group: pages
+  group: deploy
   cancel-in-progress: true
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +27,6 @@ jobs:
           channel: stable
           cache: true
 
-      # يولّد ملفات الويب الناقصة داخل السيرفر، فلا تحتاج Flutter على جهازك.
       - name: Prepare web platform files
         run: |
           mkdir -p /tmp/keep
@@ -44,18 +41,10 @@ jobs:
 
       - run: flutter pub get
 
-      - run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
+      - run: flutter build web --release
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          path: build/web
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: alfahamstore
+          channelId: live
