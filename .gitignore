@@ -1,1 +1,17 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+pubspec.lock
+.flutter-plugins
+.flutter-plugins-dependencies
+*.iml
+.idea/
+.vscode/
+
+# لا ترفع أي رموز أو مفاتيح أبدًا
+*.token
+.env
 
