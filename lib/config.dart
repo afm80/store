@@ -8,6 +8,10 @@ class StoreConfig {
   static const String _repo = 'store';
   static const String branch = 'main';
 
+  /// مفاتيح التفعيل: غيّرها إلى true عند الجاهزية.
+  static const bool showDownloads = false; // عدد التحميلات
+  static const bool showRating = false; // التقييم
+
   static String get owner {
     final host = Uri.base.host;
     if (host.endsWith('.github.io')) return host.split('.').first;

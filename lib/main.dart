@@ -8,6 +8,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
+import 'config.dart';
 import 'models.dart';
 import 'store_service.dart';
 
@@ -1395,10 +1396,10 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
       );
     }
 
-    if (app.rating > 0) {
+    if (StoreConfig.showRating && app.rating > 0) {
       addStat(Icons.star, app.ratingLabel, 'التقييم');
     }
-    if (app.downloads > 0) {
+    if (StoreConfig.showDownloads && app.downloads > 0) {
       addStat(null, app.downloadsLabel, 'التحميلات');
     }
     addStat(null, app.sizeLabel, 'الحجم');
