@@ -7,6 +7,9 @@ import 'package:url_launcher/url_launcher.dart';
 import 'models.dart';
 import 'store_service.dart';
 
+const Color kBrand = Color(0xFF075C55);
+const Color kBrandLight = Color(0xFFD3E8E5);
+
 void main() {
   runApp(const MyApp());
 }
@@ -28,7 +31,7 @@ class MyApp extends StatelessWidget {
       ],
       theme: ThemeData(
         useMaterial3: true,
-        colorSchemeSeed: Colors.blue,
+        colorSchemeSeed: kBrand,
         scaffoldBackgroundColor: const Color(0xFFF8F9FA),
         textTheme: GoogleFonts.cairoTextTheme(),
       ),
@@ -117,7 +120,7 @@ class _MainLayoutState extends State<MainLayout> {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue.shade700),
+              decoration: BoxDecoration(color: kBrand),
               child: const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -147,7 +150,7 @@ class _MainLayoutState extends State<MainLayout> {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.info_outline, color: Colors.blue),
+              leading: const Icon(Icons.info_outline, color: kBrand),
               title: const Text('من نحن'),
               onTap: () => _push(const InfoPage(
                 title: 'من نحن',
@@ -156,7 +159,7 @@ class _MainLayoutState extends State<MainLayout> {
               )),
             ),
             ListTile(
-              leading: const Icon(Icons.contact_support_outlined, color: Colors.green),
+              leading: const Icon(Icons.contact_support_outlined, color: kBrand),
               title: const Text('اتصل بنا / تواصل معي'),
               onTap: () => _push(const ContactScreen()),
             ),
@@ -216,7 +219,7 @@ class _MainLayoutState extends State<MainLayout> {
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: Colors.blue,
+        selectedItemColor: kBrand,
         unselectedItemColor: Colors.grey,
         items: const [
           BottomNavigationBarItem(
@@ -255,9 +258,9 @@ class AppIcon extends StatelessWidget {
 
   Widget _fallback() {
     return Container(
-      color: Colors.blue.shade100,
+      color: kBrandLight,
       alignment: Alignment.center,
-      child: Icon(Icons.android, color: Colors.blue, size: size * 0.5),
+      child: Icon(Icons.android, color: kBrand, size: size * 0.5),
     );
   }
 
@@ -314,7 +317,7 @@ class AppTile extends StatelessWidget {
         ),
         trailing: ElevatedButton(
           style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.blue,
+            backgroundColor: kBrand,
             foregroundColor: Colors.white,
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
           ),
@@ -637,7 +640,7 @@ class ContactScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 16)),
             SizedBox(height: 15),
             Text('• تليجرام: @YourChannel',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blue)),
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: kBrand)),
             SizedBox(height: 10),
             Text('• البريد الإلكتروني: support@store.com',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
@@ -738,7 +741,7 @@ class AppDetailsScreen extends StatelessWidget {
                     if (app.genre.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(app.genre,
-                          style: TextStyle(color: Colors.blue.shade700, fontWeight: FontWeight.w600)),
+                          style: TextStyle(color: kBrand, fontWeight: FontWeight.w600)),
                     ],
                   ],
                 ),
@@ -751,7 +754,7 @@ class AppDetailsScreen extends StatelessWidget {
             height: 50,
             child: ElevatedButton.icon(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
+                backgroundColor: kBrand,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
               ),
