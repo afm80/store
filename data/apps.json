@@ -9,17 +9,17 @@
     "version": "0.1",
     "whatsNew": "",
     "featured": true,
-    "icon": "data/media/app.alfaham.store/icon-mvsdcmkl.png",
-    "banner": "data/media/app.alfaham.store/banner-mvsdcmkl.png",
+    "icon": "data/media/app.alfaham.store/icon-mvsdd9yy.png",
+    "banner": "data/media/app.alfaham.store/banner-mvsdd9yy.png",
     "screenshots": [
-      "data/media/app.alfaham.store/shot1-mvsdcmkl.png",
-      "data/media/app.alfaham.store/shot2-mvsdcmkl.png"
+      "data/media/app.alfaham.store/shot1-mvsdd9yy.png",
+      "data/media/app.alfaham.store/shot2-mvsdd9yy.png"
     ],
     "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.store-v0.1/Alfaham%2BStore_1.0_APKPure.apk",
     "size": 32849512,
     "sha256": "3340a72bd26bcbc44f09547164a032748020b0d33d28ae32ce8235d1fb62584d",
     "createdAt": "2026-10-28T17:09:21.382Z",
-    "updatedAt": "2026-10-28T17:09:21.382Z"
+    "updatedAt": "2026-10-28T17:09:34.175Z"
   },
   {
     "packageName": "app.alfaham.sat",
