@@ -838,7 +838,11 @@ class HomeScreen extends StatelessWidget {
               child: BannerCarousel(apps: banners),
             ),
           _row('تطبيقات مميزة', highlighted),
-          _row('أحدث الإضافات', apps.take(10).toList()),
+          _row(
+              'أحدث الإضافات',
+              ([...apps]..sort((x, y) => y.updatedAt.compareTo(x.updatedAt)))
+                  .take(10)
+                  .toList()),
           _row('تطبيقات', onlyApps, onMore: onSeeApps),
           _row('ألعاب', games, onMore: onSeeGames),
         ],
@@ -1302,15 +1306,13 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
   Widget _mediaCarousel() {
     final shots = app.screenshotUrls;
     final hasVideo = app.youtubeId.isNotEmpty;
-    final hasBanner = app.banner.isNotEmpty;
+    final banners = app.bannerUrls;
+    final hasBanner = banners.isNotEmpty;
     if (!hasVideo && !hasBanner && shots.isEmpty) return const SizedBox.shrink();
 
-    // المعرض (ملء الشاشة): البنر ثم لقطات الشاشة.
-    final gallery = <String>[
-      if (hasBanner) app.bannerUrl,
-      ...shots,
-    ];
-    final offset = hasBanner ? 1 : 0;
+    // المعرض (ملء الشاشة): صور البانر ثم لقطات الشاشة.
+    final gallery = <String>[...banners, ...shots];
+    final offset = banners.length;
 
     return Padding(
       padding: const EdgeInsets.only(top: 20),
@@ -1318,7 +1320,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
         builder: (context, c) {
           final h = (c.maxWidth * 0.62).clamp(200.0, 340.0);
           final leadW = h * 16 / 9;
-          final count = (hasVideo ? 1 : 0) + (hasBanner ? 1 : 0) + shots.length;
+          final count = (hasVideo ? 1 : 0) + banners.length + shots.length;
 
           return SizedBox(
             height: h,
@@ -1335,29 +1337,27 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                   }
                   k--;
                 }
-                if (hasBanner) {
-                  if (k == 0) {
-                    return GestureDetector(
-                      onTap: () => _openGallery(gallery, 0),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                        child: SizedBox(
-                          width: leadW,
-                          height: h,
-                          child: Image.network(
-                            app.bannerUrl,
-                            fit: BoxFit.cover,
-                            loadingBuilder: (_, child, p) =>
-                                p == null ? child : _mediaPlaceholder(),
-                            errorBuilder: (_, __, ___) =>
-                                Container(color: Colors.grey.shade200),
-                          ),
+                if (k < banners.length) {
+                  return GestureDetector(
+                    onTap: () => _openGallery(gallery, k),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                      child: SizedBox(
+                        width: leadW,
+                        height: h,
+                        child: Image.network(
+                          banners[k],
+                          fit: BoxFit.cover,
+                          loadingBuilder: (_, child, p) =>
+                              p == null ? child : _mediaPlaceholder(),
+                          errorBuilder: (_, __, ___) =>
+                              Container(color: Colors.grey.shade200),
                         ),
                       ),
-                    );
-                  }
-                  k--;
+                    ),
+                  );
                 }
+                k -= banners.length;
                 return GestureDetector(
                   onTap: () => _openGallery(gallery, k + offset),
                   child: _shotImage(shots[k], h),
@@ -1482,7 +1482,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
   Widget _installButton() {
     if (_dl != null) {
       return SizedBox(
-        height: 48,
+        height: 40,
         child: Row(
           children: [
             Expanded(
@@ -1493,7 +1493,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                   children: [
                     LinearProgressIndicator(
                       value: _dl! > 0 ? _dl : null,
-                      minHeight: 48,
+                      minHeight: 40,
                       backgroundColor: kBrandLight,
                       color: kBrand.withOpacity(0.45),
                     ),
@@ -1524,7 +1524,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
     }
     return SizedBox(
       width: double.infinity,
-      height: 48,
+      height: 40,
       child: FilledButton(
         style: FilledButton.styleFrom(
           backgroundColor: kBrand,
@@ -1537,7 +1537,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
         onPressed: (app.apkUrl.isEmpty || _dl != null) ? null : _download,
         child: Text(
           app.apkUrl.isEmpty ? 'غير متاح حالياً' : 'تثبيت',
-          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
         ),
       ),
     );
