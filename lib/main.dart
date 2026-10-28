@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:ui' show PointerDeviceKind;
 
 import 'package:app_links/app_links.dart';
@@ -8,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import 'apk_installer_stub.dart'
@@ -1150,8 +1150,6 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
   bool _showPinnedInstall = false;
   bool _playing = false;
   YoutubePlayerController? _yt;
-  StreamSubscription<YoutubePlayerValue>? _ytSub;
-  bool _ytFailed = false;
   double? _dl;           // تقدّم التنزيل (0..1) أو null إذا لا يوجد تنزيل
   bool _cancelDl = false;
 
@@ -1170,7 +1168,6 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
 
   @override
   void dispose() {
-    _ytSub?.cancel();
     _yt?.close();
     _scrollController.dispose();
     super.dispose();
@@ -1243,26 +1240,18 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
 
   // ─── الغلاف العلوي (على نمط Google Play): البانر + تشغيل الفيديو داخل الصفحة ───
   void _startVideo() {
-    _yt ??= YoutubePlayerController.fromVideoId(
-      videoId: app.youtubeId,
-      autoPlay: true,
-      params: const YoutubePlayerParams(
-        showControls: true,
-        showFullscreenButton: false,
-        strictRelatedVideos: true,
-        origin: 'https://www.youtube-nocookie.com',
-      ),
-    );
-    _ytSub?.cancel();
-    _ytSub = _yt!.listen((v) {
-      if (v.hasError && !_ytFailed && mounted) {
-        setState(() => _ytFailed = true);
-      }
-    });
-    setState(() {
-      _playing = true;
-      _ytFailed = false;
-    });
+    if (kIsWeb) {
+      _yt ??= YoutubePlayerController.fromVideoId(
+        videoId: app.youtubeId,
+        autoPlay: true,
+        params: const YoutubePlayerParams(
+          showControls: true,
+          showFullscreenButton: true,
+          strictRelatedVideos: true,
+        ),
+      );
+    }
+    setState(() => _playing = true);
   }
 
   // ─── شريط الوسائط على نمط Google Play ───
@@ -1346,22 +1335,10 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
         : 'https://img.youtube.com/vi/${app.youtubeId}/hqdefault.jpg';
 
     Widget content;
-    if (hasVideo && _playing && _yt != null) {
-      content = _ytFailed
-          ? Container(
-              color: Colors.black,
-              alignment: Alignment.center,
-              child: TextButton.icon(
-                onPressed: () => launchUrl(
-                  Uri.parse('https://www.youtube.com/watch?v=${app.youtubeId}'),
-                  mode: LaunchMode.externalApplication,
-                ),
-                icon: const Icon(Icons.open_in_new, color: Colors.white),
-                label: const Text('فتح في يوتيوب',
-                    style: TextStyle(color: Colors.white)),
-              ),
-            )
-          : YoutubePlayer(controller: _yt!, aspectRatio: 16 / 9);
+    if (hasVideo && _playing) {
+      content = kIsWeb
+          ? YoutubePlayer(controller: _yt!, aspectRatio: 16 / 9)
+          : _AndroidYoutube(videoId: app.youtubeId);
     } else {
       content = Stack(
         fit: StackFit.expand,
@@ -2118,6 +2095,78 @@ class _ZoomableImageState extends State<_ZoomableImage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+
+/// مشغّل يوتيوب داخل التطبيق على أندرويد/iOS عبر WebView مع origin صحيح
+/// (يوتيوب يرفض التضمين بدون Referer/origin حقيقي: خطأ 150/153).
+class _AndroidYoutube extends StatefulWidget {
+  final String videoId;
+  const _AndroidYoutube({required this.videoId});
+
+  @override
+  State<_AndroidYoutube> createState() => _AndroidYoutubeState();
+}
+
+class _AndroidYoutubeState extends State<_AndroidYoutube> {
+  static const _origin = 'https://alfahamstore.web.app';
+  late final WebViewController _c;
+  bool _failed = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final id = widget.videoId;
+    final html = '''
+<!DOCTYPE html><html><head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>html,body{margin:0;height:100%;background:#000;overflow:hidden}
+#p{position:absolute;inset:0;width:100%;height:100%}</style></head>
+<body><div id="p"></div>
+<script src="https://www.youtube.com/iframe_api"></script>
+<script>
+function onYouTubeIframeAPIReady(){
+  new YT.Player('p',{
+    videoId:'$id', width:'100%', height:'100%',
+    playerVars:{autoplay:1,playsinline:1,rel:0,modestbranding:1,origin:'$_origin'},
+    events:{onError:function(e){Err.postMessage(String(e.data));}}
+  });
+}
+</script></body></html>''';
+    _c = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(Colors.black)
+      ..addJavaScriptChannel('Err', onMessageReceived: (_) {
+        if (mounted) setState(() => _failed = true);
+      })
+      ..loadHtmlString(html, baseUrl: _origin);
+  }
+
+  Future<void> _openExternal() => launchUrl(
+        Uri.parse('https://www.youtube.com/watch?v=${widget.videoId}'),
+        mode: LaunchMode.externalApplication,
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        WebViewWidget(controller: _c),
+        if (_failed)
+          Container(
+            color: Colors.black,
+            alignment: Alignment.center,
+            child: TextButton.icon(
+              onPressed: _openExternal,
+              icon: const Icon(Icons.open_in_new, color: Colors.white),
+              label: const Text('فتح في يوتيوب',
+                  style: TextStyle(color: Colors.white)),
+            ),
+          ),
+      ],
     );
   }
 }
