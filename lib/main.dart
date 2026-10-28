@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui' show PointerDeviceKind;
 
+import 'package:app_links/app_links.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -101,12 +103,43 @@ class _MainLayoutState extends State<MainLayout> {
   void initState() {
     super.initState();
     _future = StoreService.fetchApps();
-    _future.then((apps) {
-      final pkg = StoreConfig.sharedPackage;
-      if (pkg.isEmpty || !mounted) return;
+    _initLinks();
+  }
+
+  StreamSubscription<Uri>? _linkSub;
+
+  @override
+  void dispose() {
+    _linkSub?.cancel();
+    super.dispose();
+  }
+
+  // فتح صفحة تطبيق من رابط مشاركة (?app=اسم.الحزمة)
+  Future<void> _openPackage(String pkg) async {
+    if (pkg.isEmpty) return;
+    try {
+      final apps = await _future;
+      if (!mounted) return;
       final match = apps.where((a) => a.packageName == pkg);
       if (match.isNotEmpty) openApp(context, match.first);
-    }).catchError((_) {});
+    } catch (_) {}
+  }
+
+  Future<void> _initLinks() async {
+    // الويب: الرابط الحالي في المتصفح
+    await _openPackage(StoreConfig.sharedPackage);
+    if (kIsWeb) return;
+    // أندرويد: الروابط التي تفتح التطبيق
+    try {
+      final links = AppLinks();
+      final initial = await links.getInitialLink();
+      if (initial != null) {
+        await _openPackage(initial.queryParameters['app'] ?? '');
+      }
+      _linkSub = links.uriLinkStream.listen(
+        (u) => _openPackage(u.queryParameters['app'] ?? ''),
+      );
+    } catch (_) {}
   }
 
   Future<void> _reload() async {
