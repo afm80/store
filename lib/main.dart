@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'متجري الرقمي',
+      title: 'Alfaham Store',
       debugShowCheckedModeBanner: false,
       locale: const Locale('ar'),
       supportedLocales: const [Locale('ar')],
@@ -98,7 +98,7 @@ class _MainLayoutState extends State<MainLayout> {
             ),
             const SizedBox(width: 10),
             const Text(
-              'متجري الرقمي',
+              'Alfaham Store',
               style: TextStyle(
                 color: Colors.black87,
                 fontWeight: FontWeight.bold,
@@ -135,7 +135,7 @@ class _MainLayoutState extends State<MainLayout> {
                   ),
                   SizedBox(height: 10),
                   Text(
-                    'متجري الرقمي للـ APK',
+                    'Alfaham Store',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 18,
