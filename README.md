@@ -90,3 +90,40 @@ data/media/          الأيقونات واللقطات
 firebase.json        إعداد الاستضافة
 .firebaserc          مشروع Firebase: alfahamstore
 ```
+
+## 6) بناء المتجر كتطبيق أندرويد (APK)
+
+لا تحتاج تثبيت Flutter؛ البناء يتم على GitHub Actions (`.github/workflows/android.yml`).
+
+**بناء سريع:** GitHub ← Actions ← *Build Android APK* ← **Run workflow**. بعد دقائق ينزل الـ APK من قسم *Artifacts* (`store-apk`). الملف `store-arm64-v8a-release.apk` يناسب أغلب الهواتف.
+
+**إصدار رسمي:** أنشئ وسم يبدأ بـ `v` (مثل `v1.0.0`) فيُرفق الـ APK تلقائيًا بصفحة Release.
+
+**مفتاح التوقيع (مهم للتحديثات):** بدونه يُوقَّع التطبيق بمفتاح تجريبي وسيتعذّر تحديثه فوق نسخة موقّعة بمفتاح آخر. أنشئ المفتاح مرة واحدة واحتفظ به:
+
+```bash
+keytool -genkey -v -keystore store-key.jks -keyalg RSA -keysize 2048 -validity 10000 -alias store
+base64 -w0 store-key.jks   # انسخ الناتج
+```
+
+ثم GitHub ← Settings ← Secrets and variables ← Actions وأضف:
+
+| Secret | القيمة |
+|---|---|
+| `ANDROID_KEYSTORE_BASE64` | ناتج أمر base64 |
+| `ANDROID_KEYSTORE_PASSWORD` | كلمة مرور المفتاح |
+| `ANDROID_KEY_ALIAS` | `store` |
+| `ANDROID_KEY_PASSWORD` | (اختياري) إن اختلفت عن كلمة المرور |
+
+لا ترفع ملف `.jks` إلى المستودع، واحتفظ بنسخة منه.
+
+**بناء محلي (اختياري):** مع Flutter مثبّت:
+
+```bash
+flutter create . --platforms android --org com.alfaham --project-name apps_store
+# أعد نسخ lib/ إن استبدلها الأمر، ثم:
+python3 tools/prepare_android.py
+flutter pub add --dev flutter_launcher_icons
+dart run flutter_launcher_icons -f flutter_launcher_icons.yaml
+flutter build apk --release --split-per-abi
+```

@@ -1,0 +1,4 @@
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "brand/icons/Icon-512.png"
