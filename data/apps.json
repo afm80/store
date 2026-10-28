@@ -236,19 +236,21 @@
     "whatsNew": "",
     "featured": true,
     "icon": "data/media/app.alfaham.tv/icon-mvs0yqum.png",
-    "banner": "data/media/app.alfaham.tv/banner-mvs0yqum.png",
+    "banner": "data/media/app.alfaham.tv/banner-mvsojagr.jpg",
     "screenshots": [
-      "data/media/app.alfaham.tv/shot1-mvs0yqum.png",
-      "data/media/app.alfaham.tv/shot2-mvs0yqum.png",
-      "data/media/app.alfaham.tv/shot3-mvs0yqum.png",
-      "data/media/app.alfaham.tv/shot4-mvs0yqum.png",
-      "data/media/app.alfaham.tv/shot5-mvs0yqum.png"
+      "data/media/app.alfaham.tv/shot1-mvsojagr.webp",
+      "data/media/app.alfaham.tv/shot2-mvsojagr.webp",
+      "data/media/app.alfaham.tv/shot3-mvsojagr.webp",
+      "data/media/app.alfaham.tv/shot4-mvsojagr.png",
+      "data/media/app.alfaham.tv/shot5-mvsojagr.webp",
+      "data/media/app.alfaham.tv/shot6-mvsojagr.webp",
+      "data/media/app.alfaham.tv/shot7-mvsojagr.webp"
     ],
     "youtubeUrl": "https://www.youtube.com/watch?v=sHFqlPJy-Pk",
     "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.tv-v0.1/AlfahamTV.apk",
     "size": 79898645,
     "sha256": "b307b6804743c3103a89cea07b4e09c30a29fa69ca224502784bfb07157f09a4",
     "createdAt": "2026-10-28T11:26:29.531Z",
-    "updatedAt": "2026-10-28T18:47:02.299Z"
+    "updatedAt": "2026-10-28T22:22:16.161Z"
   }
 ]
