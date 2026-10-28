@@ -39,6 +39,18 @@ if "<queries>" not in m:
     )
     m = m.replace("</manifest>", queries + "</manifest>")
 
+if "alfahamstore.web.app" not in m:
+    links = (
+        '\n            <meta-data android:name="flutter_deeplinking_enabled" android:value="false"/>\n'
+        '            <intent-filter android:autoVerify="true">\n'
+        '                <action android:name="android.intent.action.VIEW"/>\n'
+        '                <category android:name="android.intent.category.DEFAULT"/>\n'
+        '                <category android:name="android.intent.category.BROWSABLE"/>\n'
+        '                <data android:scheme="https" android:host="alfahamstore.web.app"/>\n'
+        '            </intent-filter>\n        '
+    )
+    m = m.replace("</activity>", links + "</activity>", 1)
+
 m = re.sub(r'android:label="[^"]*"', f'android:label="{APP_LABEL}"', m, count=1)
 manifest.write_text(m, encoding="utf-8")
 
