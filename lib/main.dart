@@ -81,6 +81,7 @@ class MainLayout extends StatefulWidget {
 
 class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = 0;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late Future<List<AppItem>> _future;
 
   @override
@@ -105,6 +106,7 @@ class _MainLayoutState extends State<MainLayout> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         title: Row(
           children: [
@@ -132,9 +134,14 @@ class _MainLayoutState extends State<MainLayout> {
             icon: const Icon(Icons.refresh),
             onPressed: _reload,
           ),
+          IconButton(
+            tooltip: 'القائمة',
+            icon: const Icon(Icons.menu),
+            onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
+          ),
         ],
       ),
-      drawer: Drawer(
+      endDrawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
@@ -229,7 +236,12 @@ class _MainLayoutState extends State<MainLayout> {
           if (snapshot.hasData) {
             final apps = snapshot.data!;
             final screens = <Widget>[
-              HomeScreen(apps: apps, onRefresh: _reload),
+              HomeScreen(
+                apps: apps,
+                onRefresh: _reload,
+                onSeeApps: () => setState(() => _currentIndex = 1),
+                onSeeGames: () => setState(() => _currentIndex = 2),
+              ),
               CatalogScreen(
                 apps: apps.where((a) => !a.isGame).toList(),
                 emptyText: 'لا توجد تطبيقات بعد',
@@ -468,11 +480,112 @@ class EmptyView extends StatelessWidget {
 // ═══════════════════════════════════════════════════════════════
 // الشاشات الأساسية
 // ═══════════════════════════════════════════════════════════════
+class AppSquareCard extends StatelessWidget {
+  final AppItem app;
+  final double size;
+
+  const AppSquareCard({super.key, required this.app, this.size = 120});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: size,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        onTap: () => openApp(context, app),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AppIcon(app: app, size: size),
+            const SizedBox(height: 8),
+            Text(
+              app.name,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600, fontSize: 13, height: 1.25),
+            ),
+            const SizedBox(height: 3),
+            Row(
+              children: [
+                if (app.rating > 0) ...[
+                  Text(app.ratingLabel,
+                      style: TextStyle(
+                          fontSize: 11, color: Colors.grey.shade700)),
+                  const SizedBox(width: 2),
+                  Icon(Icons.star, size: 11, color: Colors.grey.shade700),
+                  const SizedBox(width: 6),
+                ],
+                Expanded(
+                  child: Text(
+                    app.sizeLabel,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style:
+                        TextStyle(fontSize: 11, color: Colors.grey.shade600),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class HomeScreen extends StatelessWidget {
   final List<AppItem> apps;
   final Future<void> Function() onRefresh;
+  final VoidCallback? onSeeApps;
+  final VoidCallback? onSeeGames;
 
-  const HomeScreen({super.key, required this.apps, required this.onRefresh});
+  const HomeScreen({
+    super.key,
+    required this.apps,
+    required this.onRefresh,
+    this.onSeeApps,
+    this.onSeeGames,
+  });
+
+  Widget _row(String title, List<AppItem> list, {VoidCallback? onMore}) {
+    if (list.isEmpty) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            onTap: onMore,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 4, 16, 10),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(title,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w600)),
+                  ),
+                  if (onMore != null)
+                    const Icon(Icons.arrow_back, size: 20, color: kBrand),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 205,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              itemCount: list.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 14),
+              itemBuilder: (_, i) => AppSquareCard(app: list[i]),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -486,62 +599,19 @@ class HomeScreen extends StatelessWidget {
 
     final featured = apps.where((a) => a.featured).toList();
     final highlighted = featured.isNotEmpty ? featured : apps.take(6).toList();
+    final onlyApps = apps.where((a) => !a.isGame).toList();
+    final games = apps.where((a) => a.isGame).toList();
 
     return RefreshIndicator(
       onRefresh: onRefresh,
       child: ListView(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.only(top: 16, bottom: 16),
         children: [
-          const Text('تطبيقات مميزة',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          SizedBox(
-            height: 190,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: highlighted.length,
-              itemBuilder: (context, index) {
-                final app = highlighted[index];
-                return GestureDetector(
-                  onTap: () => openApp(context, app),
-                  child: Container(
-                    width: 130,
-                    margin: const EdgeInsetsDirectional.only(end: 12),
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(AppRadius.md),
-                      border: Border.all(color: Colors.grey.shade200),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        AppIcon(app: app, size: 60),
-                        const SizedBox(height: 8),
-                        Text(
-                          app.name,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          app.sizeLabel,
-                          style: const TextStyle(
-                              color: Colors.grey, fontSize: 12),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Text('أحدث الإضافات',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          for (final app in apps.take(10)) AppTile(app: app),
+          _row('تطبيقات مميزة', highlighted),
+          _row('أحدث الإضافات', apps.take(10).toList()),
+          _row('تطبيقات', onlyApps, onMore: onSeeApps),
+          _row('ألعاب', games, onMore: onSeeGames),
         ],
       ),
     );
