@@ -9,17 +9,17 @@
     "version": "0.1",
     "whatsNew": "",
     "featured": true,
-    "icon": "data/media/app.alfaham.box/icon-mvsczb96.png",
-    "banner": "data/media/app.alfaham.box/banner-mvsczb96.png",
+    "icon": "data/media/app.alfaham.box/icon-mvsczzhq.png",
+    "banner": "data/media/app.alfaham.box/banner-mvsczzhq.png",
     "screenshots": [
-      "data/media/app.alfaham.box/shot1-mvsczb96.png",
-      "data/media/app.alfaham.box/shot2-mvsczb96.png"
+      "data/media/app.alfaham.box/shot1-mvsczzhq.png",
+      "data/media/app.alfaham.box/shot2-mvsczzhq.png"
     ],
     "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.box-v0.1/Alfaham%2BBox_1.0_APKPure.apk",
     "size": 32824037,
     "sha256": "ccb01a7b84e1e39cb558e10d626ff288951ef4ed6cb8721b274509ca1d821854",
     "createdAt": "2026-10-28T16:59:00.212Z",
-    "updatedAt": "2026-10-28T16:59:00.212Z"
+    "updatedAt": "2026-10-28T16:59:13.593Z"
   },
   {
     "packageName": "app.alfaham.tube",
