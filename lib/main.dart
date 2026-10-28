@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -534,6 +536,143 @@ class AppSquareCard extends StatelessWidget {
   }
 }
 
+class BannerCarousel extends StatefulWidget {
+  final List<AppItem> apps;
+
+  const BannerCarousel({super.key, required this.apps});
+
+  @override
+  State<BannerCarousel> createState() => _BannerCarouselState();
+}
+
+class _BannerCarouselState extends State<BannerCarousel> {
+  final PageController _controller = PageController(viewportFraction: 0.92);
+  Timer? _timer;
+  int _page = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
+      if (!mounted || !_controller.hasClients || widget.apps.length < 2) return;
+      final next = (_page + 1) % widget.apps.length;
+      _controller.animateToPage(
+        next,
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final apps = widget.apps;
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 900),
+        child: Column(
+          children: [
+            AspectRatio(
+              aspectRatio: 2,
+              child: PageView.builder(
+                controller: _controller,
+                itemCount: apps.length,
+                onPageChanged: (i) => setState(() => _page = i),
+                itemBuilder: (_, i) {
+                  final app = apps[i];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: GestureDetector(
+                      onTap: () => openApp(context, app),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(AppRadius.lg),
+                        child: Stack(
+                          fit: StackFit.expand,
+                          children: [
+                            Image.network(
+                              app.bannerUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => Container(
+                                color: kBrandLight,
+                                child: const Icon(Icons.image_outlined,
+                                    color: kBrand, size: 40),
+                              ),
+                            ),
+                            Positioned(
+                              left: 0,
+                              right: 0,
+                              bottom: 0,
+                              child: Container(
+                                padding: const EdgeInsets.fromLTRB(12, 24, 12, 10),
+                                decoration: const BoxDecoration(
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [Colors.transparent, Colors.black54],
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    AppIcon(app: app, size: 36),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Text(
+                                        app.name,
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            if (apps.length > 1)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    for (var i = 0; i < apps.length; i++)
+                      AnimatedContainer(
+                        duration: const Duration(milliseconds: 250),
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        width: i == _page ? 16 : 6,
+                        height: 6,
+                        decoration: BoxDecoration(
+                          color: i == _page ? kBrand : Colors.grey.shade300,
+                          borderRadius: BorderRadius.circular(3),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class HomeScreen extends StatelessWidget {
   final List<AppItem> apps;
   final Future<void> Function() onRefresh;
@@ -599,6 +738,10 @@ class HomeScreen extends StatelessWidget {
 
     final featured = apps.where((a) => a.featured).toList();
     final highlighted = featured.isNotEmpty ? featured : apps.take(6).toList();
+    final banners = (featured.isNotEmpty ? featured : apps)
+        .where((a) => a.banner.isNotEmpty)
+        .take(8)
+        .toList();
     final onlyApps = apps.where((a) => !a.isGame).toList();
     final games = apps.where((a) => a.isGame).toList();
 
@@ -608,6 +751,11 @@ class HomeScreen extends StatelessWidget {
         physics: const AlwaysScrollableScrollPhysics(),
         padding: const EdgeInsets.only(top: 16, bottom: 16),
         children: [
+          if (banners.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 20),
+              child: BannerCarousel(apps: banners),
+            ),
           _row('تطبيقات مميزة', highlighted),
           _row('أحدث الإضافات', apps.take(10).toList()),
           _row('تطبيقات', onlyApps, onMore: onSeeApps),
