@@ -117,6 +117,8 @@ class _MainLayoutState extends State<MainLayout> {
   int _currentIndex = StoreConfig.initialTab;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late Future<List<AppItem>> _future;
+  late final Future<DeveloperProfile?> _devFuture =
+      StoreService.fetchDeveloper();
 
   void _setTab(int i) {
     setState(() => _currentIndex = i);
@@ -278,15 +280,18 @@ class _MainLayoutState extends State<MainLayout> {
                     'هذا المتجر هو منصتك الرقمية الخاصة لتحميل وتثبيت تطبيقات الأندرويد بشكل مباشر وسهل، وبدون أي إعلانات مزعجة أو روابط وهمية.',
               )),
             ),
-            ListTile(
-              leading: const Icon(Icons.contact_support_outlined, color: kBrand),
-              title: const Text('اتصل بنا / تواصل معي'),
-              onTap: () => _push(const ContactScreen()),
-            ),
-            ListTile(
-              leading: const Icon(Icons.person_outline, color: kBrand),
-              title: const Text('المطوّر'),
-              onTap: () => _push(const DeveloperScreen()),
+            FutureBuilder<DeveloperProfile?>(
+              future: _devFuture,
+              builder: (context, snap) {
+                final dev = snap.data;
+                if (dev == null) return const SizedBox.shrink();
+                return ListTile(
+                  leading: const Icon(Icons.person_outline, color: kBrand),
+                  title: Text(dev.name),
+                  subtitle: const Text('الملف الشخصي للمطوّر'),
+                  onTap: () => _push(const DeveloperScreen()),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.privacy_tip_outlined, color: Colors.orange),
@@ -295,16 +300,6 @@ class _MainLayoutState extends State<MainLayout> {
                 title: 'سياسة الخصوصية',
                 text:
                     'نحن نحترم خصوصية المستخدمين. هذا التطبيق لا يجمع أي بيانات شخصية حساسة، وجميع ملفات الـ APK يتم تحميلها من مصادر موثوقة ومباشرة.',
-              )),
-            ),
-            const Divider(),
-            ListTile(
-              leading: const Icon(Icons.code, color: Colors.purple),
-              title: const Text('للمطورين'),
-              onTap: () => _push(const InfoPage(
-                title: 'للمطورين',
-                text:
-                    'تم تصميم وبرمجة هذا المتجر باستخدام تقنية Flutter ليعمل بكفاءة عالية كتطبيق موبايل وموقع ويب في آنٍ واحد.',
               )),
             ),
           ],
