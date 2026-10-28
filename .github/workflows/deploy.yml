@@ -38,6 +38,8 @@ jobs:
           cp /tmp/keep/pubspec.yaml pubspec.yaml
           cp brand/favicon.png web/favicon.png
           cp brand/icons/*.png web/icons/
+          mkdir -p web/.well-known
+          cp brand/assetlinks.json web/.well-known/assetlinks.json
 
       - run: flutter pub get
 
