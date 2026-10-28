@@ -1130,6 +1130,65 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
     }
   }
 
+  Future<void> _openVideo() async {
+    final ok = await launchUrl(
+      Uri.parse('https://www.youtube.com/watch?v=${app.youtubeId}'),
+      mode: LaunchMode.externalApplication,
+    );
+    if (!ok && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تعذّر فتح الفيديو')),
+      );
+    }
+  }
+
+  Widget _videoCard() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+      child: GestureDetector(
+        onTap: _openVideo,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                Image.network(
+                  'https://img.youtube.com/vi/${app.youtubeId}/hqdefault.jpg',
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, __, ___) => Container(color: Colors.black87),
+                ),
+                Container(color: Colors.black26),
+                Center(
+                  child: Container(
+                    width: 64,
+                    height: 64,
+                    decoration: const BoxDecoration(
+                      color: Colors.red,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.play_arrow,
+                        color: Colors.white, size: 40),
+                  ),
+                ),
+                const Positioned(
+                  bottom: 10,
+                  right: 12,
+                  child: Text('شاهد الفيديو على يوتيوب',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   void _openImage(String url) {
     showDialog<void>(
       context: context,
@@ -1472,6 +1531,9 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: _installButton(),
           ),
+
+          // ─── فيديو يوتيوب (اختياري) ───
+          if (app.youtubeId.isNotEmpty) _videoCard(),
 
           // ─── لقطات الشاشة (مقاس موحّد يتكيف مع عرض الشاشة) ───
           if (shots.isNotEmpty)

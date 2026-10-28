@@ -17,6 +17,7 @@ class AppItem {
   final int size;
   final bool featured;
   final List<String> screenshots;
+  final String youtubeUrl;   // رابط فيديو يوتيوب (اختياري)
 
   // ─── حقول جديدة (اختيارية) لجعل التصميم يشبه Google Play ───
   final double rating;       // 0.0 إذا غير متوفر
@@ -41,6 +42,7 @@ class AppItem {
     required this.size,
     required this.featured,
     required this.screenshots,
+    this.youtubeUrl = '',
     this.rating = 0,
     this.downloads = 0,
     this.developer = '',
@@ -70,11 +72,30 @@ class AppItem {
       size: rawSize is num ? rawSize.toInt() : 0,
       featured: j['featured'] == true,
       screenshots: shots is List ? shots.map((e) => e.toString()).toList() : const [],
+      youtubeUrl: s('youtubeUrl'),
       rating: rawRating is num ? rawRating.toDouble() : 0,
       downloads: rawDownloads is num ? rawDownloads.toInt() : 0,
       developer: s('developer'),
       ageRating: s('ageRating'),
     );
+  }
+
+  /// معرّف فيديو يوتيوب (11 حرفًا) المستخرج من الرابط، أو '' إذا لم يوجد/غير صالح.
+  String get youtubeId {
+    final u = Uri.tryParse(youtubeUrl.trim());
+    if (u == null) return '';
+    final id = RegExp(r'^[A-Za-z0-9_-]{11}$');
+    String c = '';
+    if (u.host.contains('youtu.be')) {
+      c = u.pathSegments.isNotEmpty ? u.pathSegments.first : '';
+    } else if (u.host.contains('youtube.com') || u.host.contains('youtube-nocookie.com')) {
+      c = u.queryParameters['v'] ?? '';
+      if (c.isEmpty && u.pathSegments.length >= 2 &&
+          ['embed', 'shorts', 'live', 'v'].contains(u.pathSegments.first)) {
+        c = u.pathSegments[1];
+      }
+    }
+    return id.hasMatch(c) ? c : '';
   }
 
   bool get isGame => category == 'game';
