@@ -189,6 +189,32 @@
     "order": 7
   },
   {
+    "packageName": "app.alfaham.tube",
+    "name": "Alfaham Tube",
+    "category": "app",
+    "genre": "ترفيه",
+    "shortDescription": "شاهد جميع المسلسلات والأفلام من اليوتيوب",
+    "longDescription": "تطبيق موحد لمشاهدة القنوات العالمية والعربية والمحلية والاخبارية والترفيهية والمنوعة على اليوتيوب ومشاهدة البث المباشر على اليوتيوب البث المباشر للقنوات الفضائيةالبث المباشر للمسلسلات العربيةالبث المباشر للمسلسلات التركية البث المباشر للقنوات الأخباريةالبث المباشر للكارتونالبث المباشر للقنوات الوثائقيةالبث المباشر للأفلام العالميةالبث المباشر للبرامج الترفيهيةالبث المباشر للقنوات الرياضية",
+    "version": "0.1",
+    "whatsNew": "",
+    "featured": true,
+    "icon": "data/media/app.alfaham.tube/icon-mvscsa9l.png",
+    "banner": "data/media/app.alfaham.tube/banner-mvscsa9l.png",
+    "screenshots": [
+      "data/media/app.alfaham.tube/shot1-mvscsa9l.png",
+      "data/media/app.alfaham.tube/shot2-mvscsa9l.png",
+      "data/media/app.alfaham.tube/shot3-mvscsa9l.png",
+      "data/media/app.alfaham.tube/shot4-mvscsa9l.png",
+      "data/media/app.alfaham.tube/shot5-mvscsa9l.png"
+    ],
+    "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.tube-v0.1/Alfaham%2BTube_1.0_APKPure.apk",
+    "size": 32721906,
+    "sha256": "ecfc0af79372209553ad56966a6f583350a10f1efbba9222123f59d4492b539b",
+    "createdAt": "2026-10-28T16:53:03.359Z",
+    "updatedAt": "2026-10-28T16:53:17.293Z",
+    "order": 8
+  },
+  {
     "packageName": "app.alfaham.tv",
     "name": "Alfaham TV",
     "category": "app",
@@ -215,32 +241,6 @@
     "sha256": "b307b6804743c3103a89cea07b4e09c30a29fa69ca224502784bfb07157f09a4",
     "createdAt": "2026-10-28T11:26:29.531Z",
     "updatedAt": "2026-10-28T22:22:16.161Z",
-    "order": 8
-  },
-  {
-    "packageName": "app.alfaham.tube",
-    "name": "Alfaham Tube",
-    "category": "app",
-    "genre": "ترفيه",
-    "shortDescription": "شاهد جميع المسلسلات والأفلام من اليوتيوب",
-    "longDescription": "تطبيق موحد لمشاهدة القنوات العالمية والعربية والمحلية والاخبارية والترفيهية والمنوعة على اليوتيوب ومشاهدة البث المباشر على اليوتيوب البث المباشر للقنوات الفضائيةالبث المباشر للمسلسلات العربيةالبث المباشر للمسلسلات التركية البث المباشر للقنوات الأخباريةالبث المباشر للكارتونالبث المباشر للقنوات الوثائقيةالبث المباشر للأفلام العالميةالبث المباشر للبرامج الترفيهيةالبث المباشر للقنوات الرياضية",
-    "version": "0.1",
-    "whatsNew": "",
-    "featured": true,
-    "icon": "data/media/app.alfaham.tube/icon-mvscsa9l.png",
-    "banner": "data/media/app.alfaham.tube/banner-mvscsa9l.png",
-    "screenshots": [
-      "data/media/app.alfaham.tube/shot1-mvscsa9l.png",
-      "data/media/app.alfaham.tube/shot2-mvscsa9l.png",
-      "data/media/app.alfaham.tube/shot3-mvscsa9l.png",
-      "data/media/app.alfaham.tube/shot4-mvscsa9l.png",
-      "data/media/app.alfaham.tube/shot5-mvscsa9l.png"
-    ],
-    "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.tube-v0.1/Alfaham%2BTube_1.0_APKPure.apk",
-    "size": 32721906,
-    "sha256": "ecfc0af79372209553ad56966a6f583350a10f1efbba9222123f59d4492b539b",
-    "createdAt": "2026-10-28T16:53:03.359Z",
-    "updatedAt": "2026-10-28T16:53:17.293Z",
     "order": 9
   },
   {
