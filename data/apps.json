@@ -1,5 +1,27 @@
 [
   {
+    "packageName": "app.alfaham.store",
+    "name": "Alfaham Store",
+    "category": "app",
+    "genre": "ترفيه",
+    "shortDescription": "متجر تطبيقات الفحام",
+    "longDescription": "متجر تطبيقات المخصصة للقنوات الترفيهية ومشاهدة القنوات العالمية والعربية والمحلية والحصرية والمشفرة والرياضية يحتوي المتجر على العديد من التطبيقات الحصرية التي تم أنشائها على يد افضل المطورين والمبرمجين مع تحيات الفحام للمعلوميات",
+    "version": "0.1",
+    "whatsNew": "",
+    "featured": true,
+    "icon": "data/media/app.alfaham.store/icon-mvsdcmkl.png",
+    "banner": "data/media/app.alfaham.store/banner-mvsdcmkl.png",
+    "screenshots": [
+      "data/media/app.alfaham.store/shot1-mvsdcmkl.png",
+      "data/media/app.alfaham.store/shot2-mvsdcmkl.png"
+    ],
+    "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.store-v0.1/Alfaham%2BStore_1.0_APKPure.apk",
+    "size": 32849512,
+    "sha256": "3340a72bd26bcbc44f09547164a032748020b0d33d28ae32ce8235d1fb62584d",
+    "createdAt": "2026-10-28T17:09:21.382Z",
+    "updatedAt": "2026-10-28T17:09:21.382Z"
+  },
+  {
     "packageName": "app.alfaham.sat",
     "name": "Alfaham Sat",
     "category": "app",
