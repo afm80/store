@@ -18,6 +18,12 @@ class AppItem {
   final bool featured;
   final List<String> screenshots;
 
+  // ─── حقول جديدة (اختيارية) لجعل التصميم يشبه Google Play ───
+  final double rating;       // 0.0 إذا غير متوفر
+  final int downloads;       // 0 إذا غير متوفر
+  final String developer;    // اسم المطوّر
+  final String ageRating;    // مثل: "+3"، "+12"، "الجميع"
+
   const AppItem({
     required this.packageName,
     required this.name,
@@ -35,12 +41,18 @@ class AppItem {
     required this.size,
     required this.featured,
     required this.screenshots,
+    this.rating = 0,
+    this.downloads = 0,
+    this.developer = '',
+    this.ageRating = '',
   });
 
   factory AppItem.fromJson(Map<String, dynamic> j) {
     String s(String key) => (j[key] ?? '').toString();
     final shots = j['screenshots'];
     final rawSize = j['size'];
+    final rawRating = j['rating'];
+    final rawDownloads = j['downloads'];
     return AppItem(
       packageName: s('packageName'),
       name: s('name'),
@@ -58,6 +70,10 @@ class AppItem {
       size: rawSize is num ? rawSize.toInt() : 0,
       featured: j['featured'] == true,
       screenshots: shots is List ? shots.map((e) => e.toString()).toList() : const [],
+      rating: rawRating is num ? rawRating.toDouble() : 0,
+      downloads: rawDownloads is num ? rawDownloads.toInt() : 0,
+      developer: s('developer'),
+      ageRating: s('ageRating'),
     );
   }
 
@@ -76,4 +92,15 @@ class AppItem {
 
   /// التاريخ بصيغة yyyy-mm-dd.
   String get dateLabel => updatedAt.length >= 10 ? updatedAt.substring(0, 10) : '';
+
+  /// صيغة عدد التحميلات (مثل Google Play: 1K+, 1M+).
+  String get downloadsLabel {
+    if (downloads <= 0) return '—';
+    if (downloads >= 1000000) return '${(downloads / 1000000).toStringAsFixed(1)}M+';
+    if (downloads >= 1000) return '${(downloads / 1000).toStringAsFixed(0)}K+';
+    return '$downloads+';
+  }
+
+  /// نص التقييم (مثل "4.5")، أو "—" إذا غير متوفر.
+  String get ratingLabel => rating > 0 ? rating.toStringAsFixed(1) : '—';
 }
