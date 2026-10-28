@@ -60,10 +60,10 @@ if "keystoreProperties" not in g:
 
     if is_kts:
         load = (
-            "val keystoreProperties = java.util.Properties()\n"
+            "val keystoreProperties = Properties()\n"
             'val keystorePropertiesFile = rootProject.file("key.properties")\n'
             "if (keystorePropertiesFile.exists()) {\n"
-            "    keystoreProperties.load(java.io.FileInputStream(keystorePropertiesFile))\n"
+            "    keystoreProperties.load(FileInputStream(keystorePropertiesFile))\n"
             "}\n\n"
         )
         signing = (
@@ -105,6 +105,8 @@ if "keystoreProperties" not in g:
                    "signingConfig keystorePropertiesFile.exists() ? "
                    "signingConfigs.release : signingConfigs.debug", g)
 
+    if is_kts:  # الاستيراد يجب أن يكون في أول الملف تمامًا
+        g = "import java.io.FileInputStream\nimport java.util.Properties\n\n" + g
     # قراءة key.properties قبل كتلة android
     g, n1 = re.subn(r"(?m)^android\s*\{", lambda mo: load + "android {", g, count=1)
     # كتلة التوقيع قبل buildTypes
