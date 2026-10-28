@@ -14,3 +14,9 @@ pubspec.lock
 # لا ترفع أي رموز أو مفاتيح أبدًا
 *.token
 .env
+
+# مفاتيح توقيع الأندرويد (لا ترفعها أبدًا)
+*.jks
+*.keystore
+key.properties
+android/
