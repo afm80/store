@@ -1,1 +1,61 @@
+name: Build and deploy store
 
+on:
+  push:
+    branches: [main]
+    # نشر تطبيقات من لوحة التحكم يغيّر ملفات data فقط، ولا يحتاج إعادة بناء.
+    paths-ignore:
+      - 'data/**'
+      - '**.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      # يولّد ملفات الويب الناقصة داخل السيرفر، فلا تحتاج Flutter على جهازك.
+      - name: Prepare web platform files
+        run: |
+          mkdir -p /tmp/keep
+          cp -r lib assets /tmp/keep/
+          cp pubspec.yaml /tmp/keep/pubspec.yaml
+          flutter create . --platforms web --project-name apps_store
+          rm -rf lib assets
+          cp -r /tmp/keep/lib /tmp/keep/assets .
+          cp /tmp/keep/pubspec.yaml pubspec.yaml
+          cp brand/favicon.png web/favicon.png
+          cp brand/icons/*.png web/icons/
+
+      - run: flutter pub get
+
+      - run: flutter build web --release --base-href "/${{ github.event.repository.name }}/"
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
