@@ -8,6 +8,16 @@ class StoreConfig {
   static const String _repo = 'store';
   static const String branch = 'main';
 
+  /// رابط المتجر (يُستخدم في مشاركة رابط التطبيق).
+  static const String storeUrl = 'https://alfahamstore.web.app';
+
+  /// رابط مباشر لصفحة تطبيق معيّن.
+  static String shareUrl(String packageName) =>
+      '$storeUrl/?app=${Uri.encodeQueryComponent(packageName)}';
+
+  /// اسم الحزمة القادم من الرابط (?app=...) أو '' إذا لم يوجد.
+  static String get sharedPackage => Uri.base.queryParameters['app'] ?? '';
+
   /// مفاتيح التفعيل: غيّرها إلى true عند الجاهزية.
   static const bool showDownloads = false; // عدد التحميلات
   static const bool showRating = false; // التقييم

@@ -101,6 +101,12 @@ class _MainLayoutState extends State<MainLayout> {
   void initState() {
     super.initState();
     _future = StoreService.fetchApps();
+    _future.then((apps) {
+      final pkg = StoreConfig.sharedPackage;
+      if (pkg.isEmpty || !mounted) return;
+      final match = apps.where((a) => a.packageName == pkg);
+      if (match.isNotEmpty) openApp(context, match.first);
+    }).catchError((_) {});
   }
 
   Future<void> _reload() async {
@@ -1505,6 +1511,17 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
           ),
         ),
         actions: [
+          IconButton(
+            tooltip: 'مشاركة',
+            icon: const Icon(Icons.share_outlined),
+            onPressed: () {
+              Clipboard.setData(
+                  ClipboardData(text: StoreConfig.shareUrl(app.packageName)));
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('تم نسخ رابط التطبيق')),
+              );
+            },
+          ),
           if (_showPinnedInstall && app.apkUrl.isNotEmpty)
             Padding(
               padding: const EdgeInsetsDirectional.only(end: 12),
