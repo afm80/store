@@ -9,20 +9,20 @@
     "version": "0.1",
     "whatsNew": "",
     "featured": true,
-    "icon": "data/media/app.alfaham.tube/icon-mvscr679.png",
-    "banner": "data/media/app.alfaham.tube/banner-mvscr679.png",
+    "icon": "data/media/app.alfaham.tube/icon-mvscsa9l.png",
+    "banner": "data/media/app.alfaham.tube/banner-mvscsa9l.png",
     "screenshots": [
-      "data/media/app.alfaham.tube/shot1-mvscr679.png",
-      "data/media/app.alfaham.tube/shot2-mvscr679.png",
-      "data/media/app.alfaham.tube/shot3-mvscr679.png",
-      "data/media/app.alfaham.tube/shot4-mvscr679.png",
-      "data/media/app.alfaham.tube/shot5-mvscr679.png"
+      "data/media/app.alfaham.tube/shot1-mvscsa9l.png",
+      "data/media/app.alfaham.tube/shot2-mvscsa9l.png",
+      "data/media/app.alfaham.tube/shot3-mvscsa9l.png",
+      "data/media/app.alfaham.tube/shot4-mvscsa9l.png",
+      "data/media/app.alfaham.tube/shot5-mvscsa9l.png"
     ],
     "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.tube-v0.1/Alfaham%2BTube_1.0_APKPure.apk",
     "size": 32721906,
     "sha256": "ecfc0af79372209553ad56966a6f583350a10f1efbba9222123f59d4492b539b",
     "createdAt": "2026-10-28T16:53:03.359Z",
-    "updatedAt": "2026-10-28T16:53:03.359Z"
+    "updatedAt": "2026-10-28T16:53:17.293Z"
   },
   {
     "packageName": "app.alfaham.tv",
