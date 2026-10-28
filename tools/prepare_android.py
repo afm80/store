@@ -28,6 +28,12 @@ if "android.permission.INTERNET" not in m:
         r'\1\n    <uses-permission android:name="android.permission.INTERNET"/>',
         m, count=1)
 
+if "REQUEST_INSTALL_PACKAGES" not in m:
+    m = re.sub(
+        r"(<manifest[^>]*>)",
+        r'\1\n    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>',
+        m, count=1)
+
 if "<queries>" not in m:
     queries = (
         "\n    <queries>\n"
