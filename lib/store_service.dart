@@ -23,10 +23,18 @@ class StoreService {
     final apps = decoded
         .whereType<Map<String, dynamic>>()
         .map(AppItem.fromJson)
-        .where((a) => a.packageName.isNotEmpty && a.name.isNotEmpty)
+        .where((a) =>
+            a.packageName.isNotEmpty && a.name.isNotEmpty && !a.hidden)
         .toList();
 
-    apps.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
+    // الترتيب اليدوي من لوحة التحكم أولًا، ثم الأحدث تحديثًا.
+    apps.sort((a, b) {
+      final ao = a.order, bo = b.order;
+      if (ao != null && bo != null && ao != bo) return ao.compareTo(bo);
+      if (ao != null && bo == null) return -1;
+      if (ao == null && bo != null) return 1;
+      return b.updatedAt.compareTo(a.updatedAt);
+    });
     return apps;
   }
 }

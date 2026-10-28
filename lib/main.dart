@@ -1744,8 +1744,8 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AppIcon(app: app, size: 80),
-                const SizedBox(width: 16),
+                AppIcon(app: app, size: 64),
+                const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -1759,23 +1759,16 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                             fontWeight: FontWeight.w600,
                             height: 1.2),
                       ),
-                      const SizedBox(height: 4),
-                      if (app.developer.isNotEmpty)
+                      if (app.developer.trim().isNotEmpty) ...[
+                        const SizedBox(height: 4),
                         Text(
-                          app.developer,
-                          style: const TextStyle(
-                              fontSize: 13,
-                              color: kBrand,
-                              fontWeight: FontWeight.w600),
-                        )
-                      else if (app.genre.isNotEmpty)
-                        Text(
-                          app.genre,
+                          app.developer.trim(),
                           style: const TextStyle(
                               fontSize: 13,
                               color: kBrand,
                               fontWeight: FontWeight.w600),
                         ),
+                      ],
                       const SizedBox(height: 2),
                       Text(
                         '$kind • ${app.sizeLabel}',

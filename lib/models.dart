@@ -25,6 +25,8 @@ class AppItem {
   final int downloads;       // 0 إذا غير متوفر
   final String developer;    // اسم المطوّر
   final String ageRating;    // مثل: "+3"، "+12"، "الجميع"
+  final bool hidden;         // مخفي من المتجر (من لوحة التحكم)
+  final int? order;          // ترتيب العرض من لوحة التحكم
 
   const AppItem({
     required this.packageName,
@@ -49,6 +51,8 @@ class AppItem {
     this.downloads = 0,
     this.developer = '',
     this.ageRating = '',
+    this.hidden = false,
+    this.order,
   });
 
   factory AppItem.fromJson(Map<String, dynamic> j) {
@@ -83,6 +87,8 @@ class AppItem {
       downloads: rawDownloads is num ? rawDownloads.toInt() : 0,
       developer: s('developer'),
       ageRating: s('ageRating'),
+      hidden: j['hidden'] == true,
+      order: j['order'] is num ? (j['order'] as num).toInt() : null,
     );
   }
 
