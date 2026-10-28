@@ -11,7 +11,7 @@ import re
 import sys
 from pathlib import Path
 
-APP_LABEL = "متجري الرقمي"
+APP_LABEL = "Alfaham Store"
 MIN_SDK = "23"
 
 root = Path("android")
