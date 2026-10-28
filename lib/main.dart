@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
 import 'models.dart';
 import 'store_service.dart';
@@ -1106,6 +1107,8 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _expandedDescription = false;
   bool _showPinnedInstall = false;
+  bool _playing = false;
+  YoutubePlayerController? _yt;
 
   AppItem get app => widget.app;
 
@@ -1122,6 +1125,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
 
   @override
   void dispose() {
+    _yt?.close();
     _scrollController.dispose();
     super.dispose();
   }
@@ -1138,19 +1142,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
     }
   }
 
-  Future<void> _openVideo() async {
-    final ok = await launchUrl(
-      Uri.parse('https://www.youtube.com/watch?v=${app.youtubeId}'),
-      mode: LaunchMode.externalApplication,
-    );
-    if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر فتح الفيديو')),
-      );
-    }
-  }
-
-  // ─── شريط الوسائط (على نمط Google Play): فيديو/بانر ثم لقطات الشاشة ───
+  // ─── شريط الوسائط ───
   void _openGallery(List<String> urls, int index) {
     Navigator.of(context).push(PageRouteBuilder<void>(
       opaque: false,
@@ -1170,130 +1162,124 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
         ),
       );
 
-  Widget _mediaCarousel() {
-    final shots = app.screenshotUrls;
+  // ─── الغلاف العلوي (على نمط Google Play): البانر + تشغيل الفيديو داخل الصفحة ───
+  void _startVideo() {
+    _yt ??= YoutubePlayerController.fromVideoId(
+      videoId: app.youtubeId,
+      autoPlay: true,
+      params: const YoutubePlayerParams(
+        showControls: true,
+        showFullscreenButton: true,
+        strictRelatedVideos: true,
+      ),
+    );
+    setState(() => _playing = true);
+  }
+
+  Widget _hero() {
     final hasVideo = app.youtubeId.isNotEmpty;
     final hasBanner = app.banner.isNotEmpty;
-    if (!hasVideo && !hasBanner && shots.isEmpty) {
-      return const SizedBox.shrink();
+    if (!hasVideo && !hasBanner) return const SizedBox.shrink();
+
+    final poster = hasBanner
+        ? app.bannerUrl
+        : 'https://img.youtube.com/vi/${app.youtubeId}/hqdefault.jpg';
+
+    Widget content;
+    if (hasVideo && _playing && _yt != null) {
+      content = YoutubePlayer(controller: _yt!, aspectRatio: 16 / 9);
+    } else {
+      content = Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.network(
+            poster,
+            fit: BoxFit.cover,
+            loadingBuilder: (_, child, p) =>
+                p == null ? child : _mediaPlaceholder(),
+            errorBuilder: (_, __, ___) => Container(color: Colors.black87),
+          ),
+          if (hasVideo) ...[
+            Container(color: Colors.black26),
+            Center(
+              child: Container(
+                width: 64,
+                height: 64,
+                decoration: const BoxDecoration(
+                  color: Colors.red,
+                  shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(color: Colors.black38, blurRadius: 8),
+                  ],
+                ),
+                child: const Icon(Icons.play_arrow,
+                    color: Colors.white, size: 42),
+              ),
+            ),
+          ],
+        ],
+      );
+      if (hasVideo) {
+        content = GestureDetector(onTap: _startVideo, child: content);
+      }
     }
 
-    // صور المعرض: البانر (إذا لا يوجد فيديو) ثم اللقطات
-    final gallery = <String>[
-      if (!hasVideo && hasBanner) app.bannerUrl,
-      ...shots,
-    ];
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: AspectRatio(
+          aspectRatio: hasVideo ? 16 / 9 : 1024 / 500,
+          child: content,
+        ),
+      ),
+    );
+  }
+
+  // ─── لقطات الشاشة: ارتفاع موحّد والعرض يتبع نسبة كل صورة ───
+  Widget _mediaCarousel() {
+    final shots = app.screenshotUrls;
+    if (shots.isEmpty) return const SizedBox.shrink();
 
     return Padding(
       padding: const EdgeInsets.only(top: 20),
       child: LayoutBuilder(
         builder: (context, c) {
-          // ارتفاع موحّد، والعرض يتبع نسبة كل صورة (كما في المتاجر)
           final h = (c.maxWidth * 0.62).clamp(200.0, 340.0);
-          final wideTile = (h * 16 / 9).clamp(0.0, c.maxWidth - 48);
-          final items = <Widget>[];
-
-          if (hasVideo) {
-            final poster = hasBanner
-                ? app.bannerUrl
-                : 'https://img.youtube.com/vi/${app.youtubeId}/hqdefault.jpg';
-            items.add(GestureDetector(
-              onTap: _openVideo,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                child: SizedBox(
-                  width: wideTile,
-                  height: h,
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      Image.network(
-                        poster,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) =>
-                            Container(color: Colors.black87),
-                      ),
-                      Container(color: Colors.black26),
-                      Center(
-                        child: Container(
-                          width: 60,
-                          height: 60,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(Icons.play_arrow,
-                              color: Colors.white, size: 38),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ));
-          } else if (hasBanner) {
-            items.add(GestureDetector(
-              onTap: () => _openGallery(gallery, 0),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                child: SizedBox(
-                  width: wideTile,
-                  height: h,
-                  child: Image.network(
-                    app.bannerUrl,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (_, child, p) =>
-                        p == null ? child : _mediaPlaceholder(),
-                    errorBuilder: (_, __, ___) => Container(
-                      color: Colors.grey.shade200,
-                      child: const Icon(Icons.image_not_supported,
-                          color: Colors.grey),
-                    ),
-                  ),
-                ),
-              ),
-            ));
-          }
-
-          final offset = (!hasVideo && hasBanner) ? 1 : 0;
-          for (var i = 0; i < shots.length; i++) {
-            items.add(GestureDetector(
-              onTap: () => _openGallery(gallery, i + offset),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(minWidth: h * 9 / 16),
-                  child: Image.network(
-                    shots[i],
-                    height: h,
-                    fit: BoxFit.fitHeight,
-                    loadingBuilder: (_, child, p) => p == null
-                        ? child
-                        : SizedBox(
-                            width: h * 9 / 16,
-                            height: h,
-                            child: _mediaPlaceholder()),
-                    errorBuilder: (_, __, ___) => Container(
-                      width: h * 9 / 16,
-                      height: h,
-                      color: Colors.grey.shade200,
-                      child: const Icon(Icons.image_not_supported,
-                          color: Colors.grey),
-                    ),
-                  ),
-                ),
-              ),
-            ));
-          }
-
           return SizedBox(
             height: h,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: items.length,
+              itemCount: shots.length,
               separatorBuilder: (_, __) => const SizedBox(width: 10),
-              itemBuilder: (_, i) => items[i],
+              itemBuilder: (_, i) => GestureDetector(
+                onTap: () => _openGallery(shots, i),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: h * 9 / 16),
+                    child: Image.network(
+                      shots[i],
+                      height: h,
+                      fit: BoxFit.fitHeight,
+                      loadingBuilder: (_, child, p) => p == null
+                          ? child
+                          : SizedBox(
+                              width: h * 9 / 16,
+                              height: h,
+                              child: _mediaPlaceholder()),
+                      errorBuilder: (_, __, ___) => Container(
+                        width: h * 9 / 16,
+                        height: h,
+                        color: Colors.grey.shade200,
+                        child: const Icon(Icons.image_not_supported,
+                            color: Colors.grey),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
             ),
           );
         },
@@ -1549,6 +1535,9 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
         controller: _scrollController,
         padding: const EdgeInsets.only(bottom: 32),
         children: [
+          // ─── الغلاف: البانر / الفيديو ───
+          _hero(),
+
           // ─── هيدر: أيقونة + اسم + مطوّر + تصنيف ───
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
