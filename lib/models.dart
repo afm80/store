@@ -12,6 +12,7 @@ class AppItem {
   final String sha256;
   final String icon;
   final String banner;
+  final List<String> banners; // صور بانر متعددة (اختياري)
   final String apkUrl;
   final String updatedAt;
   final int size;
@@ -37,6 +38,7 @@ class AppItem {
     required this.sha256,
     required this.icon,
     required this.banner,
+    this.banners = const [],
     required this.apkUrl,
     required this.updatedAt,
     required this.size,
@@ -52,6 +54,7 @@ class AppItem {
   factory AppItem.fromJson(Map<String, dynamic> j) {
     String s(String key) => (j[key] ?? '').toString();
     final shots = j['screenshots'];
+    final bans = j['banners'];
     final rawSize = j['size'];
     final rawRating = j['rating'];
     final rawDownloads = j['downloads'];
@@ -67,6 +70,9 @@ class AppItem {
       sha256: s('sha256'),
       icon: s('icon'),
       banner: s('banner'),
+      banners: bans is List
+          ? bans.map((e) => e.toString()).where((e) => e.isNotEmpty).toList()
+          : const [],
       apkUrl: s('apkUrl'),
       updatedAt: s('updatedAt'),
       size: rawSize is num ? rawSize.toInt() : 0,
@@ -102,6 +108,14 @@ class AppItem {
 
   String get iconUrl => StoreConfig.media(icon);
   String get bannerUrl => StoreConfig.media(banner);
+
+  /// كل صور البانر (banners إن وُجدت، وإلا banner الوحيد).
+  List<String> get bannerUrls {
+    final list = banners.isNotEmpty
+        ? banners
+        : (banner.isNotEmpty ? [banner] : const <String>[]);
+    return list.map(StoreConfig.media).toList();
+  }
   List<String> get screenshotUrls => screenshots.map(StoreConfig.media).toList();
 
   String get sizeLabel {
