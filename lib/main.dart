@@ -1243,7 +1243,11 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
             ),
         ],
       ),
-      body: ListView(
+      body: Align(
+        alignment: Alignment.topCenter,
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 760),
+          child: ListView(
         controller: _scrollController,
         padding: const EdgeInsets.only(bottom: 32),
         children: [
@@ -1310,48 +1314,53 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
             child: _installButton(),
           ),
 
-          // ─── لقطات الشاشة ───
+          // ─── لقطات الشاشة (مقاس موحّد يتكيف مع عرض الشاشة) ───
           if (shots.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(top: 20),
-              child: SizedBox(
-                height: 260,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  itemCount: shots.length,
-                  itemBuilder: (_, i) => Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 10),
-                    child: GestureDetector(
-                      onTap: () => _openImage(shots[i]),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(AppRadius.md),
-                        child: Image.network(
-                          shots[i],
-                          height: 260,
-                          fit: BoxFit.contain,
-                          loadingBuilder: (context, child, progress) {
-                            if (progress == null) return child;
-                            return Container(
-                              width: 140,
-                              color: kSurface,
-                              child: const Center(
-                                child: CircularProgressIndicator(
-                                    strokeWidth: 2, color: kBrand),
+              child: LayoutBuilder(
+                builder: (context, c) {
+                  final w = (c.maxWidth * 0.42).clamp(130.0, 210.0);
+                  final h = w * 16 / 9;
+                  return SizedBox(
+                    height: h,
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: shots.length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 10),
+                      itemBuilder: (_, i) => GestureDetector(
+                        onTap: () => _openImage(shots[i]),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          child: SizedBox(
+                            width: w,
+                            height: h,
+                            child: Image.network(
+                              shots[i],
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child, progress) {
+                                if (progress == null) return child;
+                                return Container(
+                                  color: kSurface,
+                                  child: const Center(
+                                    child: CircularProgressIndicator(
+                                        strokeWidth: 2, color: kBrand),
+                                  ),
+                                );
+                              },
+                              errorBuilder: (_, __, ___) => Container(
+                                color: Colors.grey.shade200,
+                                child: const Icon(Icons.image_not_supported,
+                                    color: Colors.grey),
                               ),
-                            );
-                          },
-                          errorBuilder: (_, __, ___) => Container(
-                            width: 140,
-                            color: Colors.grey.shade200,
-                            child: const Icon(Icons.image_not_supported,
-                                color: Colors.grey),
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
+                  );
+                },
               ),
             ),
 
@@ -1359,10 +1368,11 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
           _section(
             'عن هذا التطبيق',
             trailing: description.isNotEmpty
-                ? TextButton(
+                ? IconButton(
+                    tooltip: 'المزيد',
                     onPressed: () =>
                         _showFullText('عن هذا التطبيق', description),
-                    child: const Text('اقرأ المزيد'),
+                    icon: const Icon(Icons.arrow_back),
                   )
                 : null,
             child: description.isEmpty
@@ -1501,10 +1511,11 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
           if (app.whatsNew.isNotEmpty)
             _section(
               'ما الجديد',
-              trailing: TextButton(
+              trailing: IconButton(
+                tooltip: 'المزيد',
                 onPressed: () =>
                     _showFullText('ما الجديد', app.whatsNew),
-                child: const Text('اقرأ المزيد'),
+                icon: const Icon(Icons.arrow_back),
               ),
               child: Text(
                 app.whatsNew,
@@ -1543,6 +1554,8 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
             ),
           ),
         ],
+      ),
+        ),
       ),
     );
   }
