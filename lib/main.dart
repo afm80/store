@@ -10,6 +10,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 
+import 'apk_installer_stub.dart'
+    if (dart.library.io) 'apk_installer_io.dart';
 import 'config.dart';
 import 'models.dart';
 import 'store_service.dart';
@@ -1149,6 +1151,8 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
   bool _showPinnedInstall = false;
   bool _playing = false;
   YoutubePlayerController? _yt;
+  double? _dl;           // تقدّم التنزيل (0..1) أو null إذا لا يوجد تنزيل
+  bool _cancelDl = false;
 
   AppItem get app => widget.app;
 
@@ -1170,15 +1174,48 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
     super.dispose();
   }
 
-  Future<void> _download() async {
+  void _snack(String msg) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  Future<void> _openInBrowser() async {
     final ok = await launchUrl(
       Uri.parse(app.apkUrl),
       mode: LaunchMode.externalApplication,
     );
-    if (!ok && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تعذّر فتح رابط التحميل')),
+    if (!ok) _snack('تعذّر فتح رابط التحميل');
+  }
+
+  Future<void> _download() async {
+    if (_dl != null) return;
+    // الويب (أو أي نظام غير أندرويد): فتح الرابط في المتصفح
+    if (!supportsInAppInstall) return _openInBrowser();
+
+    _cancelDl = false;
+    setState(() => _dl = 0);
+    try {
+      final path = await downloadApk(
+        app.apkUrl,
+        fileName: '${app.packageName}.apk',
+        sha256Hex: app.sha256,
+        onProgress: (p) {
+          if (mounted) setState(() => _dl = p);
+        },
+        isCancelled: () => _cancelDl,
       );
+      if (mounted) setState(() => _dl = null);
+      final opened = await installApk(path);
+      if (!opened) _snack('تعذّر فتح المثبّت، حاول مرة أخرى');
+    } on DownloadCancelled {
+      if (mounted) setState(() => _dl = null);
+    } on ChecksumMismatch {
+      if (mounted) setState(() => _dl = null);
+      _snack('الملف غير مطابق للبصمة الأصلية، تم إلغاء التثبيت');
+    } catch (_) {
+      if (mounted) setState(() => _dl = null);
+      _snack('تعذّر التنزيل داخل المتجر، سيُفتح الرابط في المتصفح');
+      await _openInBrowser();
     }
   }
 
@@ -1373,6 +1410,48 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
   }
 
   Widget _installButton() {
+    if (_dl != null) {
+      return SizedBox(
+        height: 48,
+        child: Row(
+          children: [
+            Expanded(
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    LinearProgressIndicator(
+                      value: _dl! > 0 ? _dl : null,
+                      minHeight: 48,
+                      backgroundColor: kBrandLight,
+                      color: kBrand.withOpacity(0.45),
+                    ),
+                    Center(
+                      child: Text(
+                        _dl! > 0
+                            ? 'جارٍ التنزيل ${(_dl! * 100).round()}%'
+                            : 'جارٍ التنزيل...',
+                        style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black87),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(width: 8),
+            IconButton(
+              tooltip: 'إلغاء',
+              onPressed: () => _cancelDl = true,
+              icon: const Icon(Icons.close),
+            ),
+          ],
+        ),
+      );
+    }
     return SizedBox(
       width: double.infinity,
       height: 48,
@@ -1385,7 +1464,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
             borderRadius: BorderRadius.circular(AppRadius.pill),
           ),
         ),
-        onPressed: app.apkUrl.isEmpty ? null : _download,
+        onPressed: (app.apkUrl.isEmpty || _dl != null) ? null : _download,
         child: Text(
           app.apkUrl.isEmpty ? 'غير متاح حالياً' : 'تثبيت',
           style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
@@ -1570,7 +1649,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                       borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
                   ),
-                  onPressed: app.apkUrl.isEmpty ? null : _download,
+                  onPressed: (app.apkUrl.isEmpty || _dl != null) ? null : _download,
                   child: const Text('تثبيت',
                       style: TextStyle(fontWeight: FontWeight.w600)),
                 ),
