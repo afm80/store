@@ -9,15 +9,25 @@
     "version": "1.1",
     "whatsNew": "",
     "featured": true,
+    "hidden": false,
+    "developer": "",
+    "ageRating": "",
+    "rating": 0,
+    "downloads": 0,
+    "history": [],
     "icon": "data/media/com.oscartv.app/icon-mvsfz6nl.png",
     "banner": "data/media/com.oscartv.app/banner-mvsfz6nl.png",
+    "banners": [
+      "data/media/com.oscartv.app/banner-mvsfz6nl.png"
+    ],
     "screenshots": [],
+    "youtubeUrl": "",
     "apkUrl": "https://github.com/afm80/store/releases/download/com.oscartv.app-v1.1/OscarTV_v1.1.6.apk",
     "size": 10157455,
     "sha256": "b6b23d4f667d4662281bb2a8363d3821d36aa37ecc13e06384227dd96a45326b",
+    "order": 0,
     "createdAt": "2026-10-28T18:21:33.988Z",
-    "updatedAt": "2026-10-28T18:22:35.070Z",
-    "order": 0
+    "updatedAt": "2026-10-29T00:17:15.683Z"
   },
   {
     "packageName": "com.snaptube.premium",
