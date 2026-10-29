@@ -1480,46 +1480,50 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
     );
   }
 
-  // مثل Google Play: زر صغير (≈120×40) عند بداية السطر، ويظهر بجانبه عدّاد التنزيل %.
+  // زر تثبيت بعرض كامل؛ أثناء التنزيل يمتلئ بالتقدّم وتظهر النسبة % داخله.
   Widget _installButton() {
-    final downloading = _dl != null;
-    final p = _dl ?? 0;
-    return Row(
-      children: [
-        SizedBox(width: 120, child: _installButtonInner()),
-        if (downloading) ...[
-          const SizedBox(width: 12),
+    if (_dl == null) return _installButtonInner();
+    final p = _dl!;
+    final determinate = p > 0 || app.size > 0;
+    return SizedBox(
+      height: 40,
+      child: Row(
+        children: [
           Expanded(
             child: ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: LinearProgressIndicator(
-                value: (p > 0 || app.size > 0) ? p : null,
-                minHeight: 6,
-                backgroundColor: kBrandLight,
-                color: kBrand,
+              borderRadius: BorderRadius.circular(AppRadius.pill),
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  LinearProgressIndicator(
+                    value: determinate ? p : null,
+                    minHeight: 40,
+                    backgroundColor: kBrandLight,
+                    color: kBrand.withOpacity(0.45),
+                  ),
+                  Center(
+                    child: Text(
+                      determinate
+                          ? 'جارٍ التنزيل ${(p * 100).round()}%'
+                          : 'جارٍ التنزيل...',
+                      style: const TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black87),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
           const SizedBox(width: 8),
-          SizedBox(
-            width: 44,
-            child: Text(
-              (p > 0 || app.size > 0) ? '${(p * 100).round()}%' : '...',
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black87),
-            ),
-          ),
           IconButton(
             tooltip: 'إلغاء',
-            visualDensity: VisualDensity.compact,
             onPressed: () => _cancelDl = true,
-            icon: const Icon(Icons.close, size: 20),
+            icon: const Icon(Icons.close),
           ),
         ],
-      ],
+      ),
     );
   }
 
