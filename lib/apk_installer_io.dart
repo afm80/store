@@ -17,6 +17,7 @@ Future<String> downloadApk(
   String url, {
   required String fileName,
   String sha256Hex = '',
+  int expectedSize = 0,
   required void Function(double) onProgress,
   required bool Function() isCancelled,
 }) async {
@@ -31,7 +32,8 @@ Future<String> downloadApk(
     if (res.statusCode != 200) {
       throw Exception('HTTP ${res.statusCode}');
     }
-    final total = res.contentLength ?? 0;
+    var total = res.contentLength ?? 0;
+    if (total <= 0) total = expectedSize; // الحجم المسجّل إن لم يرسله الخادم
     var received = 0;
     sink = file.openWrite();
     await for (final chunk in res.stream) {

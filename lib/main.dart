@@ -1245,6 +1245,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
         app.apkUrl,
         fileName: '${app.packageName}.apk',
         sha256Hex: app.sha256,
+        expectedSize: app.size,
         onProgress: (p) {
           if (mounted) setState(() => _dl = p);
         },
@@ -1492,7 +1493,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4),
               child: LinearProgressIndicator(
-                value: p > 0 ? p : null,
+                value: (p > 0 || app.size > 0) ? p : null,
                 minHeight: 6,
                 backgroundColor: kBrandLight,
                 color: kBrand,
@@ -1503,7 +1504,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
           SizedBox(
             width: 44,
             child: Text(
-              p > 0 ? '${(p * 100).round()}%' : '...',
+              (p > 0 || app.size > 0) ? '${(p * 100).round()}%' : '...',
               textAlign: TextAlign.center,
               style: const TextStyle(
                   fontSize: 14,

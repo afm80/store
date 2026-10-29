@@ -10,6 +10,7 @@ Future<String> downloadApk(
   String url, {
   required String fileName,
   String sha256Hex = '',
+  int expectedSize = 0,
   required void Function(double) onProgress,
   required bool Function() isCancelled,
 }) async =>
