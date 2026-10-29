@@ -9,7 +9,7 @@
     "version": "1.1",
     "whatsNew": "",
     "featured": true,
-    "hidden": true,
+    "hidden": false,
     "developer": "",
     "ageRating": "الجميع",
     "rating": 4,
@@ -27,7 +27,7 @@
     "sha256": "b6b23d4f667d4662281bb2a8363d3821d36aa37ecc13e06384227dd96a45326b",
     "order": 0,
     "createdAt": "2026-10-28T18:21:33.988Z",
-    "updatedAt": "2026-10-29T01:01:50.525Z"
+    "updatedAt": "2026-10-29T01:02:24.142Z"
   },
   {
     "packageName": "com.snaptube.premium",
