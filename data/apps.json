@@ -11,9 +11,9 @@
     "featured": true,
     "hidden": false,
     "developer": "",
-    "ageRating": "",
-    "rating": 0,
-    "downloads": 0,
+    "ageRating": "الجميع",
+    "rating": 4,
+    "downloads": 80000,
     "history": [],
     "icon": "data/media/com.oscartv.app/icon-mvsfz6nl.png",
     "banner": "data/media/com.oscartv.app/banner-mvsfz6nl.png",
@@ -27,7 +27,7 @@
     "sha256": "b6b23d4f667d4662281bb2a8363d3821d36aa37ecc13e06384227dd96a45326b",
     "order": 0,
     "createdAt": "2026-10-28T18:21:33.988Z",
-    "updatedAt": "2026-10-29T00:17:15.683Z"
+    "updatedAt": "2026-10-29T00:32:04.044Z"
   },
   {
     "packageName": "com.snaptube.premium",
