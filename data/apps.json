@@ -138,9 +138,9 @@
     "featured": false,
     "hidden": false,
     "developer": "Alfaham Net",
-    "ageRating": "",
-    "rating": 0,
-    "downloads": 0,
+    "ageRating": "الجميع",
+    "rating": 5,
+    "downloads": 1000000,
     "history": [],
     "icon": "data/media/app.dramalive.com/icon-mvsdmxof.png",
     "banner": "data/media/app.dramalive.com/banner-mvsdmxof.png",
@@ -159,7 +159,7 @@
     "sha256": "0c56090a112466dc792b771c3fdb757323df1420dc3af8fc2fcc99216a9b5215",
     "order": 4,
     "createdAt": "2026-10-28T17:16:45.977Z",
-    "updatedAt": "2026-10-28T23:46:43.114Z"
+    "updatedAt": "2026-10-29T00:34:51.768Z"
   },
   {
     "packageName": "app.kidstv.com",
