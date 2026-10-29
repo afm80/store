@@ -41,9 +41,9 @@
     "featured": false,
     "hidden": false,
     "developer": "",
-    "ageRating": "",
-    "rating": 0,
-    "downloads": 0,
+    "ageRating": "الجميع",
+    "rating": 4,
+    "downloads": 100000,
     "history": [],
     "icon": "data/media/com.snaptube.premium/icon-mvsfq1q6.webp",
     "banner": "",
@@ -55,7 +55,7 @@
     "sha256": "b6b23d4f667d4662281bb2a8363d3821d36aa37ecc13e06384227dd96a45326b",
     "order": 1,
     "createdAt": "2026-10-28T18:15:49.092Z",
-    "updatedAt": "2026-10-29T00:17:35.834Z"
+    "updatedAt": "2026-10-29T00:32:42.907Z"
   },
   {
     "packageName": "com.tdm.manager",
