@@ -313,9 +313,9 @@
     "featured": false,
     "hidden": false,
     "developer": "Alfaham Net",
-    "ageRating": "",
-    "rating": 0,
-    "downloads": 0,
+    "ageRating": "الجميع",
+    "rating": 5,
+    "downloads": 1000000,
     "history": [],
     "icon": "data/media/app.alfaham.box/icon-mvsczzhq.png",
     "banner": "data/media/app.alfaham.box/banner-mvsczzhq.png",
@@ -332,7 +332,7 @@
     "sha256": "ccb01a7b84e1e39cb558e10d626ff288951ef4ed6cb8721b274509ca1d821854",
     "order": 9,
     "createdAt": "2026-10-28T16:59:00.212Z",
-    "updatedAt": "2026-10-28T23:49:38.263Z"
+    "updatedAt": "2026-10-29T00:36:52.318Z"
   },
   {
     "packageName": "app.alfaham.tv",
