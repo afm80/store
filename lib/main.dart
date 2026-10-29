@@ -2407,7 +2407,9 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
                   FutureBuilder<List<AppItem>>(
                     future: _apps,
                     builder: (context, asn) {
-                      final apps = asn.data ?? const <AppItem>[];
+                      final apps = (asn.data ?? const <AppItem>[])
+                          .where((a) => a.developer.trim().isNotEmpty)
+                          .toList();
                       if (apps.isEmpty) return const SizedBox.shrink();
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
