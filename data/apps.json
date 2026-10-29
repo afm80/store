@@ -173,9 +173,9 @@
     "featured": true,
     "hidden": false,
     "developer": "Alfaham Net",
-    "ageRating": "",
-    "rating": 0,
-    "downloads": 0,
+    "ageRating": "الجميع",
+    "rating": 5,
+    "downloads": 1000000,
     "history": [],
     "icon": "data/media/app.kidstv.com/icon-mvsoppzq.png",
     "banner": "data/media/app.kidstv.com/banner-mvsoppzq.jpg",
@@ -196,7 +196,7 @@
     "sha256": "be4188a881eb30ea106cb213f80cf61e483a8558f8a5abfb68404cd150009fc8",
     "order": 5,
     "createdAt": "2026-10-28T17:13:38.884Z",
-    "updatedAt": "2026-10-28T23:47:19.586Z"
+    "updatedAt": "2026-10-29T00:35:36.268Z"
   },
   {
     "packageName": "app.alfaham.store",
