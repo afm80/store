@@ -277,9 +277,9 @@
     "featured": true,
     "hidden": false,
     "developer": "Alfaham Net",
-    "ageRating": "",
-    "rating": 0,
-    "downloads": 0,
+    "ageRating": "الجميع",
+    "rating": 5,
+    "downloads": 100000,
     "history": [],
     "icon": "data/media/app.alfaham.tube/icon-mvscsa9l.png",
     "banner": "data/media/app.alfaham.tube/banner-mvscsa9l.png",
@@ -299,7 +299,7 @@
     "sha256": "ecfc0af79372209553ad56966a6f583350a10f1efbba9222123f59d4492b539b",
     "order": 8,
     "createdAt": "2026-10-28T16:53:03.359Z",
-    "updatedAt": "2026-10-28T23:48:57.624Z"
+    "updatedAt": "2026-10-29T00:36:15.519Z"
   },
   {
     "packageName": "app.alfaham.box",
