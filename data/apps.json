@@ -9,7 +9,7 @@
     "version": "1.0.0",
     "whatsNew": "أحدث أصدار",
     "featured": true,
-    "icon": "",
+    "icon": "data/media/app.alfaham.tv/icon-mvvq731o.png",
     "banner": "data/media/app.alfaham.tv/banner1-mvvq2tji.jpg",
     "banners": [
       "data/media/app.alfaham.tv/banner1-mvvq2tji.jpg"
@@ -27,7 +27,7 @@
     "size": 79898645,
     "sha256": "b307b6804743c3103a89cea07b4e09c30a29fa69ca224502784bfb07157f09a4",
     "createdAt": "2026-10-31T01:29:18.162Z",
-    "updatedAt": "2026-10-31T01:29:28.929Z"
+    "updatedAt": "2026-10-31T01:31:55.954Z"
   },
   {
     "packageName": "com.tdm.manager",
