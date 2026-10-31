@@ -9,17 +9,8 @@
     "version": "2.2.2",
     "whatsNew": "",
     "featured": false,
-    "hidden": false,
-    "developer": "",
-    "ageRating": "الجميع",
-    "rating": 4,
-    "downloads": 100000,
-    "history": [],
     "icon": "data/media/com.tdm.manager/icon-mvseub0l.webp",
     "banner": "data/media/com.tdm.manager/banner-mvseub0l.webp",
-    "banners": [
-      "data/media/com.tdm.manager/banner-mvseub0l.webp"
-    ],
     "screenshots": [
       "data/media/com.tdm.manager/shot1-mvseub0l.webp",
       "data/media/com.tdm.manager/shot2-mvseub0l.webp",
@@ -30,9 +21,8 @@
     "apkUrl": "https://github.com/afm80/store/releases/download/com.tdm.manager-v2.2.2/TDM_%2BFiles%2BDownload%2BManager_2.2.2_APKPure.xapk",
     "size": 38063431,
     "sha256": "54e4d251959346f2bb4875f80d85dc387a231158f4eaede3202e221ca9b497bf",
-    "order": 0,
     "createdAt": "2026-10-28T17:51:19.388Z",
-    "updatedAt": "2026-10-29T00:33:44.111Z"
+    "updatedAt": "2026-10-31T01:01:38.672Z"
   },
   {
     "packageName": "com.snaptube.premium",
