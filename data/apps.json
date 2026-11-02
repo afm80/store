@@ -360,7 +360,6 @@
     "version": "0.1",
     "whatsNew": "",
     "featured": true,
-    "hidden": false,
     "developer": "Alfaham Net",
     "ageRating": "الجميع",
     "rating": 5,
@@ -379,8 +378,8 @@
     "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.box-v0.1/Alfaham%2BBox_1.0_APKPure.apk",
     "size": 32824037,
     "sha256": "ccb01a7b84e1e39cb558e10d626ff288951ef4ed6cb8721b274509ca1d821854",
-    "order": 9,
+    "order": 5,
     "createdAt": "2026-10-28T16:59:00.212Z",
-    "updatedAt": "2026-10-31T01:03:58.862Z"
+    "updatedAt": "2026-11-02T23:00:05.590Z"
   }
 ]
