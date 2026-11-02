@@ -189,8 +189,7 @@
     "longDescription": "شاهد جميع القنوات العالمية والعربية والبث المباشر وشاهد جميع القنوات الرياضية والحصرية مجانأ وبدون أشتراك",
     "version": "0.1",
     "whatsNew": "",
-    "featured": false,
-    "hidden": false,
+    "featured": true,
     "developer": "Alfaham Net",
     "ageRating": "الجميع",
     "rating": 5,
@@ -211,9 +210,9 @@
     "apkUrl": "https://github.com/afm80/store/releases/download/app.dramalive.com-v0.1/Drama%2BLive_13.0.3_APKPure.apk",
     "size": 16107633,
     "sha256": "0c56090a112466dc792b771c3fdb757323df1420dc3af8fc2fcc99216a9b5215",
-    "order": 4,
+    "order": 10,
     "createdAt": "2026-10-28T17:16:45.977Z",
-    "updatedAt": "2026-10-30T23:08:34.890Z"
+    "updatedAt": "2026-11-02T23:04:38.309Z"
   },
   {
     "packageName": "app.kidstv.com",
