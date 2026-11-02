@@ -55,7 +55,8 @@
     "size": 38063431,
     "sha256": "54e4d251959346f2bb4875f80d85dc387a231158f4eaede3202e221ca9b497bf",
     "createdAt": "2026-10-28T17:51:19.388Z",
-    "updatedAt": "2026-10-31T01:10:45.604Z"
+    "updatedAt": "2026-11-02T18:19:18.352Z",
+    "developer": "AFM"
   },
   {
     "packageName": "com.snaptube.premium",
