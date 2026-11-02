@@ -12,8 +12,9 @@ class StoreConfig {
   static const String storeUrl = 'https://alfahamstore.web.app';
 
   /// رابط مباشر لصفحة تطبيق معيّن.
+  /// صفحة ثابتة (تُولَّد عند النشر) فيها الأيقونة والاسم والوصف للمعاينة، ثم تحوّل الزائر للمتجر.
   static String shareUrl(String packageName) =>
-      '$storeUrl/#/app/${Uri.encodeComponent(packageName)}';
+      '$storeUrl/s/${Uri.encodeComponent(packageName)}/';
 
   /// مسار الصفحة داخل الرابط (بعد #)، مثل: /games أو /app/اسم.الحزمة
   static Uri? _fragmentUri(Uri u) {
@@ -24,6 +25,9 @@ class StoreConfig {
 
   /// يستخرج اسم الحزمة من رابط (يدعم #/app/pkg و ?app=pkg القديم).
   static String packageFromUri(Uri u) {
+    // رابط المشاركة الجديد: /s/<package>/
+    final ps = u.pathSegments.where((e) => e.isNotEmpty).toList();
+    if (ps.length >= 2 && ps.first == 's') return ps[1];
     final fu = _fragmentUri(u);
     if (fu != null) {
       final segs = fu.pathSegments;
