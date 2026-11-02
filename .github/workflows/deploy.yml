@@ -3,9 +3,14 @@ name: Build and deploy store
 on:
   push:
     branches: [main]
-    paths-ignore:
-      - 'data/**'
-      - '**.md'
+    # يُعاد النشر عند تغيّر apps.json (لتحديث صفحات المشاركة)، ولا يُعاد عند تغيّر الصور وباقي ملفات data.
+    paths:
+      - '**'
+      - '!data/media/**'
+      - '!data/developer.json'
+      - '!data/developers.json'
+      - '!data/menu.json'
+      - '!**.md'
   workflow_dispatch:
 
 permissions:
@@ -44,6 +49,11 @@ jobs:
       - run: flutter pub get
 
       - run: flutter build web --release --pwa-strategy=none
+
+      - name: Generate share pages (icon, name, description)
+        run: |
+          pip install pillow
+          python3 tools/gen_share_pages.py
 
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
