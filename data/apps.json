@@ -263,7 +263,6 @@
     "version": "0.1",
     "whatsNew": "",
     "featured": true,
-    "hidden": false,
     "developer": "Alfaham Net",
     "ageRating": "الجميع",
     "rating": 5,
@@ -282,9 +281,9 @@
     "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.store-v0.1/Alfaham%2BStore_1.0_APKPure.apk",
     "size": 32849512,
     "sha256": "3340a72bd26bcbc44f09547164a032748020b0d33d28ae32ce8235d1fb62584d",
-    "order": 6,
+    "order": 7,
     "createdAt": "2026-10-28T17:09:21.382Z",
-    "updatedAt": "2026-10-30T23:49:07.977Z"
+    "updatedAt": "2026-11-02T23:02:19.734Z"
   },
   {
     "packageName": "app.alfaham.sat",
