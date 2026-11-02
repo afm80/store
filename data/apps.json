@@ -263,9 +263,9 @@
     "developer": "Alfaham Net",
     "history": [],
     "icon": "data/media/app.alfaham.store/icon-mvsqqgln.png",
-    "banner": "data/media/app.alfaham.store/banner-mvsdd9yy.png",
+    "banner": "data/media/app.alfaham.store/banner1-mvzwqs14.jpg",
     "banners": [
-      "data/media/app.alfaham.store/banner-mvsdd9yy.png"
+      "data/media/app.alfaham.store/banner1-mvzwqs14.jpg"
     ],
     "screenshots": [
       "data/media/app.alfaham.store/shot1-mvsdd9yy.png",
@@ -276,7 +276,7 @@
     "size": 54281346,
     "sha256": "4ebb26fddcc2f3036c5b5d79731b488f94454525ef8c970bfa7eddd8867ca990",
     "createdAt": "2026-10-28T17:09:21.382Z",
-    "updatedAt": "2026-11-02T23:39:20.593Z",
+    "updatedAt": "2026-11-02T23:46:20.905Z",
     "rating": 5,
     "downloads": 1000000,
     "ageRating": "الجميع",
