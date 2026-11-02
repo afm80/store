@@ -204,7 +204,10 @@ class _MainLayoutState extends State<MainLayout> {
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: Row(
+        title: InkWell(
+          onTap: () => _setTab(0),
+          child: Row(
+          mainAxisSize: MainAxisSize.min,
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -223,6 +226,7 @@ class _MainLayoutState extends State<MainLayout> {
             const SizedBox(width: 10),
             const Text('Alfaham Store'),
           ],
+        ),
         ),
         actions: [
           IconButton(
@@ -252,7 +256,12 @@ class _MainLayoutState extends State<MainLayout> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      ClipRRect(
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                          _setTab(0);
+                        },
+                        child: ClipRRect(
                         borderRadius: BorderRadius.circular(AppRadius.md),
                         child: Image.asset(
                           'assets/logo.png',
@@ -266,6 +275,7 @@ class _MainLayoutState extends State<MainLayout> {
                                 size: 34, color: Colors.white),
                           ),
                         ),
+                      ),
                       ),
                       const SizedBox(height: 10),
                       const Text(
