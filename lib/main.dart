@@ -119,6 +119,7 @@ class _MainLayoutState extends State<MainLayout> {
   late Future<List<AppItem>> _future;
   late final Future<DeveloperProfile?> _devFuture =
       StoreService.fetchDeveloper();
+  late final Future<List<SideMenuItem>> _menuFuture = StoreService.fetchMenu();
 
   void _setTab(int i) {
     setState(() => _currentIndex = i);
@@ -176,6 +177,19 @@ class _MainLayoutState extends State<MainLayout> {
     try {
       await next;
     } catch (_) {}
+  }
+
+  Future<void> _openMenuItem(SideMenuItem m) async {
+    if (m.url.isNotEmpty) {
+      final ok = await launchUrl(Uri.parse(m.url),
+          mode: LaunchMode.externalApplication);
+      if (!ok && mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(const SnackBar(content: Text('تعذّر فتح الرابط')));
+      }
+      return;
+    }
+    _push(InfoPage(title: m.title, text: m.text));
   }
 
   void _push(Widget page) {
@@ -271,15 +285,6 @@ class _MainLayoutState extends State<MainLayout> {
                 ),
               ),
             ),
-            ListTile(
-              leading: const Icon(Icons.info_outline, color: kBrand),
-              title: const Text('من نحن'),
-              onTap: () => _push(const InfoPage(
-                title: 'من نحن',
-                text:
-                    'هذا المتجر هو منصتك الرقمية الخاصة لتحميل وتثبيت تطبيقات الأندرويد بشكل مباشر وسهل، وبدون أي إعلانات مزعجة أو روابط وهمية.',
-              )),
-            ),
             FutureBuilder<DeveloperProfile?>(
               future: _devFuture,
               builder: (context, snap) {
@@ -293,14 +298,24 @@ class _MainLayoutState extends State<MainLayout> {
                 );
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.privacy_tip_outlined, color: Colors.orange),
-              title: const Text('سياسة الخصوصية'),
-              onTap: () => _push(const InfoPage(
-                title: 'سياسة الخصوصية',
-                text:
-                    'نحن نحترم خصوصية المستخدمين. هذا التطبيق لا يجمع أي بيانات شخصية حساسة، وجميع ملفات الـ APK يتم تحميلها من مصادر موثوقة ومباشرة.',
-              )),
+            FutureBuilder<List<SideMenuItem>>(
+              future: _menuFuture,
+              builder: (context, snap) {
+                final items = snap.data ?? const <SideMenuItem>[];
+                return Column(
+                  children: [
+                    for (final m in items)
+                      ListTile(
+                        leading: Icon(
+                          m.url.isNotEmpty ? Icons.link : Icons.info_outline,
+                          color: kBrand,
+                        ),
+                        title: Text(m.title),
+                        onTap: () => _openMenuItem(m),
+                      ),
+                  ],
+                );
+              },
             ),
           ],
         ),

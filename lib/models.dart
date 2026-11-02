@@ -205,3 +205,33 @@ class DeveloperProfile {
   String get instagramLink => _link(instagram, 'https://instagram.com/');
   String get emailLink => email.isEmpty ? '' : 'mailto:$email';
 }
+
+
+/// عنصر في القائمة الجانبية (data/menu.json) — يُدار من لوحة التحكم.
+/// إن وُجد [url] يُفتح الرابط، وإلا يُعرض [text] في صفحة.
+class SideMenuItem {
+  final String title;
+  final String url;
+  final String text;
+
+  const SideMenuItem({required this.title, this.url = '', this.text = ''});
+
+  factory SideMenuItem.fromJson(Map<String, dynamic> j) {
+    String s(String k) => (j[k] ?? '').toString().trim();
+    return SideMenuItem(title: s('title'), url: s('url'), text: s('text'));
+  }
+
+  /// العناصر الافتراضية عند عدم وجود data/menu.json.
+  static const defaults = <SideMenuItem>[
+    SideMenuItem(
+      title: 'من نحن',
+      text:
+          'هذا المتجر هو منصتك الرقمية الخاصة لتحميل وتثبيت تطبيقات الأندرويد بشكل مباشر وسهل، وبدون أي إعلانات مزعجة أو روابط وهمية.',
+    ),
+    SideMenuItem(
+      title: 'سياسة الخصوصية',
+      text:
+          'نحن نحترم خصوصية المستخدمين. هذا التطبيق لا يجمع أي بيانات شخصية حساسة، وجميع ملفات الـ APK يتم تحميلها من مصادر موثوقة ومباشرة.',
+    ),
+  ];
+}

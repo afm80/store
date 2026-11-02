@@ -72,6 +72,7 @@ class StoreConfig {
   static String get appsJsonUrl => raw('data/apps.json');
   static String get developerJsonUrl => raw('data/developer.json');
   static String get developersJsonUrl => raw('data/developers.json');
+  static String get menuJsonUrl => raw('data/menu.json');
 
   /// يحوّل مسار صورة محفوظ في apps.json إلى رابط كامل.
   static String media(String pathOrUrl) {

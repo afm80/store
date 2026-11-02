@@ -90,4 +90,23 @@ class StoreService {
       return null;
     }
   }
+
+  /// يقرأ عناصر القائمة الجانبية (data/menu.json). إن لم يوجد الملف تُستخدم الافتراضية.
+  static Future<List<SideMenuItem>> fetchMenu() async {
+    try {
+      final stamp = DateTime.now().millisecondsSinceEpoch ~/ 60000;
+      final res =
+          await http.get(Uri.parse('${StoreConfig.menuJsonUrl}?t=$stamp'));
+      if (res.statusCode != 200) return SideMenuItem.defaults;
+      final decoded = jsonDecode(utf8.decode(res.bodyBytes));
+      if (decoded is! List) return SideMenuItem.defaults;
+      return decoded
+          .whereType<Map<String, dynamic>>()
+          .map(SideMenuItem.fromJson)
+          .where((m) => m.title.isNotEmpty && (m.url.isNotEmpty || m.text.isNotEmpty))
+          .toList();
+    } catch (_) {
+      return SideMenuItem.defaults;
+    }
+  }
 }
