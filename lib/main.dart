@@ -378,7 +378,7 @@ class _MainLayoutState extends State<MainLayout> {
         selectedIndex: _currentIndex,
         onDestinationSelected: _setTab,
         backgroundColor: Colors.white,
-        indicatorColor: kBrandLight,
+        indicatorColor: Colors.transparent,
         elevation: 3,
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         destinations: const [
