@@ -39,7 +39,44 @@ class StoreService {
   }
 
   /// يقرأ الملف الشخصي للمطوّر (data/developer.json)، أو null إن لم يوجد.
-  static Future<DeveloperProfile?> fetchDeveloper() async {
+  /// [name] اختياري: إن كان مطورًا إضافيًا يُقرأ ملفه من data/developers.json.
+  static Future<DeveloperProfile?> fetchDeveloper({String? name}) async {
+    try {
+      final wanted = (name ?? '').trim();
+      if (wanted.isNotEmpty) {
+        final main = await _fetchMainDeveloper();
+        if (main != null && main.name == wanted) return main;
+        final extra = await _fetchExtraDeveloper(wanted);
+        if (extra != null) return extra;
+        return main != null && main.name == wanted
+            ? main
+            : DeveloperProfile(name: wanted);
+      }
+      return await _fetchMainDeveloper();
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<DeveloperProfile?> _fetchExtraDeveloper(String name) async {
+    try {
+      final stamp = DateTime.now().millisecondsSinceEpoch ~/ 60000;
+      final res = await http
+          .get(Uri.parse('${StoreConfig.developersJsonUrl}?t=$stamp'));
+      if (res.statusCode != 200) return null;
+      final decoded = jsonDecode(utf8.decode(res.bodyBytes));
+      if (decoded is! List) return null;
+      for (final e in decoded.whereType<Map<String, dynamic>>()) {
+        final p = DeveloperProfile.fromJson(e);
+        if (p.name == name) return p;
+      }
+      return null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<DeveloperProfile?> _fetchMainDeveloper() async {
     try {
       final stamp = DateTime.now().millisecondsSinceEpoch ~/ 60000;
       final res =

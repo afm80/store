@@ -1772,7 +1772,8 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => const DeveloperScreen()),
+                                builder: (_) =>
+                                    DeveloperScreen(name: app.developer.trim())),
                           ),
                           child: Text(
                             app.developer.trim(),
@@ -2266,14 +2267,17 @@ function onYouTubeIframeAPIReady(){
 // صفحة المطوّر (الملف الشخصي) — تُدار من لوحة التحكم
 // ═══════════════════════════════════════════════════════════════
 class DeveloperScreen extends StatefulWidget {
-  const DeveloperScreen({super.key});
+  /// اسم المطور؛ إن كان فارغًا يُعرض المطور الافتراضي.
+  final String? name;
+  const DeveloperScreen({super.key, this.name});
 
   @override
   State<DeveloperScreen> createState() => _DeveloperScreenState();
 }
 
 class _DeveloperScreenState extends State<DeveloperScreen> {
-  late final Future<DeveloperProfile?> _profile = StoreService.fetchDeveloper();
+  late final Future<DeveloperProfile?> _profile =
+      StoreService.fetchDeveloper(name: widget.name);
   late final Future<List<AppItem>> _apps = StoreService.fetchApps();
 
   Future<void> _open(String url) async {
@@ -2415,7 +2419,7 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
                     future: _apps,
                     builder: (context, asn) {
                       final apps = (asn.data ?? const <AppItem>[])
-                          .where((a) => a.developer.trim().isNotEmpty)
+                          .where((a) => a.developer.trim() == p.name)
                           .toList();
                       if (apps.isEmpty) return const SizedBox.shrink();
                       return Padding(
