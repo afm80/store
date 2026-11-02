@@ -19,7 +19,11 @@
     "size": 1057770,
     "sha256": "e06dabdf6fef93cd5578c7cb02bd6fb5708b8521d05ea01366628d583f38ee8d",
     "createdAt": "2026-11-02T18:24:59.973Z",
-    "updatedAt": "2026-11-02T18:25:12.250Z"
+    "updatedAt": "2026-11-02T23:00:52.999Z",
+    "rating": 5,
+    "downloads": 1000000,
+    "ageRating": "الجميع",
+    "order": 6
   },
   {
     "packageName": "app.alfaham.tv",
