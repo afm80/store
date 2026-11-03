@@ -353,16 +353,21 @@
     "downloads": 100000,
     "history": [],
     "icon": "data/media/app.alfaham.tube/icon-mvscsa9l.png",
-    "banner": "data/media/app.alfaham.tube/banner-mvscsa9l.png",
+    "banner": "data/media/app.alfaham.tube/banner1-mw0nv1rs.jpg",
     "banners": [
+      "data/media/app.alfaham.tube/banner1-mw0nv1rs.jpg",
       "data/media/app.alfaham.tube/banner-mvscsa9l.png"
     ],
     "screenshots": [
-      "data/media/app.alfaham.tube/shot1-mvscsa9l.png",
-      "data/media/app.alfaham.tube/shot2-mvscsa9l.png",
-      "data/media/app.alfaham.tube/shot3-mvscsa9l.png",
-      "data/media/app.alfaham.tube/shot4-mvscsa9l.png",
-      "data/media/app.alfaham.tube/shot5-mvscsa9l.png"
+      "data/media/app.alfaham.tube/shot1-mw0nv1rs.png",
+      "data/media/app.alfaham.tube/shot2-mw0nv1rs.png",
+      "data/media/app.alfaham.tube/shot3-mw0nv1rs.png",
+      "data/media/app.alfaham.tube/shot4-mw0nv1rs.png",
+      "data/media/app.alfaham.tube/shot5-mw0nv1rs.png",
+      "data/media/app.alfaham.tube/shot6-mw0nv1rs.png",
+      "data/media/app.alfaham.tube/shot7-mw0nv1rs.png",
+      "data/media/app.alfaham.tube/shot8-mw0nv1rs.png",
+      "data/media/app.alfaham.tube/shot9-mw0nv1rs.png"
     ],
     "youtubeUrl": "",
     "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.tube-v0.1/Alfaham%2BTube_1.0_APKPure.apk",
@@ -370,7 +375,7 @@
     "sha256": "ecfc0af79372209553ad56966a6f583350a10f1efbba9222123f59d4492b539b",
     "order": 3,
     "createdAt": "2026-10-28T16:53:03.359Z",
-    "updatedAt": "2026-11-02T22:59:14.797Z"
+    "updatedAt": "2026-11-03T12:26:39.648Z"
   },
   {
     "packageName": "app.alfaham.box",
