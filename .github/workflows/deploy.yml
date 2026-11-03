@@ -50,6 +50,9 @@ jobs:
 
       - run: flutter build web --release --pwa-strategy=none
 
+      - name: Add developers page
+        run: cp -r developers build/web/developers
+
       - name: Generate share pages (icon, name, description)
         run: |
           pip install pillow
