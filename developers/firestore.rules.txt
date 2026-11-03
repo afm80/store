@@ -2,26 +2,38 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ملف المطور: يقرؤه ويكتبه صاحبه فقط
-    match /devProfiles/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+    // المدير: بريدك المؤكَّد (غيّره هنا إن كنت تدخل ببريد آخر)
+    function isAdmin() {
+      return request.auth != null
+        && request.auth.token.email_verified == true
+        && request.auth.token.email == 'alfahamnet@gmail.com';
     }
 
-    // طلبات النشر: المطور ينشئ ويقرأ طلباته فقط، ولا يعدّل حالتها
+    // ملف المطور: يقرؤه ويكتبه صاحبه، ويقرؤه المدير
+    match /devProfiles/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read: if isAdmin();
+    }
+
+    // طلبات النشر
     match /submissions/{id} {
+      // المطور ينشئ طلبه بحالة pending فقط
       allow create: if request.auth != null
         && request.resource.data.uid == request.auth.uid
         && request.resource.data.status == 'pending';
-      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
-      allow update, delete: if false;
+      // المطور يقرأ طلباته، والمدير يقرأ الكل
+      allow read: if request.auth != null && (resource.data.uid == request.auth.uid || isAdmin());
+      // المدير فقط يغيّر الحالة (قبول/رفض) أو يحذف
+      allow update, delete: if isAdmin();
 
       // الصور (الأيقونة ولقطات الشاشة والبانر)
       match /media/{mid} {
         allow create: if request.auth != null
           && getAfter(/databases/$(database)/documents/submissions/$(id)).data.uid == request.auth.uid;
         allow read: if request.auth != null
-          && get(/databases/$(database)/documents/submissions/$(id)).data.uid == request.auth.uid;
-        allow update, delete: if false;
+          && (get(/databases/$(database)/documents/submissions/$(id)).data.uid == request.auth.uid || isAdmin());
+        allow delete: if isAdmin();
+        allow update: if false;
       }
     }
   }
