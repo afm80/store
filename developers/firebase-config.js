@@ -1,10 +1,10 @@
 // إعدادات Firebase لصفحة المطورين.
-// من Firebase Console: Project settings ← Your apps ← (</> Web) ← انسخ القيم هنا.
 // هذه القيم ليست أسراراً، ويمكن أن تبقى ظاهرة في الصفحة.
 window.FIREBASE_CONFIG = {
-  apiKey: "ضع_apiKey_هنا",
+  apiKey: "AIzaSyAnC8evDpZQhuobeEklZj-j0LgrJ6Yr9hk",
   authDomain: "alfahamstore.firebaseapp.com",
   projectId: "alfahamstore",
-  messagingSenderId: "ضع_messagingSenderId_هنا",
-  appId: "ضع_appId_هنا"
+  storageBucket: "alfahamstore.firebasestorage.app",
+  messagingSenderId: "686561618062",
+  appId: "1:686561618062:web:6b2fb379117809f56e81df"
 };
