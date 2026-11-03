@@ -239,10 +239,10 @@
     "name": "KIDS TV",
     "category": "app",
     "genre": "ترفيه",
-    "shortDescription": "",
-    "longDescription": "منصة آمنة وممتعة تقدم باقة منوعة من برامج الكرتون، والبرامج الترفيهية",
+    "shortDescription": "منصة آمنة وممتعة تقدم باقة منوعة من برامج الكرتون، والبرامج الترفيهية",
+    "longDescription": "تلفزيون الأطفال هو منصة آمنة وممتعة تقدم باقة منوعة من برامج الكرتون، الأناشيد، والقصص التعليمية المناسبة لجميع الأعمار، في بيئة خالية من الإعلانات والمحتوى غير المناسب، لتعزيز التعلم والترفيه في وقت واحد",
     "version": "0.1",
-    "whatsNew": "تلفزيون الأطفال هو منصة آمنة وممتعة تقدم باقة منوعة من برامج الكرتون، الأناشيد، والقصص التعليمية المناسبة لجميع الأعمار، في بيئة خالية من الإعلانات والمحتوى غير المناسب، لتعزيز التعلم والترفيه في وقت واحد.<br>",
+    "whatsNew": "",
     "featured": true,
     "developer": "Alfaham Net",
     "ageRating": "الجميع",
@@ -250,17 +250,17 @@
     "downloads": 1000000,
     "history": [],
     "icon": "data/media/app.kidstv.com/icon-mvsoppzq.png",
-    "banner": "data/media/app.kidstv.com/banner-mvsoppzq.jpg",
+    "banner": "data/media/app.kidstv.com/banner1-mw0nmk8q.jpg",
     "banners": [
-      "data/media/app.kidstv.com/banner-mvsoppzq.jpg"
+      "data/media/app.kidstv.com/banner1-mw0nmk8q.jpg"
     ],
     "screenshots": [
-      "data/media/app.kidstv.com/shot1-mvsoppzq.webp",
-      "data/media/app.kidstv.com/shot2-mvsoppzq.webp",
-      "data/media/app.kidstv.com/shot3-mvsoppzq.webp",
-      "data/media/app.kidstv.com/shot4-mvsoppzq.webp",
-      "data/media/app.kidstv.com/shot5-mvsoppzq.webp",
-      "data/media/app.kidstv.com/shot6-mvsoppzq.webp"
+      "data/media/app.kidstv.com/shot1-mw0nmk8q.png",
+      "data/media/app.kidstv.com/shot2-mw0nmk8q.png",
+      "data/media/app.kidstv.com/shot3-mw0nmk8q.png",
+      "data/media/app.kidstv.com/shot4-mw0nmk8q.png",
+      "data/media/app.kidstv.com/shot5-mw0nmk8q.png",
+      "data/media/app.kidstv.com/shot6-mw0nmk8q.png"
     ],
     "youtubeUrl": "https://youtu.be/uLPJIuevODY?si=Tfp9M25RrKsCH-VF",
     "apkUrl": "https://github.com/afm80/store/releases/download/app.kidstv.com-v0.1/KIDS%2BTV_1.0_APKPure.apk",
@@ -268,7 +268,7 @@
     "sha256": "be4188a881eb30ea106cb213f80cf61e483a8558f8a5abfb68404cd150009fc8",
     "order": 2,
     "createdAt": "2026-10-28T17:13:38.884Z",
-    "updatedAt": "2026-11-02T22:57:43.352Z"
+    "updatedAt": "2026-11-03T12:19:49.560Z"
   },
   {
     "packageName": "app.alfaham.store",
