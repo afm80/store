@@ -53,12 +53,8 @@
     "size": 79889778,
     "sha256": "1e771cc6cd8d8d49dc2892009c46ad02831967b7973e3d704bd005e90843d342",
     "createdAt": "2026-10-31T01:29:18.162Z",
-    "updatedAt": "2026-11-03T02:58:15.865Z",
-    "developer": "Alfaham Net",
-    "rating": 5,
-    "downloads": 1000000,
-    "ageRating": "الجميع",
-    "order": 1
+    "updatedAt": "2026-11-03T02:58:26.578Z",
+    "developer": "Alfaham Net"
   },
   {
     "packageName": "com.tdm.manager",
