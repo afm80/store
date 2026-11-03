@@ -348,9 +348,6 @@
     "whatsNew": "",
     "featured": true,
     "developer": "Alfaham Net",
-    "ageRating": "الجميع",
-    "rating": 5,
-    "downloads": 100000,
     "history": [],
     "icon": "data/media/app.alfaham.tube/icon-mvscsa9l.png",
     "banner": "data/media/app.alfaham.tube/banner1-mw0nv1rs.jpg",
@@ -372,9 +369,8 @@
     "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.tube-v0.1/Alfaham%2BTube_1.0_APKPure.apk",
     "size": 32721906,
     "sha256": "ecfc0af79372209553ad56966a6f583350a10f1efbba9222123f59d4492b539b",
-    "order": 3,
     "createdAt": "2026-10-28T16:53:03.359Z",
-    "updatedAt": "2026-11-03T12:27:58.841Z"
+    "updatedAt": "2026-11-03T12:29:00.241Z"
   },
   {
     "packageName": "app.alfaham.box",
