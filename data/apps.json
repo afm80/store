@@ -11,8 +11,16 @@
     "whatsNew": "",
     "featured": true,
     "icon": "data/media/app.karbala.media/icon-mvzl9trj.png",
-    "banner": "",
-    "banners": [],
+    "banner": "data/media/app.karbala.media/banner1-mw0ne4dj.jpg",
+    "banners": [
+      "data/media/app.karbala.media/banner1-mw0ne4dj.jpg",
+      "data/media/app.karbala.media/banner2-mw0ne4dj.jpg",
+      "data/media/app.karbala.media/banner3-mw0ne4dj.jpg",
+      "data/media/app.karbala.media/banner4-mw0ne4dj.jpg",
+      "data/media/app.karbala.media/banner5-mw0ne4dj.jpg",
+      "data/media/app.karbala.media/banner6-mw0ne4dj.jpg",
+      "data/media/app.karbala.media/banner7-mw0ne4dj.jpg"
+    ],
     "screenshots": [
       "data/media/app.karbala.media/shot1-mw0n27c0.png",
       "data/media/app.karbala.media/shot2-mw0n27c0.png",
@@ -32,7 +40,7 @@
     "size": 1057770,
     "sha256": "e06dabdf6fef93cd5578c7cb02bd6fb5708b8521d05ea01366628d583f38ee8d",
     "createdAt": "2026-11-02T18:24:59.973Z",
-    "updatedAt": "2026-11-03T12:04:31.508Z",
+    "updatedAt": "2026-11-03T12:12:52.000Z",
     "rating": 5,
     "downloads": 1000000,
     "ageRating": "الجميع",
