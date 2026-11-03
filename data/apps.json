@@ -355,8 +355,7 @@
     "icon": "data/media/app.alfaham.tube/icon-mvscsa9l.png",
     "banner": "data/media/app.alfaham.tube/banner1-mw0nv1rs.jpg",
     "banners": [
-      "data/media/app.alfaham.tube/banner1-mw0nv1rs.jpg",
-      "data/media/app.alfaham.tube/banner-mvscsa9l.png"
+      "data/media/app.alfaham.tube/banner1-mw0nv1rs.jpg"
     ],
     "screenshots": [
       "data/media/app.alfaham.tube/shot1-mw0nv1rs.png",
@@ -375,7 +374,7 @@
     "sha256": "ecfc0af79372209553ad56966a6f583350a10f1efbba9222123f59d4492b539b",
     "order": 3,
     "createdAt": "2026-10-28T16:53:03.359Z",
-    "updatedAt": "2026-11-03T12:26:39.648Z"
+    "updatedAt": "2026-11-03T12:27:58.841Z"
   },
   {
     "packageName": "app.alfaham.box",
