@@ -327,6 +327,16 @@ class _MainLayoutState extends State<MainLayout> {
                 );
               },
             ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.code, color: kBrand),
+              title: const Text('للمطورين'),
+              subtitle: const Text('أرسل تطبيقك للنشر في المتجر'),
+              onTap: () => _openMenuItem(const SideMenuItem(
+                title: 'للمطورين',
+                url: '${StoreConfig.storeUrl}/developers/',
+              )),
+            ),
           ],
         ),
       ),
