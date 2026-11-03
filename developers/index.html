@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>منصة المطورين - Alfaham Store</title>
+<meta name="description" content="أرسل تطبيقك للنشر في متجر Alfaham Store">
+<link rel="icon" type="image/png" href="logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bar:#414b82; --bar-dark:#272d4e; --accent:#5c6bc0; --accent-dark:#4a58a8;
+  --cta:#29b6f6; --link:#0288d1; --bg:#f5f6fa; --card:#fff; --line:#dfe2ef;
+  --text:#2b2f45; --muted:#757a93; --ok:#2e7d32; --warn:#ef6c00; --bad:#c62828;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'Cairo',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+[hidden]{display:none!important}
+a{color:var(--link);text-decoration:none}
+button{font-family:inherit}
+
+/* ===== الشريط العلوي ===== */
+.topbar{background:var(--bar);color:#fff;display:flex;align-items:center;gap:12px;padding:10px 16px;position:sticky;top:0;z-index:20;box-shadow:0 2px 6px rgba(0,0,0,.18)}
+.brand{display:flex;align-items:center;gap:10px;color:#fff}
+.brand img{width:42px;height:42px;border-radius:10px;background:#fff;padding:3px}
+.brand b{font-size:18px;font-weight:800;letter-spacing:.3px}
+.brand small{display:block;font-size:12px;opacity:.8;margin-top:-4px}
+.top-actions{margin-inline-start:auto;display:flex;align-items:center;gap:8px}
+.top-link{color:#fff;font-size:14px;opacity:.92;padding:6px 10px;border-radius:8px}
+.top-link:hover{background:rgba(255,255,255,.12)}
+
+/* ===== الواجهة الرئيسية ===== */
+.hero{background:linear-gradient(160deg,var(--bar-dark),var(--bar));color:#fff;text-align:center;padding:64px 20px 72px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;opacity:.28;background-image:
+  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='520' height='360' viewBox='0 0 520 360' fill='none' stroke='white' stroke-width='1'><path d='M20 40 L150 90 L240 20 L360 110 L490 50 M150 90 L120 220 L260 260 L360 110 M120 220 L40 320 M260 260 L400 330 L500 240 L360 110'/><g fill='white'><circle cx='20' cy='40' r='3'/><circle cx='150' cy='90' r='3'/><circle cx='240' cy='20' r='3'/><circle cx='360' cy='110' r='3'/><circle cx='490' cy='50' r='3'/><circle cx='120' cy='220' r='3'/><circle cx='260' cy='260' r='3'/><circle cx='40' cy='320' r='3'/><circle cx='400' cy='330' r='3'/><circle cx='500' cy='240' r='3'/></g></svg>");
+  background-size:520px 360px}
+.hero>*{position:relative}
+.hero img.logo{width:84px;height:84px;border-radius:20px;background:#fff;padding:8px;margin-bottom:14px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.hero h1{margin:0 0 10px;font-size:32px;font-weight:800}
+.hero p{margin:0 auto 28px;max-width:640px;font-size:17px;opacity:.92}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:4px;padding:12px 26px;font-size:15px;font-weight:700;color:#fff;background:var(--accent);cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,.2);transition:.15s}
+.btn:hover{background:var(--accent-dark)}
+.btn:disabled{background:#c9cce0;color:#fff;cursor:not-allowed;box-shadow:none}
+.btn.cta{background:var(--cta);padding:14px 34px;font-size:16px}
+.btn.cta:hover{background:#1ba3e0}
+.btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--line);box-shadow:none}
+.btn.ghost:hover{background:#f0f1fa}
+.btn.small{padding:7px 14px;font-size:13px}
+.btn.danger{background:var(--bad)}
+
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+.section{padding:44px 0 10px}
+.section h2{text-align:center;font-weight:600;font-size:28px;margin:0 0 8px}
+.section .sub{text-align:center;color:var(--muted);max-width:640px;margin:0 auto 26px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.feat{background:#fff;border-radius:6px;box-shadow:0 1px 6px rgba(40,50,100,.12);padding:28px 22px;text-align:center}
+.feat .big{font-size:34px;font-weight:800;color:var(--accent);margin-bottom:6px}
+.feat h3{margin:0 0 8px;font-size:19px}
+.feat p{margin:0;color:var(--muted);font-size:14px}
+.how{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+.how div{background:#fff;border-radius:6px;padding:18px;box-shadow:0 1px 6px rgba(40,50,100,.1);text-align:center}
+.how i{font-style:normal;display:inline-flex;width:34px;height:34px;border-radius:50%;background:var(--accent);color:#fff;align-items:center;justify-content:center;font-weight:700;margin-bottom:6px}
+.how p{margin:0;font-size:14px}
+.rules{background:#fff;border-radius:6px;box-shadow:0 1px 6px rgba(40,50,100,.1);padding:18px 24px;margin:18px 0 0}
+.rules li{margin:6px 0;font-size:14px;color:#4a4f68}
+footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
+
+/* ===== بطاقات ونماذج ===== */
+.card{background:var(--card);border-radius:6px;box-shadow:0 1px 6px rgba(40,50,100,.14);padding:22px;margin-bottom:18px}
+.card h3{margin:0 0 14px;font-size:19px;font-weight:600}
+.auth{max-width:440px;margin:34px auto}
+.tabs{display:flex;border-bottom:1px solid var(--line);margin-bottom:18px}
+.tabs button{flex:1;background:none;border:0;padding:12px 6px;font-size:15px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+.tabs button.on{color:var(--accent);border-color:var(--accent)}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:13px;font-weight:600;color:#555b78;margin-bottom:5px}
+.field label .req{color:#e53935;display:inline}
+.field input,.field select,.field textarea{width:100%;border:1px solid #cfd3e6;border-radius:6px;padding:11px 12px;font:inherit;font-size:14px;background:#fff;color:var(--text)}
+.field textarea{min-height:92px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:0;border-color:var(--accent);box-shadow:0 0 0 3px rgba(92,107,192,.18)}
+.field input[readonly]{background:#f1f2f8}
+.ltr{direction:ltr;text-align:left}
+.hint{font-size:12px;color:var(--muted);margin-top:4px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.msg{border-radius:6px;padding:10px 12px;font-size:14px;margin:0 0 14px}
+.msg.err{background:#fdecea;color:#b71c1c;border:1px solid #f5c6c3}
+.msg.ok{background:#e8f5e9;color:#1b5e20;border:1px solid #c5e1c7}
+.msg.info{background:#fff4e5;color:#8a4b00;border:1px solid #ffd9a8}
+.sep{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:13px;margin:16px 0}
+.sep::before,.sep::after{content:"";flex:1;height:1px;background:var(--line)}
+.gbtn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border:1px solid #cfd3e6;border-radius:6px;padding:11px;font-size:15px;font-weight:600;cursor:pointer}
+.gbtn:hover{background:#f7f8fc}
+.linkbtn{background:none;border:0;color:var(--link);cursor:pointer;font-size:13px;padding:0}
+
+/* ===== لوحة المطور ===== */
+.subbar{background:#e8e8ee;border-bottom:1px solid #d6d8e4}
+.subbar .wrap{display:flex;align-items:center;gap:12px;padding:10px 16px}
+.subbar b{font-size:15px}
+.subbar .grow{flex:1}
+.ctabs{background:#fff;border-bottom:1px solid var(--line)}
+.ctabs .wrap{display:flex;gap:4px}
+.ctabs button{background:none;border:0;padding:14px 18px;font-size:15px;font-weight:600;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent}
+.ctabs button.on{color:var(--accent);border-color:var(--accent)}
+.stepper{display:flex;max-width:760px;margin:26px auto 12px}
+.step{flex:1;text-align:center;position:relative;font-size:13px;color:#8a8fa8}
+.step .dot{width:42px;height:42px;border-radius:50%;background:#aeb2c6;color:#fff;margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-weight:700;position:relative;z-index:1}
+.step.on .dot,.step.done .dot{background:var(--accent)}
+.step.on{color:var(--text);font-weight:600}
+.step:not(:last-child)::after{content:"";position:absolute;top:21px;right:50%;width:100%;height:2px;background:#c9cce0}
+.step.done:not(:last-child)::after{background:var(--accent)}
+.pick{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.thumbs{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}
+.thumb{position:relative;border:1px solid var(--line);border-radius:8px;overflow:hidden;background:#fafafa}
+.thumb img{display:block;height:130px;width:auto;max-width:220px;object-fit:cover}
+.thumb.sq img{width:110px;height:110px}
+.thumb.bn img{height:96px;width:auto}
+.thumb button{position:absolute;top:4px;left:4px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;cursor:pointer;line-height:1}
+.actions{display:flex;justify-content:space-between;gap:10px;margin-top:6px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.check input{width:18px;height:18px;margin-top:3px;flex:none}
+
+/* معاينة تشبه بطاقة المتجر */
+.preview{display:flex;gap:14px;align-items:center}
+.preview img.ic{width:76px;height:76px;border-radius:18px;object-fit:cover;border:1px solid var(--line);background:#fff}
+.preview h4{margin:0;font-size:18px}
+.preview p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.shots{display:flex;gap:8px;overflow-x:auto;padding:12px 0 2px}
+.shots img{height:190px;border-radius:10px;border:1px solid var(--line)}
+.kv{display:grid;grid-template-columns:130px 1fr;gap:6px 10px;font-size:14px;margin-top:10px}
+.kv span:nth-child(odd){color:var(--muted)}
+.kv span{word-break:break-word}
+
+/* طلباتي */
+.reqrow{display:flex;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.reqrow:last-child{border:0}
+.reqrow img{width:56px;height:56px;border-radius:14px;object-fit:cover;background:#eceef8;border:1px solid var(--line);flex:none}
+.reqrow .info{flex:1;min-width:0}
+.reqrow .info b{display:block;font-size:16px}
+.reqrow .info small{color:var(--muted);display:block;direction:ltr;text-align:right}
+.chip{display:inline-block;padding:3px 12px;border-radius:99px;font-size:12px;font-weight:700}
+.chip.pending{background:#fff3e0;color:var(--warn)}
+.chip.approved{background:#e8f5e9;color:var(--ok)}
+.chip.rejected{background:#fdecea;color:var(--bad)}
+.reason{margin-top:6px;font-size:13px;color:var(--bad)}
+.empty{text-align:center;color:var(--muted);padding:34px 10px}
+.done-box{text-align:center;padding:34px 12px}
+.done-box .tick{width:78px;height:78px;border-radius:50%;background:#e8f5e9;color:var(--ok);font-size:42px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
+.spin{display:inline-block;width:16px;height:16px;border:3px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+@media(max-width:640px){
+  .hero{padding:44px 16px 52px}.hero h1{font-size:25px}.hero p{font-size:15px}
+  .grid2,.how,.row{grid-template-columns:1fr}
+  .step{font-size:11px}.step .dot{width:36px;height:36px}.step:not(:last-child)::after{top:18px}
+  .kv{grid-template-columns:100px 1fr}
+  .brand small{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" href="./">
+    <img src="logo.png" alt="Alfaham Store">
+    <span><b>Alfaham Store</b><small>منصة المطورين</small></span>
+  </a>
+  <div class="top-actions">
+    <a class="top-link" href="/">← العودة للمتجر</a>
+  </div>
+</header>
+
+<!-- ============ الصفحة الرئيسية ============ -->
+<main id="vHome">
+  <section class="hero">
+    <img class="logo" src="logo.png" alt="">
+    <h1>منصة مطوري Alfaham Store</h1>
+    <p>انشر تطبيقك أمام مستخدمي المتجر. أرسل التطبيق ولقطات الشاشة وتفاصيله، ونراجعه وننشره.</p>
+    <button class="btn cta" id="btnStart">وحدة تحكم المطورين</button>
+    <div id="cfgWarn" class="msg info" style="max-width:520px;margin:22px auto 0;text-align:right" hidden>
+      الصفحة غير مفعّلة بعد: لم تُضبط إعدادات Firebase في الملف <b dir="ltr">firebase-config.js</b>.
+    </div>
+  </section>
+
+  <div class="wrap">
+    <section class="section">
+      <h2>عن المنصة</h2>
+      <p class="sub">Alfaham Store متجر تطبيقات أندرويد بتحميل مباشر وآمن. أي مطور يقدر يرسل تطبيقه، وكل تطبيق يُراجع قبل ظهوره.</p>
+      <div class="grid2">
+        <div class="feat"><div class="big">إرسال</div><h3>أرسل تطبيقاتك</h3><p>أدخل بيانات التطبيق والأيقونة ولقطات الشاشة ورابط ملف الـ APK في أربع خطوات.</p></div>
+        <div class="feat"><div class="big">متابعة</div><h3>تابع حالة طلباتك</h3><p>اعرف إن كان طلبك قيد المراجعة أو مقبولاً أو مرفوضاً مع سبب الرفض.</p></div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>كيف تعمل؟</h2>
+      <div class="how">
+        <div><i>1</i><p>أنشئ حساب مطور مجاني</p></div>
+        <div><i>2</i><p>أرسل تطبيقك وتفاصيله</p></div>
+        <div><i>3</i><p>نراجعه وننشره بالمتجر باسمك</p></div>
+      </div>
+      <ul class="rules">
+        <li>يجب أن يكون التطبيق خالياً من البرمجيات الضارة والإعلانات المخادعة.</li>
+        <li>أرسل تطبيقات تملك حقوقها أو مصرّح لك بنشرها فقط.</li>
+        <li>يجب أن يكون رابط الـ APK رابط تحميل مباشر وثابت.</li>
+        <li>نحتفظ بحق رفض أو إزالة أي تطبيق مخالف.</li>
+      </ul>
+    </section>
+  </div>
+  <footer>© Alfaham Store</footer>
+</main>
+
+<!-- ============ تسجيل الدخول ============ -->
+<main id="vAuth" hidden>
+  <div class="wrap">
+    <div class="card auth">
+      <div class="tabs">
+        <button id="tabLogin" class="on">تسجيل الدخول</button>
+        <button id="tabReg">حساب جديد</button>
+      </div>
+      <div id="authMsg"></div>
+      <form id="authForm" novalidate>
+        <div class="field" id="fName" hidden>
+          <label>اسم المطور <span class="req">*</span></label>
+          <input id="aName" maxlength="40" placeholder="الاسم الذي سيظهر بالمتجر">
+        </div>
+        <div class="field">
+          <label>البريد الإلكتروني <span class="req">*</span></label>
+          <input id="aEmail" type="email" class="ltr" autocomplete="email">
+        </div>
+        <div class="field">
+          <label>كلمة المرور <span class="req">*</span></label>
+          <input id="aPass" type="password" class="ltr" autocomplete="current-password" minlength="6">
+        </div>
+        <button class="btn" id="authBtn" style="width:100%" type="submit">دخول</button>
+        <div style="text-align:center;margin-top:10px"><button type="button" class="linkbtn" id="btnReset">نسيت كلمة المرور؟</button></div>
+      </form>
+      <div class="sep">أو</div>
+      <button class="gbtn" id="btnGoogle" type="button">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.7 2.5 30.3 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6.1C12.3 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"/><path fill="#FBBC05" d="M10.4 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.9-4.7l-7.8-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.7-4.1-13.6-9.8l-7.8 6.1C6.5 42.6 14.6 48 24 48z"/></svg>
+        المتابعة بحساب Google
+      </button>
+    </div>
+  </div>
+</main>
+
+<!-- ============ لوحة المطور ============ -->
+<main id="vConsole" hidden>
+  <div class="subbar"><div class="wrap">
+    <b id="whoName"></b>
+    <span class="grow"></span>
+    <button class="btn ghost small" id="btnLogout">تسجيل الخروج</button>
+  </div></div>
+  <div class="ctabs"><div class="wrap">
+    <button id="ctReqs" class="on">طلباتي</button>
+    <button id="ctNew">إرسال تطبيق جديد</button>
+  </div></div>
+
+  <!-- طلباتي -->
+  <div class="wrap" id="paneReqs" style="padding-top:22px">
+    <div class="card">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <h3 style="margin:0;flex:1">طلبات النشر</h3>
+        <button class="btn small" id="btnNewFromList">+ تطبيق جديد</button>
+      </div>
+      <div id="reqList"><div class="empty">جارٍ التحميل...</div></div>
+    </div>
+  </div>
+
+  <!-- نموذج الإرسال -->
+  <div class="wrap" id="paneNew" hidden>
+    <div class="stepper" id="stepper">
+      <div class="step on"><div class="dot">1</div>معلومات التطبيق</div>
+      <div class="step"><div class="dot">2</div>ملف الـ APK</div>
+      <div class="step"><div class="dot">3</div>المراجعة والإرسال</div>
+      <div class="step"><div class="dot">4</div>بانتظار الموافقة</div>
+    </div>
+    <div id="formMsg"></div>
+
+    <!-- الخطوة 1 -->
+    <section id="s1">
+      <div class="card">
+        <h3>تعديل التطبيق</h3>
+        <div class="field">
+          <label>اسم الحزمة (Package name) <span class="req">*</span></label>
+          <input id="fPkg" class="ltr" placeholder="com.example.myapp" autocapitalize="off" spellcheck="false">
+          <div class="hint">يُحدَّد مرة واحدة ولا يتغير أبداً، وعليه يعتمد تحديث التطبيق عند المستخدمين.</div>
+        </div>
+        <div class="field">
+          <label>اسم التطبيق <span class="req">*</span></label>
+          <input id="fName2" maxlength="50">
+        </div>
+        <div class="row">
+          <div class="field">
+            <label>النوع <span class="req">*</span></label>
+            <select id="fCat"><option value="app">تطبيق</option><option value="game">لعبة</option></select>
+          </div>
+          <div class="field">
+            <label>التصنيف <span class="req">*</span></label>
+            <input id="fGenre" list="genres" placeholder="مثال: أدوات">
+            <datalist id="genres"><option value="أدوات"><option value="تواصل"><option value="تعليم"><option value="ترفيه"><option value="إنتاجية"><option value="دينية"><option value="أخبار"><option value="صحة ولياقة"><option value="تصوير"><option value="أكشن"><option value="ألغاز"><option value="سباق"></datalist>
+          </div>
+        </div>
+        <div class="field" style="max-width:260px">
+          <label>تصنيف المحتوى (العمر) <span class="req">*</span></label>
+          <select id="fAge"><option>الجميع</option><option>+3</option><option>+7</option><option>+12</option><option>+16</option><option>+18</option></select>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>الوصف</h3>
+        <div class="field">
+          <label>وصف قصير <span class="req">*</span></label>
+          <input id="fShort" maxlength="120" placeholder="سطر واحد يوضح وظيفة التطبيق">
+        </div>
+        <div class="field">
+          <label>وصف كامل <span class="req">*</span></label>
+          <textarea id="fLong" style="min-height:150px" placeholder="اكتب التفاصيل الكاملة والمميزات..."></textarea>
+        </div>
+        <div class="field">
+          <label>رابط فيديو يوتيوب (اختياري)</label>
+          <input id="fYt" class="ltr" placeholder="https://youtu.be/...">
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>الصور</h3>
+        <div class="field">
+          <label>أيقونة التطبيق <span class="req">*</span></label>
+          <div class="pick"><button type="button" class="btn small" id="btnIcon">أضف أيقونة</button></div>
+          <div class="thumbs" id="thIcon"></div>
+          <div class="hint">صورة مربعة. تُضبط تلقائياً على 512×512 (الحد الأدنى 192 بكسل).</div>
+        </div>
+        <div class="field">
+          <label>لقطات الشاشة <span class="req">*</span></label>
+          <div class="pick"><button type="button" class="btn small" id="btnShots">أضف لقطات شاشة</button><span class="hint" id="shotCount"></span></div>
+          <div class="thumbs" id="thShots"></div>
+          <div class="hint">من 2 إلى 8 لقطات. الحد الأدنى للبعد 320 بكسل. تجنب وضع معلومات الأداء أو السعر أو العروض الترويجية.</div>
+        </div>
+        <div class="field">
+          <label>رسم مميز / بانر (اختياري)</label>
+          <div class="pick"><button type="button" class="btn small" id="btnBanner">أضف رسماً مميزاً</button></div>
+          <div class="thumbs" id="thBanner"></div>
+          <div class="hint">يظهر بأعلى صفحة التطبيق. يُضبط على 1024×500.</div>
+        </div>
+        <input type="file" id="fileIcon" accept="image/*" hidden>
+        <input type="file" id="fileShots" accept="image/*" multiple hidden>
+        <input type="file" id="fileBanner" accept="image/*" hidden>
+      </div>
+      <div class="actions"><span></span><button class="btn" data-go="2">التالي ←</button></div>
+    </section>
+
+    <!-- الخطوة 2 -->
+    <section id="s2" hidden>
+      <div class="card">
+        <h3>ملف الـ APK</h3>
+        <div class="field">
+          <label>رابط تحميل مباشر لملف الـ APK <span class="req">*</span></label>
+          <input id="fApk" class="ltr" placeholder="https://...">
+          <div class="hint">ارفع الملف على Google Drive أو MediaFire أو GitHub وضع رابط التحميل المباشر. سنراجع الملف قبل النشر.</div>
+        </div>
+        <div class="field" style="max-width:260px">
+          <label>رقم الإصدار <span class="req">*</span></label>
+          <input id="fVer" class="ltr" placeholder="1.0.0">
+        </div>
+        <div class="field">
+          <label>ما الجديد في هذا الإصدار <span class="req">*</span></label>
+          <textarea id="fNew" placeholder="مثال: الإصدار الأول"></textarea>
+        </div>
+        <div class="field">
+          <label>رابط سياسة الخصوصية (اختياري)</label>
+          <input id="fPriv" class="ltr" placeholder="https://...">
+        </div>
+      </div>
+      <div class="actions"><button class="btn ghost" data-go="1">→ السابق</button><button class="btn" data-go="3">التالي ←</button></div>
+    </section>
+
+    <!-- الخطوة 3 -->
+    <section id="s3" hidden>
+      <div class="card">
+        <h3>مراجعة الطلب</h3>
+        <div class="preview">
+          <img class="ic" id="pvIcon" alt="">
+          <div><h4 id="pvName"></h4><p id="pvDev"></p><p id="pvShort"></p></div>
+        </div>
+        <div class="shots" id="pvShots"></div>
+        <div class="kv" id="pvKv"></div>
+      </div>
+      <div class="card">
+        <label class="check"><input type="checkbox" id="fAgree"><span>أقر بأن هذا التطبيق خالٍ من البرمجيات الضارة، وأنني أملك حقوقه أو مصرّح لي بنشره، وأوافق على مراجعته قبل النشر.</span></label>
+      </div>
+      <div class="actions"><button class="btn ghost" data-go="2">→ السابق</button><button class="btn" id="btnSubmit">إرسال للمراجعة</button></div>
+    </section>
+
+    <!-- الخطوة 4 -->
+    <section id="s4" hidden>
+      <div class="card done-box">
+        <div class="tick">✓</div>
+        <h3 style="margin-bottom:6px">تم استلام طلبك</h3>
+        <p style="color:var(--muted);margin:0 0 18px">سنراجع التطبيق وننشره بالمتجر عند الموافقة. تابع الحالة من «طلباتي».</p>
+        <button class="btn" id="btnToReqs">عرض طلباتي</button>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="firebase-config.js"></script>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  };
+  var PKG_RE = /^[A-Za-z][A-Za-z0-9_]*(\.[A-Za-z][A-Za-z0-9_]*)+$/;
+  var VER_RE = /^[0-9A-Za-z._+-]+$/;
+  var MAX_SHOTS = 8, MIN_SHOTS = 2, MAX_B64 = 700000;
+
+  var cfg = window.FIREBASE_CONFIG || {};
+  var configured = /^AIza/.test(cfg.apiKey || '') && /^[0-9]+:/.test(cfg.appId || '');
+  var auth = null, db = null, user = null, profile = null;
+
+  // الصور المختارة (data URLs)
+  var media = { icon: null, banner: null, shots: [] };
+  var step = 1;
+
+  function show(view) {
+    ['vHome', 'vAuth', 'vConsole'].forEach(function (v) { $(v).hidden = (v !== view); });
+    window.scrollTo(0, 0);
+  }
+  function msg(boxId, text, kind) {
+    var b = $(boxId);
+    b.innerHTML = text ? '<div class="msg ' + (kind || 'err') + '">' + esc(text) + '</div>' : '';
+  }
+  function authError(e) {
+    var m = {
+      'auth/invalid-email': 'البريد الإلكتروني غير صالح',
+      'auth/user-not-found': 'البريد أو كلمة المرور غير صحيحة',
+      'auth/wrong-password': 'البريد أو كلمة المرور غير صحيحة',
+      'auth/invalid-credential': 'البريد أو كلمة المرور غير صحيحة',
+      'auth/email-already-in-use': 'هذا البريد مسجل مسبقاً، سجّل الدخول بدلاً من ذلك',
+      'auth/weak-password': 'كلمة المرور ضعيفة (6 أحرف على الأقل)',
+      'auth/popup-closed-by-user': 'أُغلقت نافذة الدخول قبل الإكمال',
+      'auth/cancelled-popup-request': 'أُغلقت نافذة الدخول قبل الإكمال',
+      'auth/network-request-failed': 'تعذّر الاتصال بالإنترنت',
+      'auth/too-many-requests': 'محاولات كثيرة، حاول لاحقاً',
+      'auth/operation-not-allowed': 'طريقة الدخول هذه غير مفعّلة في Firebase',
+      'auth/unauthorized-domain': 'هذا الدومين غير مصرّح به في Firebase'
+    };
+    return m[e && e.code] || ('حدث خطأ: ' + ((e && e.message) || 'غير معروف'));
+  }
+
+  /* ───────── البدء ───────── */
+  if (!configured) {
+    $('cfgWarn').hidden = false;
+    $('btnStart').disabled = true;
+  } else {
+    firebase.initializeApp(cfg);
+    auth = firebase.auth();
+    db = firebase.firestore();
+    auth.languageCode = 'ar';
+    auth.onAuthStateChanged(onUser);
+  }
+
+  async function onUser(u) {
+    user = u;
+    if (!u) { profile = null; show('vHome'); return; }
+    try {
+      var ref = db.collection('devProfiles').doc(u.uid);
+      var snap = await ref.get();
+      if (!snap.exists) {
+        var nm = (pendingName || u.displayName || (u.email || '').split('@')[0] || 'مطور').trim();
+        await ref.set({ name: nm, email: u.email || '', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        profile = { name: nm };
+      } else { profile = snap.data(); }
+    } catch (e) {
+      profile = { name: u.displayName || (u.email || '').split('@')[0] || 'مطور' };
+    }
+    pendingName = '';
+    $('whoName').textContent = 'مرحباً ' + profile.name;
+    show('vConsole');
+    switchPane('reqs');
+    loadRequests();
+  }
+  var pendingName = '';
+
+  /* ───────── الدخول والتسجيل ───────── */
+  var mode = 'login';
+  function setMode(m) {
+    mode = m;
+    $('tabLogin').classList.toggle('on', m === 'login');
+    $('tabReg').classList.toggle('on', m === 'reg');
+    $('fName').hidden = (m !== 'reg');
+    $('authBtn').textContent = m === 'reg' ? 'إنشاء حساب' : 'دخول';
+    $('aPass').autocomplete = m === 'reg' ? 'new-password' : 'current-password';
+    msg('authMsg', '');
+  }
+  $('btnStart').onclick = function () { if (user) { show('vConsole'); } else { setMode('login'); show('vAuth'); } };
+  $('tabLogin').onclick = function () { setMode('login'); };
+  $('tabReg').onclick = function () { setMode('reg'); };
+
+  $('authForm').onsubmit = async function (ev) {
+    ev.preventDefault();
+    var email = $('aEmail').value.trim(), pass = $('aPass').value, name = $('aName').value.trim();
+    if (!email || !pass) { msg('authMsg', 'أدخل البريد وكلمة المرور'); return; }
+    if (mode === 'reg' && name.length < 2) { msg('authMsg', 'أدخل اسم المطور'); return; }
+    var btn = $('authBtn'); btn.disabled = true; msg('authMsg', '');
+    try {
+      if (mode === 'reg') { pendingName = name; await auth.createUserWithEmailAndPassword(email, pass); }
+      else { await auth.signInWithEmailAndPassword(email, pass); }
+    } catch (e) { pendingName = ''; msg('authMsg', authError(e)); }
+    btn.disabled = false;
+  };
+  $('btnGoogle').onclick = async function () {
+    msg('authMsg', '');
+    try { await auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
+    catch (e) { msg('authMsg', authError(e)); }
+  };
+  $('btnReset').onclick = async function () {
+    var email = $('aEmail').value.trim();
+    if (!email) { msg('authMsg', 'اكتب بريدك أولاً ثم اضغط «نسيت كلمة المرور»'); return; }
+    try { await auth.sendPasswordResetEmail(email); msg('authMsg', 'أرسلنا رابط إعادة تعيين كلمة المرور إلى بريدك', 'ok'); }
+    catch (e) { msg('authMsg', authError(e)); }
+  };
+  $('btnLogout').onclick = function () { auth.signOut(); };
+
+  /* ───────── التبويبات ───────── */
+  function switchPane(p) {
+    $('paneReqs').hidden = (p !== 'reqs');
+    $('paneNew').hidden = (p !== 'new');
+    $('ctReqs').classList.toggle('on', p === 'reqs');
+    $('ctNew').classList.toggle('on', p === 'new');
+    if (p === 'reqs') loadRequests();
+  }
+  $('ctReqs').onclick = function () { switchPane('reqs'); };
+  $('ctNew').onclick = startNew;
+  $('btnNewFromList').onclick = startNew;
+  $('btnToReqs').onclick = function () { switchPane('reqs'); };
+
+  /* ───────── طلباتي ───────── */
+  var STATUS = { pending: 'قيد المراجعة', approved: 'مقبول', rejected: 'مرفوض' };
+  async function loadRequests() {
+    var box = $('reqList');
+    box.innerHTML = '<div class="empty">جارٍ التحميل...</div>';
+    try {
+      var qs = await db.collection('submissions').where('uid', '==', user.uid).get();
+      var items = qs.docs.map(function (d) { var x = d.data(); x._id = d.id; return x; });
+      items.sort(function (a, b) {
+        var ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
+        var tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
+        return tb - ta;
+      });
+      if (!items.length) { box.innerHTML = '<div class="empty">لم ترسل أي تطبيق بعد.<br>اضغط «تطبيق جديد» للبدء.</div>'; return; }
+      box.innerHTML = items.map(function (x) {
+        var st = STATUS[x.status] ? x.status : 'pending';
+        var dt = x.createdAt && x.createdAt.toDate ? x.createdAt.toDate().toLocaleDateString('ar-IQ') : '';
+        return '<div class="reqrow"><img id="ic_' + esc(x._id) + '" alt="">' +
+          '<div class="info"><b>' + esc(x.name) + '</b><small>' + esc(x.packageName) + ' · v' + esc(x.version) + '</small>' +
+          (x.status === 'rejected' && x.rejectReason ? '<div class="reason">سبب الرفض: ' + esc(x.rejectReason) + '</div>' : '') + '</div>' +
+          '<div style="text-align:left"><span class="chip ' + st + '">' + STATUS[st] + '</span><div class="hint">' + esc(dt) + '</div></div></div>';
+      }).join('');
+      items.forEach(function (x) {
+        db.collection('submissions').doc(x._id).collection('media').doc('icon').get().then(function (s) {
+          var im = $('ic_' + x._id); if (im && s.exists) im.src = s.data().data;
+        }).catch(function () {});
+      });
+    } catch (e) {
+      box.innerHTML = '<div class="msg err">تعذّر تحميل الطلبات: ' + esc(e.message || e) + '</div>';
+    }
+  }
+
+  /* ───────── معالجة الصور ───────── */
+  function loadImage(file) {
+    return new Promise(function (res, rej) {
+      var u = URL.createObjectURL(file), i = new Image();
+      i.onload = function () { URL.revokeObjectURL(u); res(i); };
+      i.onerror = function () { URL.revokeObjectURL(u); rej(new Error('تعذّر قراءة الصورة')); };
+      i.src = u;
+    });
+  }
+  function draw(img, w, h, mode) {
+    var cv = document.createElement('canvas'), ctx;
+    if (mode === 'cover') {
+      cv.width = w; cv.height = h; ctx = cv.getContext('2d');
+      var s = Math.max(w / img.width, h / img.height), dw = img.width * s, dh = img.height * s;
+      ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, w, h);
+      ctx.drawImage(img, (w - dw) / 2, (h - dh) / 2, dw, dh);
+    } else {
+      var k = Math.min(1, w / Math.max(img.width, img.height));
+      cv.width = Math.round(img.width * k); cv.height = Math.round(img.height * k);
+      ctx = cv.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, cv.width, cv.height);
+      ctx.drawImage(img, 0, 0, cv.width, cv.height);
+    }
+    return cv;
+  }
+  async function makeIcon(file) {
+    var img = await loadImage(file);
+    if (Math.min(img.width, img.height) < 192) throw new Error('الأيقونة صغيرة، الحد الأدنى 192×192 بكسل');
+    var cv = document.createElement('canvas'); cv.width = cv.height = 512;
+    var ctx = cv.getContext('2d');
+    var s = Math.max(512 / img.width, 512 / img.height), dw = img.width * s, dh = img.height * s;
+    ctx.drawImage(img, (512 - dw) / 2, (512 - dh) / 2, dw, dh);
+    var out = cv.toDataURL('image/png');
+    if (out.length > MAX_B64) out = draw(img, 512, 512, 'cover').toDataURL('image/jpeg', .9);
+    return out;
+  }
+  async function makeShot(file) {
+    var img = await loadImage(file);
+    if (Math.min(img.width, img.height) < 320) throw new Error('لقطة الشاشة صغيرة، الحد الأدنى 320 بكسل');
+    var out = draw(img, 1280, 0, 'fit').toDataURL('image/jpeg', .82);
+    if (out.length > MAX_B64) out = draw(img, 1000, 0, 'fit').toDataURL('image/jpeg', .7);
+    if (out.length > MAX_B64) throw new Error('حجم الصورة كبير جداً');
+    return out;
+  }
+  async function makeBanner(file) {
+    var img = await loadImage(file);
+    if (img.width < 500) throw new Error('الرسم المميز صغير، العرض الأدنى 500 بكسل');
+    var out = draw(img, 1024, 500, 'cover').toDataURL('image/jpeg', .82);
+    if (out.length > MAX_B64) out = draw(img, 1024, 500, 'cover').toDataURL('image/jpeg', .65);
+    return out;
+  }
+
+  function thumb(src, cls, onRemove) {
+    var d = document.createElement('div'); d.className = 'thumb ' + (cls || '');
+    var i = document.createElement('img'); i.src = src; d.appendChild(i);
+    var b = document.createElement('button'); b.type = 'button'; b.textContent = '×'; b.title = 'حذف'; b.onclick = onRemove; d.appendChild(b);
+    return d;
+  }
+  function renderMedia() {
+    var ti = $('thIcon'); ti.innerHTML = '';
+    if (media.icon) ti.appendChild(thumb(media.icon, 'sq', function () { media.icon = null; renderMedia(); }));
+    var tb = $('thBanner'); tb.innerHTML = '';
+    if (media.banner) tb.appendChild(thumb(media.banner, 'bn', function () { media.banner = null; renderMedia(); }));
+    var ts = $('thShots'); ts.innerHTML = '';
+    media.shots.forEach(function (s, i) {
+      ts.appendChild(thumb(s, '', function () { media.shots.splice(i, 1); renderMedia(); }));
+    });
+    $('shotCount').textContent = media.shots.length ? media.shots.length + ' من ' + MAX_SHOTS : '';
+  }
+  $('btnIcon').onclick = function () { $('fileIcon').click(); };
+  $('btnBanner').onclick = function () { $('fileBanner').click(); };
+  $('btnShots').onclick = function () { $('fileShots').click(); };
+  $('fileIcon').onchange = async function () {
+    var f = this.files[0]; this.value = ''; if (!f) return;
+    try { media.icon = await makeIcon(f); renderMedia(); msg('formMsg', ''); } catch (e) { msg('formMsg', e.message); }
+  };
+  $('fileBanner').onchange = async function () {
+    var f = this.files[0]; this.value = ''; if (!f) return;
+    try { media.banner = await makeBanner(f); renderMedia(); msg('formMsg', ''); } catch (e) { msg('formMsg', e.message); }
+  };
+  $('fileShots').onchange = async function () {
+    var files = Array.prototype.slice.call(this.files); this.value = '';
+    msg('formMsg', '');
+    for (var i = 0; i < files.length; i++) {
+      if (media.shots.length >= MAX_SHOTS) { msg('formMsg', 'الحد الأقصى ' + MAX_SHOTS + ' لقطات'); break; }
+      try { media.shots.push(await makeShot(files[i])); } catch (e) { msg('formMsg', e.message); }
+    }
+    renderMedia();
+  };
+
+  /* ───────── خطوات النموذج ───────── */
+  function ids() {
+    return ['fPkg', 'fName2', 'fCat', 'fGenre', 'fAge', 'fShort', 'fLong', 'fYt', 'fApk', 'fVer', 'fNew', 'fPriv'];
+  }
+  function startNew() {
+    ids().forEach(function (i) { var e = $(i); if (e.tagName === 'SELECT') e.selectedIndex = 0; else e.value = ''; });
+    $('fAgree').checked = false;
+    media = { icon: null, banner: null, shots: [] };
+    renderMedia(); msg('formMsg', '');
+    goStep(1); switchPane('new');
+  }
+  function goStep(n) {
+    step = n;
+    ['s1', 's2', 's3', 's4'].forEach(function (s, i) { $(s).hidden = (i + 1 !== n); });
+    Array.prototype.forEach.call($('stepper').children, function (el, i) {
+      el.classList.toggle('on', i + 1 === n);
+      el.classList.toggle('done', i + 1 < n);
+      el.firstChild.textContent = (i + 1 < n) ? '✓' : String(i + 1);
+    });
+    if (n === 3) fillPreview();
+    window.scrollTo(0, 0);
+  }
+  function isUrl(u) { return /^https:\/\/[^\s]+\.[^\s]+$/i.test(u); }
+  function validate(n) {
+    var v = function (i) { return $(i).value.trim(); };
+    if (n === 1) {
+      if (!PKG_RE.test(v('fPkg'))) return 'اسم الحزمة غير صالح. مثال صحيح: com.example.myapp';
+      if (v('fName2').length < 2) return 'أدخل اسم التطبيق';
+      if (!v('fGenre')) return 'اختر أو اكتب التصنيف';
+      if (v('fShort').length < 10) return 'الوصف القصير قصير جداً (10 أحرف على الأقل)';
+      if (v('fLong').length < 30) return 'الوصف الكامل قصير جداً (30 حرفاً على الأقل)';
+      if (v('fYt') && !/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(v('fYt'))) return 'رابط يوتيوب غير صالح';
+      if (!media.icon) return 'أضف أيقونة التطبيق';
+      if (media.shots.length < MIN_SHOTS) return 'أضف لقطتي شاشة على الأقل';
+    }
+    if (n === 2) {
+      if (!isUrl(v('fApk'))) return 'أدخل رابط تحميل APK صالحاً يبدأ بـ https://';
+      if (!VER_RE.test(v('fVer'))) return 'رقم الإصدار غير صالح. مثال: 1.0.0';
+      if (v('fNew').length < 3) return 'اكتب ما الجديد في هذا الإصدار';
+      if (v('fPriv') && !isUrl(v('fPriv'))) return 'رابط سياسة الخصوصية غير صالح';
+    }
+    return '';
+  }
+  document.addEventListener('click', function (ev) {
+    var b = ev.target.closest && ev.target.closest('[data-go]');
+    if (!b) return;
+    var to = parseInt(b.getAttribute('data-go'), 10);
+    if (to > step) {
+      for (var i = step; i < to; i++) { var err = validate(i); if (err) { msg('formMsg', err); goStep(i); return; } }
+    }
+    msg('formMsg', ''); goStep(to);
+  });
+
+  function fillPreview() {
+    var g = function (i) { return $(i).value.trim(); };
+    $('pvIcon').src = media.icon || '';
+    $('pvName').textContent = g('fName2');
+    $('pvDev').textContent = profile ? profile.name : '';
+    $('pvShort').textContent = g('fShort');
+    $('pvShots').innerHTML = media.shots.map(function (s) { return '<img src="' + s + '" alt="">'; }).join('');
+    var rows = [
+      ['اسم الحزمة', g('fPkg')], ['النوع', $('fCat').selectedOptions[0].text], ['التصنيف', g('fGenre')],
+      ['العمر', g('fAge')], ['الإصدار', g('fVer')], ['رابط APK', g('fApk')], ['ما الجديد', g('fNew')]
+    ];
+    if (g('fYt')) rows.push(['يوتيوب', g('fYt')]);
+    $('pvKv').innerHTML = rows.map(function (r) { return '<span>' + esc(r[0]) + '</span><span>' + esc(r[1]) + '</span>'; }).join('');
+  }
+
+  /* ───────── الإرسال ───────── */
+  $('btnSubmit').onclick = async function () {
+    var e1 = validate(1) || validate(2);
+    if (e1) { msg('formMsg', e1); return; }
+    if (!$('fAgree').checked) { msg('formMsg', 'يجب الموافقة على الإقرار قبل الإرسال'); return; }
+    var btn = $('btnSubmit'); btn.disabled = true; btn.innerHTML = '<span class="spin"></span> جارٍ الإرسال...';
+    msg('formMsg', '');
+    var g = function (i) { return $(i).value.trim(); };
+    try {
+      var ref = db.collection('submissions').doc();
+      var batch = db.batch();
+      batch.set(ref, {
+        uid: user.uid, devName: profile ? profile.name : '', devEmail: user.email || '',
+        status: 'pending',
+        packageName: g('fPkg'), name: g('fName2'), category: $('fCat').value, genre: g('fGenre'), ageRating: g('fAge'),
+        shortDescription: g('fShort'), longDescription: g('fLong'), youtubeUrl: g('fYt'),
+        version: g('fVer'), whatsNew: g('fNew'), apkUrl: g('fApk'), privacyUrl: g('fPriv'),
+        shotCount: media.shots.length, hasBanner: !!media.banner,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
+      var m = ref.collection('media');
+      batch.set(m.doc('icon'), { kind: 'icon', data: media.icon });
+      if (media.banner) batch.set(m.doc('banner'), { kind: 'banner', data: media.banner });
+      media.shots.forEach(function (s, i) { batch.set(m.doc('shot' + (i + 1)), { kind: 'shot', order: i + 1, data: s }); });
+      await batch.commit();
+      goStep(4);
+    } catch (e) {
+      var t = (e && e.code === 'permission-denied')
+        ? 'تعذّر الإرسال: لم تُضبط قواعد Firestore بعد. راجع الملف firestore.rules.txt.'
+        : 'تعذّر الإرسال: ' + (e.message || e);
+      msg('formMsg', t);
+    }
+    btn.disabled = false; btn.textContent = 'إرسال للمراجعة';
+  };
+})();
+</script>
+</body>
+</html>

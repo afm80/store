@@ -1,0 +1,28 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ملف المطور: يقرؤه ويكتبه صاحبه فقط
+    match /devProfiles/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // طلبات النشر: المطور ينشئ ويقرأ طلباته فقط، ولا يعدّل حالتها
+    match /submissions/{id} {
+      allow create: if request.auth != null
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.status == 'pending';
+      allow read: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+
+      // الصور (الأيقونة ولقطات الشاشة والبانر)
+      match /media/{mid} {
+        allow create: if request.auth != null
+          && getAfter(/databases/$(database)/documents/submissions/$(id)).data.uid == request.auth.uid;
+        allow read: if request.auth != null
+          && get(/databases/$(database)/documents/submissions/$(id)).data.uid == request.auth.uid;
+        allow update, delete: if false;
+      }
+    }
+  }
+}
