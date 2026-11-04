@@ -1,5 +1,31 @@
 [
   {
+    "developer": "HR IRAQ",
+    "packageName": "app.haider.alaraji",
+    "name": "حيدر الاعرجي",
+    "category": "game",
+    "genre": "ترفيه",
+    "shortDescription": "لعبة ماين كرافت",
+    "longDescription": "هههههههههههههههههه ههههههههههههه خههههههههههههههههه خههههههههههههه هههههههههههههههههههههههههههههههههههههههههه",
+    "version": "1.0",
+    "whatsNew": "ههههههه",
+    "featured": false,
+    "icon": "data/media/app.haider.alaraji/icon-mw21vrqx.png",
+    "banner": "",
+    "banners": [],
+    "screenshots": [
+      "data/media/app.haider.alaraji/shot1-mw21vrqx.jpg",
+      "data/media/app.haider.alaraji/shot2-mw21vrqx.jpg"
+    ],
+    "youtubeUrl": "",
+    "apkUrl": "https://github.com/afm80/store/releases/download/app.haider.alaraji-v1.0/default.apk",
+    "size": 177911,
+    "sha256": "68077c8958062de7cda697b09aca33f40c3233a16bef57b41be4bfeec3ba066e",
+    "createdAt": "2026-11-04T11:45:43.511Z",
+    "updatedAt": "2026-11-04T11:45:43.511Z",
+    "ageRating": "الجميع"
+  },
+  {
     "developer": "Alfaham Net",
     "packageName": "app.karbala.media",
     "name": "كربلاء ميديا",
