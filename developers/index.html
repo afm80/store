@@ -509,20 +509,48 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
       var ref = db.collection('devProfiles').doc(u.uid);
       var snap = await ref.get();
       if (!snap.exists) {
-        var nm = (pendingName || u.displayName || (u.email || '').split('@')[0] || 'مطور').trim();
-        await ref.set({ name: nm, email: u.email || '', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        var nm = (pendingName || u.displayName || (u.email || '').split('@')[0] || 'مطور').trim().replace(/\s+/g, ' ');
+        var wanted = nm, uh = '';
+        try { uh = (await hashUid(u.uid)).slice(0, 4); } catch (e) {}
+        var cands = [nm, nm + '-' + uh, nm + '-' + uh + Math.floor(Math.random() * 900 + 100)];
+        var made = false;
+        for (var ci = 0; ci < cands.length && !made; ci++) {
+          try {
+            var ck = await nameKey(cands[ci]);
+            var cs = await db.collection('devNames').doc(ck).get();
+            if (cs.exists && cs.data().uid !== u.uid) continue;
+            var b0 = db.batch();
+            b0.set(db.collection('devNames').doc(ck), { uid: u.uid, name: cands[ci] });
+            b0.set(ref, { name: cands[ci], email: u.email || '', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+            await b0.commit();
+            nm = cands[ci]; made = true;
+          } catch (e2) { /* نجرّب الاسم التالي */ }
+        }
+        if (!made) {
+          nm = cands[1];
+          await ref.set({ name: nm, email: u.email || '', createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+        }
         profile = { name: nm };
-      } else { profile = snap.data(); }
+        if (nm !== wanted) nameNote = 'الاسم «' + wanted + '» مستخدم عند مطور آخر، فسُجّلت باسم «' + nm + '». يمكنك تغييره من هنا.';
+      } else {
+        profile = snap.data();
+        /* حجز الاسم للحسابات القديمة (بصمت) */
+        try {
+          var bk = await nameKey(profile.name || '');
+          var bs = await db.collection('devNames').doc(bk).get();
+          if (!bs.exists) await db.collection('devNames').doc(bk).set({ uid: u.uid, name: profile.name });
+        } catch (e3) {}
+      }
     } catch (e) {
       profile = { name: u.displayName || (u.email || '').split('@')[0] || 'مطور' };
     }
     pendingName = '';
     $('whoName').textContent = 'مرحباً ' + profile.name;
     show('vConsole');
-    switchPane('reqs');
-    loadRequests();
+    if (nameNote) { switchPane('profile'); msg('pfMsg', nameNote); nameNote = ''; }
+    else { switchPane('reqs'); loadRequests(); }
   }
-  var pendingName = '';
+  var pendingName = '', nameNote = '';
 
   /* ───────── الدخول والتسجيل ───────── */
   var mode = 'login';
@@ -767,6 +795,12 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
     var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('alfaham:' + uid));
     return Array.prototype.slice.call(new Uint8Array(b), 0, 8).map(function (x) { return x.toString(16).padStart(2, '0'); }).join('');
   }
+  /* مفتاح الاسم: بدون فروق الحروف الكبيرة/الصغيرة ولا المسافات الزائدة */
+  async function nameKey(name) {
+    var n = String(name || '').normalize('NFKC').trim().replace(/\s+/g, ' ').toLowerCase();
+    var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('devname:' + n));
+    return Array.prototype.slice.call(new Uint8Array(b), 0, 16).map(function (x) { return x.toString(16).padStart(2, '0'); }).join('');
+  }
   async function getDataJson(f) {
     try {
       var r = await fetch(RAW_DATA + f + '?t=' + Date.now(), { cache: 'no-store' });
@@ -798,7 +832,36 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
       }
       var data = { name: name, avatar: pf.avatar || '', cover: pf.cover || '' };
       var toSave = Object.assign({}, data, { profileUpdatedAt: firebase.firestore.FieldValue.serverTimestamp() });
-      await db.collection('devProfiles').doc(user.uid).set(toSave, { merge: true });
+      var pref = db.collection('devProfiles').doc(user.uid);
+      if (name !== oldName) {
+        /* حجز الاسم في Firestore: مستند واحد لكل اسم، والقواعد تمنع تكراره */
+        var nk = await nameKey(name), ok = oldName ? await nameKey(oldName) : '';
+        var nref = db.collection('devNames').doc(nk);
+        var ns;
+        try { ns = await nref.get(); }
+        catch (e1) { throw new Error('حدّث قواعد Firestore (ملف firestore.rules.txt) ثم أعد المحاولة.'); }
+        if (ns.exists && ns.data().uid !== user.uid) {
+          msg('pfMsg', 'الاسم «' + name + '» مستخدم عند مطور آخر. اختر اسماً مختلفاً.');
+          btn.disabled = false; btn.textContent = 'حفظ'; return;
+        }
+        var bt = db.batch();
+        bt.set(nref, { uid: user.uid, name: name });
+        if (ok && ok !== nk) {
+          var oref = db.collection('devNames').doc(ok), os = await oref.get();
+          if (os.exists && os.data().uid === user.uid) bt.delete(oref);
+        }
+        bt.set(pref, toSave, { merge: true });
+        try { await bt.commit(); }
+        catch (e2) {
+          if (e2 && e2.code === 'permission-denied') {
+            msg('pfMsg', 'الاسم «' + name + '» حُجز الآن لمطور آخر. اختر اسماً مختلفاً.');
+            btn.disabled = false; btn.textContent = 'حفظ'; return;
+          }
+          throw e2;
+        }
+      } else {
+        await pref.set(toSave, { merge: true });
+      }
       profile = Object.assign(profile || {}, data);
       $('whoName').textContent = 'مرحباً ' + name;
       msg('pfMsg', 'تم الحفظ. سيظهر في المتجر بعد أن تنشره الإدارة.', 'ok');
