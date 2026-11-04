@@ -152,6 +152,9 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
 .spin{display:inline-block;width:16px;height:16px;border:3px solid rgba(255,255,255,.5);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 
+.pfav{width:84px;height:84px;border-radius:50%;object-fit:cover;border:1px solid var(--line);background:#fff;display:block}
+.pfcv{width:100%;max-width:420px;aspect-ratio:1024/400;object-fit:cover;border-radius:8px;border:1px solid var(--line);background:#fff;display:block}
+
 @media(max-width:640px){
   .hero{padding:44px 16px 52px}.hero h1{font-size:25px}.hero p{font-size:15px}
   .grid2,.how,.row{grid-template-columns:1fr}
@@ -257,6 +260,7 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
   <div class="ctabs"><div class="wrap">
     <button id="ctReqs" class="on">طلباتي</button>
     <button id="ctNew">إرسال تطبيق جديد</button>
+    <button id="ctProfile">ملفي الشخصي</button>
   </div></div>
 
   <!-- طلباتي -->
@@ -267,6 +271,34 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
         <button class="btn small" id="btnNewFromList">+ تطبيق جديد</button>
       </div>
       <div id="reqList"><div class="empty">جارٍ التحميل...</div></div>
+    </div>
+  </div>
+
+  <!-- ملفي الشخصي -->
+  <div class="wrap" id="paneProfile" style="padding-top:22px" hidden>
+    <div id="pfMsg"></div>
+    <div class="card">
+      <h3>ملفي الشخصي</h3>
+      <div class="msg info">يظهر هذا الملف في المتجر باسمك، وتنشره الإدارة بعد مراجعته.</div>
+      <div class="field">
+        <label>اسم المطور</label>
+        <input id="pName" maxlength="40">
+        <div class="hint">عند تغيير الاسم ينتقل لكل تطبيقاتك بالمتجر بعد نشر الإدارة له.</div>
+      </div>
+      <div class="field">
+        <label>الصورة الشخصية</label>
+        <div class="pick"><button type="button" class="btn small" id="btnPAvatar">اختر صورة</button><button type="button" class="linkbtn" id="btnPAvatarX">حذف الصورة</button></div>
+        <div class="thumbs" id="pAvatarBox"></div>
+      </div>
+      <div class="field">
+        <label>صورة الغلاف</label>
+        <div class="pick"><button type="button" class="btn small" id="btnPCover">اختر صورة</button><button type="button" class="linkbtn" id="btnPCoverX">حذف الصورة</button></div>
+        <div class="hint">تُضبط على 1024×400.</div>
+        <div class="thumbs" id="pCoverBox"></div>
+      </div>
+      <input type="file" id="pFileAvatar" accept="image/*" hidden>
+      <input type="file" id="pFileCover" accept="image/*" hidden>
+      <div class="actions"><span></span><button class="btn" id="btnPfSave">حفظ</button></div>
     </div>
   </div>
 
@@ -536,10 +568,14 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
   function switchPane(p) {
     $('paneReqs').hidden = (p !== 'reqs');
     $('paneNew').hidden = (p !== 'new');
+    $('paneProfile').hidden = (p !== 'profile');
     $('ctReqs').classList.toggle('on', p === 'reqs');
     $('ctNew').classList.toggle('on', p === 'new');
+    $('ctProfile').classList.toggle('on', p === 'profile');
     if (p === 'reqs') loadRequests();
+    if (p === 'profile') loadProfileForm();
   }
+  $('ctProfile').onclick = function () { switchPane('profile'); };
   $('ctReqs').onclick = function () { switchPane('reqs'); };
   $('ctNew').onclick = startNew;
   $('btnNewFromList').onclick = startNew;
@@ -677,6 +713,100 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
       try { media.shots.push(await makeShot(files[i])); } catch (e) { msg('formMsg', e.message); }
     }
     renderMedia();
+  };
+
+  /* ───────── ملفي الشخصي ───────── */
+  var pf = { avatar: '', cover: '' };
+  var DATA_IMG_RE = /^data:image\/(png|jpeg|webp);base64,/;
+  var RAW_DATA = 'https://raw.githubusercontent.com/afm80/store/main/data/';
+  function setPfImg(boxId, cls, src) {
+    var b = $(boxId); b.innerHTML = '';
+    if (!DATA_IMG_RE.test(src || '')) return;
+    var i = document.createElement('img'); i.className = cls; i.alt = ''; i.src = src; b.appendChild(i);
+  }
+  function renderPf() {
+    setPfImg('pAvatarBox', 'pfav', pf.avatar);
+    setPfImg('pCoverBox', 'pfcv', pf.cover);
+    $('btnPAvatarX').hidden = !pf.avatar;
+    $('btnPCoverX').hidden = !pf.cover;
+  }
+  function loadProfileForm() {
+    var p = profile || {};
+    $('pName').value = p.name || '';
+    pf.avatar = DATA_IMG_RE.test(p.avatar || '') ? p.avatar : '';
+    pf.cover = DATA_IMG_RE.test(p.cover || '') ? p.cover : '';
+    renderPf(); msg('pfMsg', '');
+  }
+  async function makeAvatar(file) {
+    var img = await loadImage(file);
+    if (Math.min(img.width, img.height) < 128) throw new Error('الصورة الشخصية صغيرة، الحد الأدنى 128×128 بكسل');
+    var out = draw(img, 400, 400, 'cover').toDataURL('image/jpeg', .85);
+    if (out.length > MAX_B64) out = draw(img, 400, 400, 'cover').toDataURL('image/jpeg', .7);
+    return out;
+  }
+  async function makeCover(file) {
+    var img = await loadImage(file);
+    if (img.width < 500) throw new Error('صورة الغلاف صغيرة، العرض الأدنى 500 بكسل');
+    var out = draw(img, 1024, 400, 'cover').toDataURL('image/jpeg', .82);
+    if (out.length > MAX_B64) out = draw(img, 1024, 400, 'cover').toDataURL('image/jpeg', .65);
+    return out;
+  }
+  $('btnPAvatar').onclick = function () { $('pFileAvatar').click(); };
+  $('btnPCover').onclick = function () { $('pFileCover').click(); };
+  $('btnPAvatarX').onclick = function () { pf.avatar = ''; renderPf(); };
+  $('btnPCoverX').onclick = function () { pf.cover = ''; renderPf(); };
+  $('pFileAvatar').onchange = async function () {
+    var f = this.files[0]; this.value = ''; if (!f) return;
+    try { pf.avatar = await makeAvatar(f); renderPf(); msg('pfMsg', ''); } catch (e) { msg('pfMsg', e.message); }
+  };
+  $('pFileCover').onchange = async function () {
+    var f = this.files[0]; this.value = ''; if (!f) return;
+    try { pf.cover = await makeCover(f); renderPf(); msg('pfMsg', ''); } catch (e) { msg('pfMsg', e.message); }
+  };
+  async function hashUid(uid) {
+    var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode('alfaham:' + uid));
+    return Array.prototype.slice.call(new Uint8Array(b), 0, 8).map(function (x) { return x.toString(16).padStart(2, '0'); }).join('');
+  }
+  async function getDataJson(f) {
+    try {
+      var r = await fetch(RAW_DATA + f + '?t=' + Date.now(), { cache: 'no-store' });
+      return r.ok ? await r.json() : null;
+    } catch (e) { return null; }
+  }
+  /* هل الاسم مستخدم عند مطور آخر؟ (إن تعذّر الفحص نكمل، والإدارة تراجع عند النشر) */
+  async function nameTaken(name) {
+    var n = name.toLowerCase(), me = '';
+    try { me = await hashUid(user.uid); } catch (e) {}
+    var res = await Promise.all([getDataJson('developers.json'), getDataJson('developer.json'), getDataJson('apps.json')]);
+    var devs = res[0], main = res[1], apps = res[2];
+    if (Array.isArray(devs) && devs.some(function (d) { return String(d.name || '').toLowerCase() === n && d.devKey !== me; })) return true;
+    if (main && String(main.name || '').toLowerCase() === n) return true;
+    var list = Array.isArray(apps) ? apps : (apps && apps.apps) || [];
+    return list.some(function (a) { return String(a.developer || '').toLowerCase() === n; });
+  }
+  $('btnPfSave').onclick = async function () {
+    var name = $('pName').value.trim().replace(/\s+/g, ' ');
+    if (name.length < 2) { msg('pfMsg', 'أدخل اسم المطور (حرفان على الأقل)'); return; }
+    if ((pf.avatar.length + pf.cover.length) > 900000) { msg('pfMsg', 'حجم الصور كبير، اختر صوراً أصغر'); return; }
+    var btn = $('btnPfSave'); btn.disabled = true; btn.innerHTML = '<span class="spin"></span> جارٍ الحفظ...';
+    msg('pfMsg', '');
+    try {
+      var oldName = (profile && profile.name) || '';
+      if (name !== oldName && await nameTaken(name)) {
+        msg('pfMsg', 'الاسم «' + name + '» مستخدم عند مطور آخر. اختر اسماً مختلفاً.');
+        btn.disabled = false; btn.textContent = 'حفظ'; return;
+      }
+      var data = { name: name, avatar: pf.avatar || '', cover: pf.cover || '' };
+      var toSave = Object.assign({}, data, { profileUpdatedAt: firebase.firestore.FieldValue.serverTimestamp() });
+      await db.collection('devProfiles').doc(user.uid).set(toSave, { merge: true });
+      profile = Object.assign(profile || {}, data);
+      $('whoName').textContent = 'مرحباً ' + name;
+      msg('pfMsg', 'تم الحفظ. سيظهر في المتجر بعد أن تنشره الإدارة.', 'ok');
+      window.scrollTo(0, 0);
+    } catch (e) {
+      msg('pfMsg', 'تعذّر الحفظ: ' + (e.message || e));
+    }
+    btn.disabled = false; btn.textContent = 'حفظ';
   };
 
   /* ───────── خطوات النموذج ───────── */
