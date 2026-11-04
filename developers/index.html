@@ -737,6 +737,10 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
       }
     } catch (e) { /* إن تعذّر الفحص نكمل، والإدارة تراجع الطلب */ }
     try {
+      var reg = await db.collection('packages').doc(pkg).get();
+      if (reg.exists) return 'اسم الحزمة «' + $('fPkg').value.trim() + '» مستخدم في طلب آخر قيد المراجعة أو مقبول. غيّره إلى اسم فريد.';
+    } catch (e) { /* إن تعذّر القراءة يتولى الإرسال المنع */ }
+    try {
       var q = await db.collection('submissions').where('uid', '==', user.uid).where('packageName', '==', $('fPkg').value.trim()).get();
       var dup = false;
       q.forEach(function (d) { var st = d.data().status; if (st === 'pending' || st === 'approved') dup = true; });
@@ -792,6 +796,10 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
         shotCount: media.shots.length, hasBanner: !!media.banner,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
       });
+      batch.set(db.collection('packages').doc(g('fPkg').toLowerCase()), {
+        uid: user.uid, packageName: g('fPkg'), submissionId: ref.id,
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+      });
       var m = ref.collection('media');
       batch.set(m.doc('icon'), { kind: 'icon', data: media.icon });
       if (media.banner) batch.set(m.doc('banner'), { kind: 'banner', data: media.banner });
@@ -800,7 +808,7 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
       goStep(4);
     } catch (e) {
       var t = (e && e.code === 'permission-denied')
-        ? 'تعذّر الإرسال: لم تُضبط قواعد Firestore بعد. راجع الملف firestore.rules.txt.'
+        ? 'تعذّر الإرسال: اسم الحزمة مستخدم مسبقًا في طلب آخر، أو لم تُضبط قواعد Firestore بعد. غيّر اسم الحزمة وحاول مجددًا.'
         : 'تعذّر الإرسال: ' + (e.message || e);
       msg('formMsg', t);
     }
