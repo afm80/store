@@ -143,6 +143,9 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
 .chip.approved{background:#e8f5e9;color:var(--ok)}
 .chip.rejected{background:#fdecea;color:var(--bad)}
 .reason{margin-top:6px;font-size:13px;color:var(--bad)}
+.note{margin-top:6px;font-size:13px}
+.note.wait{color:var(--warn)}
+.note.ok{color:var(--ok);font-weight:700}
 .empty{text-align:center;color:var(--muted);padding:34px 10px}
 .done-box{text-align:center;padding:34px 12px}
 .done-box .tick{width:78px;height:78px;border-radius:50%;background:#e8f5e9;color:var(--ok);font-size:42px;display:flex;align-items:center;justify-content:center;margin:0 auto 14px}
@@ -527,7 +530,7 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
     try { await auth.sendPasswordResetEmail(email); msg('authMsg', 'أرسلنا رابط إعادة تعيين كلمة المرور إلى بريدك', 'ok'); }
     catch (e) { msg('authMsg', authError(e)); }
   };
-  $('btnLogout').onclick = function () { auth.signOut(); };
+  $('btnLogout').onclick = function () { stopRequests(); auth.signOut(); };
 
   /* ───────── التبويبات ───────── */
   function switchPane(p) {
@@ -544,30 +547,43 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
 
   /* ───────── طلباتي ───────── */
   var STATUS = { pending: 'قيد المراجعة', approved: 'مقبول', rejected: 'مرفوض' };
-  async function loadRequests() {
+  var reqUnsub = null, iconCache = {};
+  function stopRequests() { if (reqUnsub) { try { reqUnsub(); } catch (e) {} reqUnsub = null; } }
+  function renderRequests(qs) {
     var box = $('reqList');
+    var items = qs.docs.map(function (d) { var x = d.data(); x._id = d.id; return x; });
+    items.sort(function (a, b) {
+      var ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
+      var tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
+      return tb - ta;
+    });
+    if (!items.length) { box.innerHTML = '<div class="empty">لم ترسل أي تطبيق بعد.<br>اضغط «تطبيق جديد» للبدء.</div>'; return; }
+    box.innerHTML = items.map(function (x) {
+      var st = STATUS[x.status] ? x.status : 'pending';
+      var dt = x.createdAt && x.createdAt.toDate ? x.createdAt.toDate().toLocaleDateString('ar-IQ') : '';
+      var note = '';
+      if (st === 'pending') note = '<div class="note wait">طلبك قيد المراجعة، وستظهر النتيجة هنا تلقائيًا.</div>';
+      else if (st === 'approved') note = '<div class="note ok">✔ تم قبول تطبيقك وسيظهر في المتجر.</div>';
+      else note = '<div class="reason">تم رفض الطلب' + (x.rejectReason ? '. السبب: ' + esc(x.rejectReason) : '.') + '</div>';
+      return '<div class="reqrow"><img id="ic_' + esc(x._id) + '" alt="">' +
+        '<div class="info"><b>' + esc(x.name) + '</b><small>' + esc(x.packageName) + ' · v' + esc(x.version) + '</small>' + note + '</div>' +
+        '<div style="text-align:left"><span class="chip ' + st + '">' + STATUS[st] + '</span><div class="hint">' + esc(dt) + '</div></div></div>';
+    }).join('');
+    items.forEach(function (x) {
+      var im = $('ic_' + x._id); if (!im) return;
+      if (iconCache[x._id]) { im.src = iconCache[x._id]; return; }
+      db.collection('submissions').doc(x._id).collection('media').doc('icon').get().then(function (s) {
+        if (s.exists) { iconCache[x._id] = s.data().data; var el = $('ic_' + x._id); if (el) el.src = iconCache[x._id]; }
+      }).catch(function () {});
+    });
+  }
+  function loadRequests() {
+    var box = $('reqList');
+    stopRequests();
     box.innerHTML = '<div class="empty">جارٍ التحميل...</div>';
     try {
-      var qs = await db.collection('submissions').where('uid', '==', user.uid).get();
-      var items = qs.docs.map(function (d) { var x = d.data(); x._id = d.id; return x; });
-      items.sort(function (a, b) {
-        var ta = a.createdAt && a.createdAt.toMillis ? a.createdAt.toMillis() : 0;
-        var tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
-        return tb - ta;
-      });
-      if (!items.length) { box.innerHTML = '<div class="empty">لم ترسل أي تطبيق بعد.<br>اضغط «تطبيق جديد» للبدء.</div>'; return; }
-      box.innerHTML = items.map(function (x) {
-        var st = STATUS[x.status] ? x.status : 'pending';
-        var dt = x.createdAt && x.createdAt.toDate ? x.createdAt.toDate().toLocaleDateString('ar-IQ') : '';
-        return '<div class="reqrow"><img id="ic_' + esc(x._id) + '" alt="">' +
-          '<div class="info"><b>' + esc(x.name) + '</b><small>' + esc(x.packageName) + ' · v' + esc(x.version) + '</small>' +
-          (x.status === 'rejected' && x.rejectReason ? '<div class="reason">سبب الرفض: ' + esc(x.rejectReason) + '</div>' : '') + '</div>' +
-          '<div style="text-align:left"><span class="chip ' + st + '">' + STATUS[st] + '</span><div class="hint">' + esc(dt) + '</div></div></div>';
-      }).join('');
-      items.forEach(function (x) {
-        db.collection('submissions').doc(x._id).collection('media').doc('icon').get().then(function (s) {
-          var im = $('ic_' + x._id); if (im && s.exists) im.src = s.data().data;
-        }).catch(function () {});
+      reqUnsub = db.collection('submissions').where('uid', '==', user.uid).onSnapshot(renderRequests, function (e) {
+        box.innerHTML = '<div class="msg err">تعذّر تحميل الطلبات: ' + esc(e.message || e) + '</div>';
       });
     } catch (e) {
       box.innerHTML = '<div class="msg err">تعذّر تحميل الطلبات: ' + esc(e.message || e) + '</div>';
