@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>منصة المطورين - Alfaham Store</title>
 <meta name="description" content="أرسل تطبيقك للنشر في متجر Alfaham Store">
-<link rel="icon" type="image/png" href="logo.png">
+<link rel="icon" type="image/png" href="favicon.png">
 <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -23,7 +23,7 @@ button{font-family:inherit}
 /* ===== الشريط العلوي ===== */
 .topbar{background:var(--bar);color:#fff;display:flex;align-items:center;gap:12px;padding:10px 16px;position:sticky;top:0;z-index:20;box-shadow:0 2px 6px rgba(0,0,0,.18)}
 .brand{display:flex;align-items:center;gap:10px;color:#fff}
-.brand img{width:42px;height:42px;border-radius:10px;background:#fff;padding:3px}
+.brand img{width:42px;height:42px;object-fit:contain}
 .brand b{font-size:18px;font-weight:800;letter-spacing:.3px}
 .brand small{display:block;font-size:12px;opacity:.8;margin-top:-4px}
 .top-actions{margin-inline-start:auto;display:flex;align-items:center;gap:8px}
@@ -36,7 +36,7 @@ button{font-family:inherit}
   url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='520' height='360' viewBox='0 0 520 360' fill='none' stroke='white' stroke-width='1'><path d='M20 40 L150 90 L240 20 L360 110 L490 50 M150 90 L120 220 L260 260 L360 110 M120 220 L40 320 M260 260 L400 330 L500 240 L360 110'/><g fill='white'><circle cx='20' cy='40' r='3'/><circle cx='150' cy='90' r='3'/><circle cx='240' cy='20' r='3'/><circle cx='360' cy='110' r='3'/><circle cx='490' cy='50' r='3'/><circle cx='120' cy='220' r='3'/><circle cx='260' cy='260' r='3'/><circle cx='40' cy='320' r='3'/><circle cx='400' cy='330' r='3'/><circle cx='500' cy='240' r='3'/></g></svg>");
   background-size:520px 360px}
 .hero>*{position:relative}
-.hero img.logo{width:84px;height:84px;border-radius:20px;background:#fff;padding:8px;margin-bottom:14px;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.hero img.logo{width:96px;height:96px;object-fit:contain;margin-bottom:12px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.3))}
 .hero h1{margin:0 0 10px;font-size:32px;font-weight:800}
 .hero p{margin:0 auto 28px;max-width:640px;font-size:17px;opacity:.92}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;border-radius:4px;padding:12px 26px;font-size:15px;font-weight:700;color:#fff;background:var(--accent);cursor:pointer;box-shadow:0 2px 5px rgba(0,0,0,.2);transition:.15s}
@@ -706,12 +706,35 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
     }
     return '';
   }
-  document.addEventListener('click', function (ev) {
+  /* ───────── منع تكرار اسم الحزمة ───────── */
+  var STORE_APPS_URL = 'https://raw.githubusercontent.com/afm80/store/main/data/apps.json';
+  async function pkgProblem() {
+    var pkg = $('fPkg').value.trim().toLowerCase();
+    if (!pkg) return '';
+    try {
+      var r = await fetch(STORE_APPS_URL + '?t=' + Date.now(), { cache: 'no-store' });
+      if (r.ok) {
+        var d = await r.json();
+        var list = Array.isArray(d) ? d : (d && d.apps) || [];
+        if (list.some(function (a) { return String(a.packageName || '').toLowerCase() === pkg; }))
+          return 'اسم الحزمة «' + $('fPkg').value.trim() + '» مستخدم مسبقاً في المتجر. غيّره أو تواصل مع الإدارة إذا كان تحديثاً لتطبيقك.';
+      }
+    } catch (e) { /* إن تعذّر الفحص نكمل، والإدارة تراجع الطلب */ }
+    try {
+      var q = await db.collection('submissions').where('uid', '==', user.uid).where('packageName', '==', $('fPkg').value.trim()).get();
+      var dup = false;
+      q.forEach(function (d) { var st = d.data().status; if (st === 'pending' || st === 'approved') dup = true; });
+      if (dup) return 'لديك طلب سابق بنفس اسم الحزمة قيد المراجعة أو مقبول. لا يمكن إرساله مرة ثانية.';
+    } catch (e) { }
+    return '';
+  }
+  document.addEventListener('click', async function (ev) {
     var b = ev.target.closest && ev.target.closest('[data-go]');
     if (!b) return;
     var to = parseInt(b.getAttribute('data-go'), 10);
     if (to > step) {
       for (var i = step; i < to; i++) { var err = validate(i); if (err) { msg('formMsg', err); goStep(i); return; } }
+      if (step <= 1) { var pe = await pkgProblem(); if (pe) { msg('formMsg', pe); goStep(1); return; } }
     }
     msg('formMsg', ''); goStep(to);
   });
@@ -740,6 +763,8 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
     msg('formMsg', '');
     var g = function (i) { return $(i).value.trim(); };
     try {
+      var pe2 = await pkgProblem();
+      if (pe2) { msg('formMsg', pe2); goStep(1); btn.disabled = false; btn.textContent = 'إرسال للمراجعة'; return; }
       var ref = db.collection('submissions').doc();
       var batch = db.batch();
       batch.set(ref, {

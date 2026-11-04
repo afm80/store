@@ -45,6 +45,21 @@ jobs:
           cp brand/icons/*.png web/icons/
           mkdir -p web/.well-known
           cp brand/assetlinks.json web/.well-known/assetlinks.json
+      - name: Match web colors to the store (green instead of default blue)
+        run: |
+          python3 - <<'PY'
+          import re, pathlib
+          m = pathlib.Path('web/manifest.json')
+          t = m.read_text(encoding='utf-8')
+          t = re.sub(r'("background_color"\s*:\s*)"[^"]*"', r'\1"#F8F9FA"', t)
+          t = re.sub(r'("theme_color"\s*:\s*)"[^"]*"', r'\1"#08874A"', t)
+          m.write_text(t, encoding='utf-8')
+          h = pathlib.Path('web/index.html')
+          x = h.read_text(encoding='utf-8')
+          x = re.sub(r'<meta name="theme-color"[^>]*>', '', x)
+          x = x.replace('<head>', '<head>\n  <meta name="theme-color" content="#08874A">\n  <style>html,body{background:#F8F9FA;margin:0}</style>', 1)
+          h.write_text(x, encoding='utf-8')
+          PY
 
       - run: flutter pub get
 
