@@ -1,35 +1,5 @@
 [
   {
-    "developer": "F-APK",
-    "packageName": "com.live.ayatvpro",
-    "name": "AYA TV",
-    "category": "app",
-    "genre": "ترفيه",
-    "shortDescription": "هههههههههههههههههههههههههههههههههههههههههههههههههه",
-    "longDescription": "هههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههههه",
-    "version": "3.15",
-    "whatsNew": "جديد",
-    "featured": false,
-    "icon": "data/media/com.live.ayatvpro/icon-mw22m1ru.png",
-    "banner": "",
-    "banners": [],
-    "screenshots": [
-      "data/media/com.live.ayatvpro/shot1-mw22m1ru.jpg",
-      "data/media/com.live.ayatvpro/shot2-mw22m1ru.jpg",
-      "data/media/com.live.ayatvpro/shot3-mw22m1ru.jpg",
-      "data/media/com.live.ayatvpro/shot4-mw22m1ru.jpg",
-      "data/media/com.live.ayatvpro/shot5-mw22m1ru.jpg",
-      "data/media/com.live.ayatvpro/shot6-mw22m1ru.jpg"
-    ],
-    "youtubeUrl": "",
-    "apkUrl": "https://github.com/afm80/store/releases/download/com.live.ayatvpro-v3.15/AYA.TV.apk",
-    "size": 12623266,
-    "sha256": "441221e70cdb06e520f69faed4803e4ab0968425aa8ad0e2b657b9fa777ee5b6",
-    "createdAt": "2026-11-04T12:06:46.234Z",
-    "updatedAt": "2026-11-04T12:06:46.234Z",
-    "ageRating": "الجميع"
-  },
-  {
     "developer": "Alfaham Net",
     "packageName": "app.karbala.media",
     "name": "كربلاء ميديا",
