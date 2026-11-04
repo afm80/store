@@ -55,7 +55,8 @@ class AppItem {
     this.order,
   });
 
-  factory AppItem.fromJson(Map<String, dynamic> j) {
+  /// [real]: عدد التحميلات الحقيقي من Firestore، يُضاف إلى الرقم اليدوي في apps.json (إن وُجد).
+  factory AppItem.fromJson(Map<String, dynamic> j, {int real = 0}) {
     String s(String key) => (j[key] ?? '').toString();
     final shots = j['screenshots'];
     final bans = j['banners'];
@@ -84,7 +85,7 @@ class AppItem {
       screenshots: shots is List ? shots.map((e) => e.toString()).toList() : const [],
       youtubeUrl: s('youtubeUrl'),
       rating: rawRating is num ? rawRating.toDouble() : 0,
-      downloads: rawDownloads is num ? rawDownloads.toInt() : 0,
+      downloads: (rawDownloads is num ? rawDownloads.toInt() : 0) + real,
       developer: s('developer'),
       ageRating: s('ageRating'),
       hidden: j['hidden'] == true,
@@ -139,7 +140,7 @@ class AppItem {
     if (downloads <= 0) return '—';
     if (downloads >= 1000000) return '${(downloads / 1000000).toStringAsFixed(1)}M+';
     if (downloads >= 1000) return '${(downloads / 1000).toStringAsFixed(0)}K+';
-    return '$downloads+';
+    return '$downloads';
   }
 
   /// نص التقييم (مثل "4.5")، أو "—" إذا غير متوفر.

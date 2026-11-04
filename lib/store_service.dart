@@ -9,6 +9,7 @@ class StoreService {
   /// يقرأ قائمة التطبيقات من data/apps.json في المستودع.
   /// الرقم في آخر الرابط يتغير كل دقيقة لتجنب التخزين المؤقت القديم.
   static Future<List<AppItem>> fetchApps() async {
+    final countsFuture = fetchDownloadCounts();
     final stamp = DateTime.now().millisecondsSinceEpoch ~/ 60000;
     final res = await http.get(Uri.parse('${StoreConfig.appsJsonUrl}?t=$stamp'));
 
@@ -20,9 +21,11 @@ class StoreService {
     final decoded = jsonDecode(utf8.decode(res.bodyBytes));
     if (decoded is! List) return [];
 
+    final counts = await countsFuture;
     final apps = decoded
         .whereType<Map<String, dynamic>>()
-        .map(AppItem.fromJson)
+        .map((j) => AppItem.fromJson(j,
+            real: counts[(j['packageName'] ?? '').toString()] ?? 0))
         .where((a) =>
             a.packageName.isNotEmpty && a.name.isNotEmpty && !a.hidden)
         .toList();
@@ -36,6 +39,75 @@ class StoreService {
       return b.updatedAt.compareTo(a.updatedAt);
     });
     return apps;
+  }
+
+
+  /// يقرأ عدّاد التحميلات الحقيقي لكل التطبيقات (مجموعة downloads في Firestore).
+  static Future<Map<String, int>> fetchDownloadCounts() async {
+    final out = <String, int>{};
+    try {
+      String? token;
+      for (var i = 0; i < 10; i++) {
+        final url = StoreConfig.downloadsListUrl +
+            (token == null ? '' : '&pageToken=${Uri.encodeComponent(token)}');
+        final res =
+            await http.get(Uri.parse(url)).timeout(const Duration(seconds: 8));
+        if (res.statusCode != 200) break;
+        final j = jsonDecode(utf8.decode(res.bodyBytes));
+        if (j is! Map) break;
+        final docs = j['documents'];
+        if (docs is List) {
+          for (final d in docs) {
+            if (d is! Map) continue;
+            final id = Uri.decodeComponent(d['name'].toString().split('/').last);
+            final f = d['fields'];
+            final c = (f is Map && f['count'] is Map)
+                ? (f['count'] as Map)['integerValue']
+                : null;
+            final n = int.tryParse('${c ?? ''}');
+            if (n != null) out[id] = n;
+          }
+        }
+        token = j['nextPageToken'] as String?;
+        if (token == null || token.isEmpty) break;
+      }
+    } catch (_) {}
+    return out;
+  }
+
+  static final Set<String> _counted = {};
+
+  /// يزيد عدّاد التحميلات بمقدار 1 (مرة واحدة لكل تطبيق/إصدار في الجلسة الواحدة).
+  static Future<void> countDownload(String pkg, String version) async {
+    final key = '$pkg@$version';
+    if (_counted.contains(key)) return;
+    if (!RegExp(r'^[A-Za-z0-9][A-Za-z0-9._-]{0,150}$').hasMatch(pkg)) return;
+    _counted.add(key);
+    try {
+      await http
+          .post(
+            Uri.parse(StoreConfig.commitUrl),
+            headers: {'Content-Type': 'application/json'},
+            body: jsonEncode({
+              'writes': [
+                {
+                  'transform': {
+                    'document': StoreConfig.downloadDocPath(pkg),
+                    'fieldTransforms': [
+                      {
+                        'fieldPath': 'count',
+                        'increment': {'integerValue': '1'}
+                      }
+                    ]
+                  }
+                }
+              ]
+            }),
+          )
+          .timeout(const Duration(seconds: 8));
+    } catch (_) {
+      _counted.remove(key);
+    }
   }
 
   /// يقرأ الملف الشخصي للمطوّر (data/developer.json)، أو null إن لم يوجد.

@@ -54,6 +54,19 @@ class StoreConfig {
   static const bool showDownloads = true; // عدد التحميلات
   static const bool showRating = true; // التقييم
 
+
+  /// ─── عدّاد التحميلات الحقيقي (Firestore عبر REST، بدون مكتبات إضافية) ───
+  /// المفتاح عام وليس سرًّا (نفس مفتاح صفحة المطورين).
+  static const String firebaseProject = 'alfahamstore';
+  static const String firebaseApiKey = 'AIzaSyAnC8evDpZQhuobeEklZj-j0LgrJ6Yr9hk';
+  static const String _fsDocs =
+      'https://firestore.googleapis.com/v1/projects/$firebaseProject/databases/(default)/documents';
+  static String get downloadsListUrl =>
+      '$_fsDocs/downloads?pageSize=300&key=$firebaseApiKey';
+  static String get commitUrl => '$_fsDocs:commit?key=$firebaseApiKey';
+  static String downloadDocPath(String pkg) =>
+      'projects/$firebaseProject/databases/(default)/documents/downloads/$pkg';
+
   static String get owner {
     final host = Uri.base.host;
     if (host.endsWith('.github.io')) return host.split('.').first;

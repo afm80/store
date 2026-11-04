@@ -479,6 +479,8 @@ class AppTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final subtitle = [
       if (app.genre.isNotEmpty) app.genre,
+      if (StoreConfig.showDownloads && app.downloads > 0)
+        '${app.downloadsLabel} تحميل',
       app.sizeLabel,
     ].join(' • ');
 
@@ -1265,7 +1267,11 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
       Uri.parse(app.apkUrl),
       mode: LaunchMode.externalApplication,
     );
-    if (!ok) _snack('تعذّر فتح رابط التحميل');
+    if (ok) {
+      StoreService.countDownload(app.packageName, app.version);
+    } else {
+      _snack('تعذّر فتح رابط التحميل');
+    }
   }
 
   Future<void> _download() async {
@@ -1287,6 +1293,7 @@ class _AppDetailsScreenState extends State<AppDetailsScreen> {
         isCancelled: () => _cancelDl,
       );
       if (mounted) setState(() => _dl = null);
+      StoreService.countDownload(app.packageName, app.version);
       final opened = await installApk(path);
       if (!opened) _snack('تعذّر فتح المثبّت، حاول مرة أخرى');
     } on DownloadCancelled {
@@ -2466,6 +2473,16 @@ class _DeveloperScreenState extends State<DeveloperScreen> {
                                 style: const TextStyle(
                                     fontSize: 17,
                                     fontWeight: FontWeight.w700)),
+                            if (StoreConfig.showDownloads &&
+                                apps.fold<int>(0, (t, a) => t + a.downloads) >
+                                    0) ...[
+                              const SizedBox(height: 2),
+                              Text(
+                                  'إجمالي التحميلات: ${apps.fold<int>(0, (t, a) => t + a.downloads)}',
+                                  style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey.shade600)),
+                            ],
                             const SizedBox(height: 10),
                             for (final a in apps) AppTile(app: a),
                           ],
