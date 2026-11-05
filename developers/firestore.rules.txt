@@ -28,11 +28,18 @@ service cloud.firestore {
       function isUpdate() {
         return request.resource.data.get('type', 'new') == 'update';
       }
-      // لا يعدّل التطبيق إلا صاحب الحزمة المسجّلة باسمه
+      // لا يعدّل التطبيق إلا صاحبه: إما مسجّل باسمه في packages، أو له طلب مقبول بنفس الحزمة
       function ownsPackage() {
         let pkg = request.resource.data.packageName.lower();
-        return exists(/databases/$(database)/documents/packages/$(pkg))
+        let base = request.resource.data.get('baseSubmissionId', '');
+        let viaReg = exists(/databases/$(database)/documents/packages/$(pkg))
           && get(/databases/$(database)/documents/packages/$(pkg)).data.uid == request.auth.uid;
+        let viaSub = base is string && base.size() > 0
+          && exists(/databases/$(database)/documents/submissions/$(base))
+          && get(/databases/$(database)/documents/submissions/$(base)).data.uid == request.auth.uid
+          && get(/databases/$(database)/documents/submissions/$(base)).data.status == 'approved'
+          && get(/databases/$(database)/documents/submissions/$(base)).data.packageName.lower() == pkg;
+        return viaReg || viaSub;
       }
 
       // المطور ينشئ طلبه بحالة pending فقط (والتعديل لصاحب الحزمة فقط)

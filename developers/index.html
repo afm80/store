@@ -1145,6 +1145,12 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
       if (ed) {
         /* طلب تعديل لتطبيق منشور: يحمل كل الحقول، ومعها ما تغيّر لتسهيل مراجعة الإدارة */
         data.type = 'update';
+        /* إثبات الملكية: أحدث طلب مقبول لنفس الحزمة باسم هذا الحساب (لا يعتمد على سجل packages) */
+        var baseId = '', pk = g('fPkg').toLowerCase();
+        mySubs.forEach(function (x) {
+          if (!baseId && x.status === 'approved' && String(x.packageName || '').toLowerCase() === pk) baseId = x._id;
+        });
+        data.baseSubmissionId = baseId;
         data.changedFields = changes().map(function (c) { return c.key; });
         data.iconChanged = iconChanged(); data.bannerChanged = bannerChanged(); data.shotsChanged = shotsChanged();
       } else {
