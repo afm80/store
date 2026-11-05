@@ -1,5 +1,27 @@
 [
   {
+    "developer": "Alfaham Net",
+    "packageName": "com.live.ayatvpro",
+    "name": "AYA TV",
+    "category": "app",
+    "genre": "",
+    "shortDescription": "",
+    "longDescription": "",
+    "version": "3.15",
+    "whatsNew": "",
+    "featured": false,
+    "icon": "",
+    "banner": "",
+    "banners": [],
+    "screenshots": [],
+    "youtubeUrl": "",
+    "apkUrl": "https://github.com/afm80/store/releases/download/com.live.ayatvpro-v3.15/AYA_TV_com.live.ayatvpro.apk",
+    "size": 12602923,
+    "sha256": "be82989345bf2cd604addf791677d19d30ae9ad7d1f244e861d5d9435254d42a",
+    "createdAt": "2026-11-05T13:51:51.883Z",
+    "updatedAt": "2026-11-05T13:51:51.883Z"
+  },
+  {
     "developer": "FAPK",
     "packageName": "com.xalopex.riverraid2600",
     "name": "River Raid",
