@@ -1,6 +1,32 @@
 [
   {
     "developer": "FAPK",
+    "packageName": "app.tomandjerry.com",
+    "name": "Tom & Jerry",
+    "category": "app",
+    "genre": "ترفيه",
+    "shortDescription": "تووووووووم وووووووووووووو جيررررررررررري",
+    "longDescription": "تووووووووم وووووووووووووو جيررررررررررريتووووووووم وووووووووووووو جيررررررررررريتووووووووم وووووووووووووو جيررررررررررريتووووووووم وووووووووووووو جيررررررررررريتووووووووم وووووووووووووو جيررررررررررريتووووووووم وووووووووووووو جيررررررررررريتووووووووم وووووووووووووو جيررررررررررريتووووووووم وووووووووووووو جيررررررررررريتووووووووم وووووووووووووو جيررررررررررريتووووووووم وووووووووووووو جيررررررررررريتووووووووم وووووووووووووو جيررررررررررري",
+    "version": "1.0",
+    "whatsNew": "أحدث أصدار",
+    "featured": false,
+    "icon": "data/media/app.tomandjerry.com/icon-mw3oryak.png",
+    "banner": "",
+    "banners": [],
+    "screenshots": [
+      "data/media/app.tomandjerry.com/shot1-mw3oryak.jpg",
+      "data/media/app.tomandjerry.com/shot2-mw3oryak.jpg"
+    ],
+    "youtubeUrl": "",
+    "apkUrl": "https://github.com/afm80/store/releases/download/app.tomandjerry.com-v1.0/Tom.and.Jerry.apk",
+    "size": 35210964,
+    "sha256": "1aef762b1c9d86f330cc1c4e5af2db4a2fbdc2dfd79826c6d1f1b250a01fa206",
+    "createdAt": "2026-11-05T15:15:20.781Z",
+    "updatedAt": "2026-11-05T15:15:20.781Z",
+    "ageRating": "الجميع"
+  },
+  {
+    "developer": "FAPK",
     "packageName": "com.live.ayatvpro",
     "name": "AYA TV",
     "category": "app",
