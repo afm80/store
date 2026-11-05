@@ -22,6 +22,16 @@ service cloud.firestore {
       allow delete: if true;
     }
 
+    // عدّاد التحميلات الحقيقي: يقرؤه الجميع، والمتجر يزيده بمقدار 1 فقط في كل مرة
+    match /downloads/{pkg} {
+      allow read: if true;
+      allow create: if request.resource.data.keys().hasOnly(['count'])
+        && request.resource.data.count == 1;
+      allow update: if request.resource.data.keys().hasOnly(['count'])
+        && request.resource.data.count == resource.data.count + 1;
+      allow delete: if false;
+    }
+
     // طلبات النشر
     match /submissions/{id} {
       // طلب تعديل تطبيق منشور

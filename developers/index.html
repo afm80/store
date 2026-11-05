@@ -635,7 +635,7 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
       var tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
       return tb - ta;
     });
-    mySubs = items; subsLoaded = true; renderPublished();
+    mySubs = items; subsLoaded = true; renderPublished(); loadDlCounts();
     if (!items.length) { box.innerHTML = '<div class="empty">لم ترسل أي تطبيق بعد.<br>اضغط «تطبيق جديد» للبدء.</div>'; return; }
     box.innerHTML = items.map(function (x) {
       var st = STATUS[x.status] ? x.status : 'pending';
@@ -685,6 +685,22 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
       storeApps = Array.isArray(d) ? d : (d && d.apps) || [];
     } catch (e) { storeAppsErr = 'تعذّر تحميل قائمة تطبيقات المتجر.'; }
     renderPublished();
+    loadDlCounts();
+  }
+  /* عداد التحميلات الحقيقي (مجموعة downloads) لتطبيقات هذا المطور فقط */
+  var dlCounts = {};
+  async function loadDlCounts() {
+    if (!storeApps || !subsLoaded) return;
+    var mineK = {};
+    mySubs.forEach(function (x) { if (x.status === 'approved') mineK[String(x.packageName || '').toLowerCase()] = true; });
+    var apps = storeApps.filter(function (a) { return mineK[String(a.packageName || '').toLowerCase()]; });
+    await Promise.all(apps.map(async function (a) {
+      try {
+        var d = await db.collection('downloads').doc(String(a.packageName)).get();
+        dlCounts[String(a.packageName).toLowerCase()] = d.exists ? (parseInt(d.data().count, 10) || 0) : 0;
+      } catch (e) { /* القراءة غير متاحة: لا نعرض شيئاً */ }
+    }));
+    renderPublished();
   }
   function renderPublished() {
     var box = $('pubList'); if (!box) return;
@@ -702,6 +718,7 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
       var k = String(a.packageName || '').toLowerCase();
       return '<div class="reqrow"><img src="' + esc(appUrl(a.icon)) + '" alt="">' +
         '<div class="info"><b>' + esc(a.name) + '</b><small>' + esc(a.packageName) + ' · v' + esc(a.version) + '</small>' +
+        (dlCounts[k] !== undefined ? '<small>⬇ ' + dlCounts[k].toLocaleString('en-US') + ' تحميل</small>' : '') +
         (pend[k] ? '<div class="note wait">لديك طلب تعديل قيد المراجعة.</div>' : '') + '</div>' +
         '<button type="button" class="btn small" data-edit="' + esc(a.packageName) + '"' + (pend[k] ? ' disabled' : '') + '>تعديل</button></div>';
     }).join('');
