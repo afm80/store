@@ -4,22 +4,32 @@
     "packageName": "com.haigram.app",
     "name": "Haigram",
     "category": "app",
-    "genre": "",
-    "shortDescription": "",
-    "longDescription": "",
+    "genre": "تواصل",
+    "shortDescription": "شارك صورك وفيديوهاتك وقصصك\nوتابع من تحب",
+    "longDescription": "انشر الصور والفيديوهات القصيرة والقصص، تابع أصدقاءك وصنّاع المحتوى، وتفاعل بالإعجابات والتعليقات والرسائل.\nكل ما تحتاجه في تطبيق واحد\nمميزات بسيطة وقوية تجعل تجربتك أجمل\n📸\nصور وفيديوهات\nانشر لحظاتك بجودة عالية وشاركها مع متابعيك بضغطة واحدة.\n✨\nقصص مميزة\nشارك قصصك اليومية واكتشف قصص أصدقائك وصنّاع المحتوى.\n💬\nتفاعل ورسائل\nأعجب وعلّق وراسل أصدقاءك بسهولة داخل التطبيق.\nابدأ رحلتك مع Haigram اليوم\nحمّل التطبيق وانضم إلى مجتمع يشاركك اهتماماتك.",
     "version": "1.0.0",
     "whatsNew": "",
-    "featured": false,
-    "icon": "",
-    "banner": "",
-    "banners": [],
-    "screenshots": [],
+    "featured": true,
+    "icon": "data/media/com.haigram.app/icon-mw3j0jzt.png",
+    "banner": "data/media/com.haigram.app/banner1-mw3j0jzt.jpg",
+    "banners": [
+      "data/media/com.haigram.app/banner1-mw3j0jzt.jpg",
+      "data/media/com.haigram.app/banner2-mw3j0jzt.jpg",
+      "data/media/com.haigram.app/banner3-mw3j0jzt.jpg"
+    ],
+    "screenshots": [
+      "data/media/com.haigram.app/shot1-mw3j0jzt.png",
+      "data/media/com.haigram.app/shot2-mw3j0jzt.png",
+      "data/media/com.haigram.app/shot3-mw3j0jzt.png",
+      "data/media/com.haigram.app/shot4-mw3j0jzt.png",
+      "data/media/com.haigram.app/shot5-mw3j0jzt.png"
+    ],
     "youtubeUrl": "",
     "apkUrl": "https://github.com/afm80/store/releases/download/com.haigram.app-v1.0.0/Haigram.apk",
     "size": 68691777,
     "sha256": "0ad98a7d8221eea8820a0f26eb4e1854d8bafe4096a56cc519a4d790dcbc367a",
     "createdAt": "2026-11-05T12:29:17.252Z",
-    "updatedAt": "2026-11-05T12:29:17.252Z"
+    "updatedAt": "2026-11-05T12:33:39.913Z"
   },
   {
     "developer": "Alfaham Net",
