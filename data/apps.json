@@ -10,16 +10,21 @@
     "version": "3.15",
     "whatsNew": "",
     "featured": false,
-    "icon": "",
+    "icon": "data/media/com.live.ayatvpro/icon-mw3lvvkw.png",
     "banner": "",
     "banners": [],
-    "screenshots": [],
+    "screenshots": [
+      "data/media/com.live.ayatvpro/shot1-mw3lvvkw.webp",
+      "data/media/com.live.ayatvpro/shot2-mw3lvvkw.webp",
+      "data/media/com.live.ayatvpro/shot3-mw3lvvkw.webp",
+      "data/media/com.live.ayatvpro/shot4-mw3lvvkw.webp"
+    ],
     "youtubeUrl": "",
     "apkUrl": "https://github.com/afm80/store/releases/download/com.live.ayatvpro-v3.15/AYA_TV_com.live.ayatvpro.apk",
     "size": 12602923,
     "sha256": "be82989345bf2cd604addf791677d19d30ae9ad7d1f244e861d5d9435254d42a",
     "createdAt": "2026-11-05T13:51:51.883Z",
-    "updatedAt": "2026-11-05T13:52:41.786Z"
+    "updatedAt": "2026-11-05T13:53:30.017Z"
   },
   {
     "developer": "FAPK",
