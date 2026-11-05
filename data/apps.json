@@ -158,8 +158,6 @@
     "featured": true,
     "developer": "FAPK",
     "ageRating": "الجميع",
-    "rating": 5,
-    "downloads": 1000000,
     "history": [],
     "icon": "data/media/com.oscartv.app/icon-mvsfz6nl.png",
     "banner": "data/media/com.oscartv.app/banner-mvsfz6nl.png",
@@ -171,9 +169,8 @@
     "apkUrl": "https://github.com/afm80/store/releases/download/com.oscartv.app-v1.1/OscarTV_v1.1.6.apk",
     "size": 10157455,
     "sha256": "b6b23d4f667d4662281bb2a8363d3821d36aa37ecc13e06384227dd96a45326b",
-    "order": 8,
     "createdAt": "2026-10-28T18:21:33.988Z",
-    "updatedAt": "2026-11-05T11:08:30.579Z"
+    "updatedAt": "2026-11-05T11:41:51.213Z"
   },
   {
     "packageName": "app.haider.tv",
