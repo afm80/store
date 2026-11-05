@@ -142,6 +142,7 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
 .chip.pending{background:#fff3e0;color:var(--warn)}
 .chip.approved{background:#e8f5e9;color:var(--ok)}
 .chip.rejected{background:#fdecea;color:var(--bad)}
+.chip.upd{background:#e8eaf6;color:var(--accent);font-size:11px;padding:1px 10px;margin-inline-start:6px;vertical-align:middle}
 .reason{margin-top:6px;font-size:13px;color:var(--bad)}
 .note{margin-top:6px;font-size:13px}
 .note.wait{color:var(--warn)}
@@ -272,6 +273,11 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
       </div>
       <div id="reqList"><div class="empty">جارٍ التحميل...</div></div>
     </div>
+    <div class="card">
+      <h3>تطبيقاتي المنشورة</h3>
+      <div class="hint" style="margin:-8px 0 6px">يمكنك تعديل بيانات تطبيقك بعد نشره، وتُراجَع التعديلات من الإدارة قبل ظهورها في المتجر. لا يمكن تغيير اسم التطبيق أو اسم الحزمة أو الإحصائيات.</div>
+      <div id="pubList"><div class="empty">جارٍ التحميل...</div></div>
+    </div>
   </div>
 
   <!-- ملفي الشخصي -->
@@ -315,7 +321,8 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
     <!-- الخطوة 1 -->
     <section id="s1">
       <div class="card">
-        <h3>تعديل التطبيق</h3>
+        <h3 id="s1Title">معلومات التطبيق</h3>
+        <div class="msg info" id="editNote" hidden>تعدّل الآن تطبيقاً منشوراً. غيّر ما تريد فقط، وسيُرسل للمراجعة ولا يظهر في المتجر قبل موافقة الإدارة.</div>
         <div class="field">
           <label>اسم الحزمة (Package name) <span class="req">*</span></label>
           <input id="fPkg" class="ltr" placeholder="com.example.myapp" autocapitalize="off" spellcheck="false">
@@ -324,6 +331,7 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
         <div class="field">
           <label>اسم التطبيق <span class="req">*</span></label>
           <input id="fName2" maxlength="50">
+          <div class="hint" id="nameHint" hidden>لا يمكن تغيير اسم التطبيق بعد نشره.</div>
         </div>
         <div class="row">
           <div class="field">
@@ -382,7 +390,7 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
         <input type="file" id="fileShots" accept="image/*" multiple hidden>
         <input type="file" id="fileBanner" accept="image/*" hidden>
       </div>
-      <div class="actions"><span></span><button class="btn" data-go="2">التالي ←</button></div>
+      <div class="actions"><button class="btn ghost" id="btnCancelEdit" hidden>إلغاء التعديل</button><span></span><button class="btn" data-go="2">التالي ←</button></div>
     </section>
 
     <!-- الخطوة 2 -->
@@ -393,13 +401,14 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
           <label>رابط تحميل مباشر لملف الـ APK <span class="req">*</span></label>
           <input id="fApk" class="ltr" placeholder="https://...">
           <div class="hint">ارفع الملف على Google Drive أو MediaFire أو GitHub وضع رابط التحميل المباشر. سنراجع الملف قبل النشر.</div>
+          <div class="hint" id="apkEditHint" hidden>إن غيّرت ملف الـ APK فغيّر رقم الإصدار أيضاً حتى يصل التحديث للمستخدمين.</div>
         </div>
         <div class="field" style="max-width:260px">
           <label>رقم الإصدار <span class="req">*</span></label>
           <input id="fVer" class="ltr" placeholder="1.0.0">
         </div>
         <div class="field">
-          <label>ما الجديد في هذا الإصدار <span class="req">*</span></label>
+          <label>ما الجديد في هذا الإصدار <span class="req" id="reqNew">*</span></label>
           <textarea id="fNew" placeholder="مثال: الإصدار الأول"></textarea>
         </div>
         <div class="field">
@@ -431,8 +440,8 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
     <section id="s4" hidden>
       <div class="card done-box">
         <div class="tick">✓</div>
-        <h3 style="margin-bottom:6px">تم استلام طلبك</h3>
-        <p style="color:var(--muted);margin:0 0 18px">سنراجع التطبيق وننشره بالمتجر عند الموافقة. تابع الحالة من «طلباتي».</p>
+        <h3 style="margin-bottom:6px" id="doneTitle">تم استلام طلبك</h3>
+        <p style="color:var(--muted);margin:0 0 18px" id="doneText">سنراجع التطبيق وننشره بالمتجر عند الموافقة. تابع الحالة من «طلباتي».</p>
         <button class="btn" id="btnToReqs">عرض طلباتي</button>
       </div>
     </section>
@@ -462,6 +471,10 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
 
   // الصور المختارة (data URLs)
   var media = { icon: null, banner: null, shots: [] };
+  /* تعديل تطبيق منشور: {app, base, orig} وإلا null */
+  var editing = null;
+  var mySubs = [], subsLoaded = false, storeApps = null, storeAppsErr = '';
+  var RAW_ROOT = 'https://raw.githubusercontent.com/afm80/store/main/';
   var step = 1;
 
   function show(view) {
@@ -600,6 +613,7 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
     $('ctReqs').classList.toggle('on', p === 'reqs');
     $('ctNew').classList.toggle('on', p === 'new');
     $('ctProfile').classList.toggle('on', p === 'profile');
+    if (p !== 'new' && editing) { editing = null; applyMode(); }
     if (p === 'reqs') loadRequests();
     if (p === 'profile') loadProfileForm();
   }
@@ -621,16 +635,17 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
       var tb = b.createdAt && b.createdAt.toMillis ? b.createdAt.toMillis() : 0;
       return tb - ta;
     });
+    mySubs = items; subsLoaded = true; renderPublished();
     if (!items.length) { box.innerHTML = '<div class="empty">لم ترسل أي تطبيق بعد.<br>اضغط «تطبيق جديد» للبدء.</div>'; return; }
     box.innerHTML = items.map(function (x) {
       var st = STATUS[x.status] ? x.status : 'pending';
       var dt = x.createdAt && x.createdAt.toDate ? x.createdAt.toDate().toLocaleDateString('ar-IQ') : '';
       var note = '';
       if (st === 'pending') note = '<div class="note wait">طلبك قيد المراجعة، وستظهر النتيجة هنا تلقائيًا.</div>';
-      else if (st === 'approved') note = '<div class="note ok">✔ تم قبول تطبيقك وسيظهر في المتجر.</div>';
+      else if (st === 'approved') note = '<div class="note ok">' + (x.type === 'update' ? '✔ تم قبول التعديل وسيظهر في المتجر.' : '✔ تم قبول تطبيقك وسيظهر في المتجر.') + '</div>';
       else note = '<div class="reason">تم رفض الطلب' + (x.rejectReason ? '. السبب: ' + esc(x.rejectReason) : '.') + '</div>';
       return '<div class="reqrow"><img id="ic_' + esc(x._id) + '" alt="">' +
-        '<div class="info"><b>' + esc(x.name) + '</b><small>' + esc(x.packageName) + ' · v' + esc(x.version) + '</small>' + note + '</div>' +
+        '<div class="info"><b>' + esc(x.name) + '</b>' + (x.type === 'update' ? '<span class="chip upd">تعديل</span>' : '') + '<small>' + esc(x.packageName) + ' · v' + esc(x.version) + '</small>' + note + '</div>' +
         '<div style="text-align:left"><span class="chip ' + st + '">' + STATUS[st] + '</span><div class="hint">' + esc(dt) + '</div></div></div>';
     }).join('');
     items.forEach(function (x) {
@@ -644,7 +659,9 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
   function loadRequests() {
     var box = $('reqList');
     stopRequests();
+    subsLoaded = false;
     box.innerHTML = '<div class="empty">جارٍ التحميل...</div>';
+    loadStoreApps();
     try {
       reqUnsub = db.collection('submissions').where('uid', '==', user.uid).onSnapshot(renderRequests, function (e) {
         box.innerHTML = '<div class="msg err">تعذّر تحميل الطلبات: ' + esc(e.message || e) + '</div>';
@@ -653,6 +670,138 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
       box.innerHTML = '<div class="msg err">تعذّر تحميل الطلبات: ' + esc(e.message || e) + '</div>';
     }
   }
+
+  /* ───────── تطبيقاتي المنشورة وتعديلها ───────── */
+  function appUrl(p) {
+    p = String(p || '');
+    return /^https?:\/\//i.test(p) ? p : RAW_ROOT + p.replace(/^\/+/, '');
+  }
+  async function loadStoreApps() {
+    storeApps = null; storeAppsErr = ''; renderPublished();
+    try {
+      var r = await fetch(STORE_APPS_URL + '?t=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      var d = await r.json();
+      storeApps = Array.isArray(d) ? d : (d && d.apps) || [];
+    } catch (e) { storeAppsErr = 'تعذّر تحميل قائمة تطبيقات المتجر.'; }
+    renderPublished();
+  }
+  function renderPublished() {
+    var box = $('pubList'); if (!box) return;
+    if (storeAppsErr) { box.innerHTML = '<div class="msg err">' + esc(storeAppsErr) + ' <button type="button" class="linkbtn" data-reload="1">إعادة المحاولة</button></div>'; return; }
+    if (!storeApps || !subsLoaded) { box.innerHTML = '<div class="empty">جارٍ التحميل...</div>'; return; }
+    var mine = {}, pend = {};
+    mySubs.forEach(function (x) {
+      var k = String(x.packageName || '').toLowerCase();
+      if (x.status === 'approved') mine[k] = true;
+      if (x.status === 'pending' && x.type === 'update') pend[k] = true;
+    });
+    var list = storeApps.filter(function (a) { return mine[String(a.packageName || '').toLowerCase()]; });
+    if (!list.length) { box.innerHTML = '<div class="empty">لا توجد تطبيقات منشورة بعد.<br>تظهر هنا تطبيقاتك بعد قبولها ونشرها في المتجر.</div>'; return; }
+    box.innerHTML = list.map(function (a) {
+      var k = String(a.packageName || '').toLowerCase();
+      return '<div class="reqrow"><img src="' + esc(appUrl(a.icon)) + '" alt="">' +
+        '<div class="info"><b>' + esc(a.name) + '</b><small>' + esc(a.packageName) + ' · v' + esc(a.version) + '</small>' +
+        (pend[k] ? '<div class="note wait">لديك طلب تعديل قيد المراجعة.</div>' : '') + '</div>' +
+        '<button type="button" class="btn small" data-edit="' + esc(a.packageName) + '"' + (pend[k] ? ' disabled' : '') + '>تعديل</button></div>';
+    }).join('');
+  }
+  $('pubList').addEventListener('click', function (ev) {
+    var t = ev.target.closest && ev.target.closest('[data-edit],[data-reload]');
+    if (!t) return;
+    if (t.hasAttribute('data-reload')) { loadStoreApps(); return; }
+    startEdit(t.getAttribute('data-edit'));
+  });
+
+  /* الحقول القابلة للتعديل: [معرّف الحقل، اسمه في الطلب، التسمية] */
+  var EDIT_FIELDS = [
+    ['fCat', 'category', 'النوع'], ['fGenre', 'genre', 'التصنيف'], ['fAge', 'ageRating', 'العمر'],
+    ['fShort', 'shortDescription', 'الوصف القصير'], ['fLong', 'longDescription', 'الوصف الكامل'],
+    ['fYt', 'youtubeUrl', 'رابط يوتيوب'], ['fApk', 'apkUrl', 'رابط APK'], ['fVer', 'version', 'الإصدار'],
+    ['fNew', 'whatsNew', 'ما الجديد'], ['fPriv', 'privacyUrl', 'سياسة الخصوصية']
+  ];
+  function iconChanged() { return !!editing && (media.icon || null) !== (editing.orig.icon || null); }
+  function bannerChanged() { return !!editing && (media.banner || null) !== (editing.orig.banner || null); }
+  function shotsChanged() {
+    if (!editing) return false;
+    var o = editing.orig.shots;
+    return o.length !== media.shots.length || o.some(function (s, i) { return s !== media.shots[i]; });
+  }
+  function changes() {
+    var out = [];
+    if (!editing) return out;
+    EDIT_FIELDS.forEach(function (f) { if ($(f[0]).value.trim() !== editing.base[f[0]]) out.push({ key: f[1], label: f[2] }); });
+    if (iconChanged()) out.push({ key: 'icon', label: 'الأيقونة' });
+    if (bannerChanged()) out.push({ key: 'banner', label: 'الرسم المميز' });
+    if (shotsChanged()) out.push({ key: 'screenshots', label: 'لقطات الشاشة' });
+    return out;
+  }
+  function applyMode() {
+    var ed = !!editing;
+    $('fPkg').readOnly = ed; $('fName2').readOnly = ed;
+    $('s1Title').textContent = ed ? 'تعديل التطبيق' : 'معلومات التطبيق';
+    $('editNote').hidden = !ed; $('nameHint').hidden = !ed; $('apkEditHint').hidden = !ed;
+    $('reqNew').hidden = ed; $('btnCancelEdit').hidden = !ed;
+    $('ctNew').textContent = ed ? 'تعديل تطبيق' : 'إرسال تطبيق جديد';
+    $('doneTitle').textContent = ed ? 'تم استلام طلب التعديل' : 'تم استلام طلبك';
+    $('doneText').textContent = ed
+      ? 'سنراجع التعديلات وننشرها بالمتجر عند الموافقة. تابع الحالة من «طلباتي».'
+      : 'سنراجع التطبيق وننشره بالمتجر عند الموافقة. تابع الحالة من «طلباتي».';
+  }
+  function setSelect(id, val) {
+    var el = $(id), ok = Array.prototype.some.call(el.options, function (o) { return o.value === val || o.text === val; });
+    if (val && !ok) { var o = document.createElement('option'); o.textContent = val; el.appendChild(o); }
+    if (val) el.value = val;
+  }
+  function startEdit(pkg) {
+    var key = String(pkg || '').toLowerCase();
+    var a = (storeApps || []).filter(function (x) { return String(x.packageName || '').toLowerCase() === key; })[0];
+    if (!a) return;
+    /* رابط الخصوصية غير محفوظ بـ apps.json، فنقرأه من أحدث طلب مقبول لنفس الحزمة */
+    var priv = a.privacyUrl || '';
+    if (!priv) mySubs.forEach(function (x) {
+      if (!priv && x.status === 'approved' && x.privacyUrl && String(x.packageName || '').toLowerCase() === key) priv = x.privacyUrl;
+    });
+    startNew();
+    $('fPkg').value = a.packageName;
+    $('fName2').value = a.name || '';
+    $('fCat').value = a.category === 'game' ? 'game' : 'app';
+    $('fGenre').value = a.genre || '';
+    setSelect('fAge', a.ageRating || 'الجميع');
+    $('fShort').value = a.shortDescription || '';
+    $('fLong').value = a.longDescription || '';
+    $('fYt').value = a.youtubeUrl || '';
+    $('fApk').value = a.apkUrl || '';
+    $('fVer').value = a.version || '';
+    $('fNew').value = a.whatsNew || '';
+    $('fPriv').value = priv;
+    var bn = a.banner || (a.banners && a.banners[0]) || '';
+    media = { icon: a.icon ? appUrl(a.icon) : null, banner: bn ? appUrl(bn) : null, shots: (a.screenshots || []).map(appUrl) };
+    editing = { app: a, base: {}, orig: { icon: media.icon, banner: media.banner, shots: media.shots.slice() } };
+    EDIT_FIELDS.forEach(function (f) { editing.base[f[0]] = $(f[0]).value.trim(); });
+    applyMode(); renderMedia();
+  }
+  $('btnCancelEdit').onclick = function () { switchPane('reqs'); };
+  /* تحويل صورة منشورة (رابط) إلى data URL ليحملها طلب التعديل */
+  async function urlToDataUrl(url) {
+    var r = await fetch(url, { cache: 'no-store' });
+    if (!r.ok) throw new Error('تعذّر تحميل إحدى الصور الحالية (' + r.status + ')');
+    var b = await r.blob();
+    if (/^image\/(png|jpeg|webp)$/.test(b.type) && b.size * 1.37 < MAX_B64) {
+      return await new Promise(function (res, rej) {
+        var fr = new FileReader();
+        fr.onload = function () { res(fr.result); };
+        fr.onerror = function () { rej(new Error('تعذّر قراءة الصورة')); };
+        fr.readAsDataURL(b);
+      });
+    }
+    var img = await loadImage(b);
+    var out = draw(img, 1280, 0, 'fit').toDataURL('image/jpeg', .82);
+    if (out.length > MAX_B64) out = draw(img, 1000, 0, 'fit').toDataURL('image/jpeg', .7);
+    if (out.length > MAX_B64) throw new Error('حجم إحدى الصور الحالية كبير جداً');
+    return out;
+  }
+  async function asData(src) { return /^data:/.test(src) ? src : await urlToDataUrl(src); }
 
   /* ───────── معالجة الصور ───────── */
   function loadImage(file) {
@@ -879,6 +1028,7 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
   function startNew() {
     ids().forEach(function (i) { var e = $(i); if (e.tagName === 'SELECT') e.selectedIndex = 0; else e.value = ''; });
     $('fAgree').checked = false;
+    editing = null; applyMode();
     media = { icon: null, banner: null, shots: [] };
     renderMedia(); msg('formMsg', '');
     goStep(1); switchPane('new');
@@ -898,20 +1048,21 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
   function validate(n) {
     var v = function (i) { return $(i).value.trim(); };
     if (n === 1) {
-      if (!PKG_RE.test(v('fPkg'))) return 'اسم الحزمة غير صالح. مثال صحيح: com.example.myapp';
+      if (!editing && !PKG_RE.test(v('fPkg'))) return 'اسم الحزمة غير صالح. مثال صحيح: com.example.myapp';
       if (v('fName2').length < 2) return 'أدخل اسم التطبيق';
       if (!v('fGenre')) return 'اختر أو اكتب التصنيف';
       if (v('fShort').length < 10) return 'الوصف القصير قصير جداً (10 أحرف على الأقل)';
       if (v('fLong').length < 30) return 'الوصف الكامل قصير جداً (30 حرفاً على الأقل)';
       if (v('fYt') && !/^https?:\/\/(www\.)?(youtube\.com|youtu\.be)\//i.test(v('fYt'))) return 'رابط يوتيوب غير صالح';
       if (!media.icon) return 'أضف أيقونة التطبيق';
-      if (media.shots.length < MIN_SHOTS) return 'أضف لقطتي شاشة على الأقل';
+      if (media.shots.length < MIN_SHOTS && (!editing || shotsChanged())) return 'أضف لقطتي شاشة على الأقل';
     }
     if (n === 2) {
       if (!isUrl(v('fApk'))) return 'أدخل رابط تحميل APK صالحاً يبدأ بـ https://';
       if (!VER_RE.test(v('fVer'))) return 'رقم الإصدار غير صالح. مثال: 1.0.0';
-      if (v('fNew').length < 3) return 'اكتب ما الجديد في هذا الإصدار';
+      if (!editing && v('fNew').length < 3) return 'اكتب ما الجديد في هذا الإصدار';
       if (v('fPriv') && !isUrl(v('fPriv'))) return 'رابط سياسة الخصوصية غير صالح';
+      if (editing && !changes().length) return 'لم تغيّر أي شيء في التطبيق بعد.';
     }
     return '';
   }
@@ -947,7 +1098,7 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
     var to = parseInt(b.getAttribute('data-go'), 10);
     if (to > step) {
       for (var i = step; i < to; i++) { var err = validate(i); if (err) { msg('formMsg', err); goStep(i); return; } }
-      if (step <= 1) { var pe = await pkgProblem(); if (pe) { msg('formMsg', pe); goStep(1); return; } }
+      if (step <= 1 && !editing) { var pe = await pkgProblem(); if (pe) { msg('formMsg', pe); goStep(1); return; } }
     }
     msg('formMsg', ''); goStep(to);
   });
@@ -964,6 +1115,7 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
       ['العمر', g('fAge')], ['الإصدار', g('fVer')], ['رابط APK', g('fApk')], ['ما الجديد', g('fNew')]
     ];
     if (g('fYt')) rows.push(['يوتيوب', g('fYt')]);
+    if (editing) rows.unshift(['التعديلات', changes().map(function (c) { return c.label; }).join('، ')]);
     $('pvKv').innerHTML = rows.map(function (r) { return '<span>' + esc(r[0]) + '</span><span>' + esc(r[1]) + '</span>'; }).join('');
   }
 
@@ -976,11 +1128,12 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
     msg('formMsg', '');
     var g = function (i) { return $(i).value.trim(); };
     try {
-      var pe2 = await pkgProblem();
+      var ed = !!editing;
+      var pe2 = ed ? '' : await pkgProblem();
       if (pe2) { msg('formMsg', pe2); goStep(1); btn.disabled = false; btn.textContent = 'إرسال للمراجعة'; return; }
       var ref = db.collection('submissions').doc();
       var batch = db.batch();
-      batch.set(ref, {
+      var data = {
         uid: user.uid, devName: profile ? profile.name : '', devEmail: user.email || '',
         status: 'pending',
         packageName: g('fPkg'), name: g('fName2'), category: $('fCat').value, genre: g('fGenre'), ageRating: g('fAge'),
@@ -988,19 +1141,34 @@ footer{margin-top:50px;padding:22px 16px;text-align:center;color:var(--muted);fo
         version: g('fVer'), whatsNew: g('fNew'), apkUrl: g('fApk'), privacyUrl: g('fPriv'),
         shotCount: media.shots.length, hasBanner: !!media.banner,
         createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
-      batch.set(db.collection('packages').doc(g('fPkg').toLowerCase()), {
-        uid: user.uid, packageName: g('fPkg'), submissionId: ref.id,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      });
+      };
+      if (ed) {
+        /* طلب تعديل لتطبيق منشور: يحمل كل الحقول، ومعها ما تغيّر لتسهيل مراجعة الإدارة */
+        data.type = 'update';
+        data.changedFields = changes().map(function (c) { return c.key; });
+        data.iconChanged = iconChanged(); data.bannerChanged = bannerChanged(); data.shotsChanged = shotsChanged();
+      } else {
+        batch.set(db.collection('packages').doc(g('fPkg').toLowerCase()), {
+          uid: user.uid, packageName: g('fPkg'), submissionId: ref.id,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      }
+      batch.set(ref, data);
       var m = ref.collection('media');
-      batch.set(m.doc('icon'), { kind: 'icon', data: media.icon });
-      if (media.banner) batch.set(m.doc('banner'), { kind: 'banner', data: media.banner });
-      media.shots.forEach(function (s, i) { batch.set(m.doc('shot' + (i + 1)), { kind: 'shot', order: i + 1, data: s }); });
+      /* في التعديل نرسل فقط الصور التي تغيّرت (الصور الحالية موجودة بالمتجر) */
+      if (!ed || iconChanged()) batch.set(m.doc('icon'), { kind: 'icon', data: await asData(media.icon) });
+      if (media.banner && (!ed || bannerChanged())) batch.set(m.doc('banner'), { kind: 'banner', data: await asData(media.banner) });
+      if (!ed || shotsChanged()) {
+        for (var si = 0; si < media.shots.length; si++) {
+          batch.set(m.doc('shot' + (si + 1)), { kind: 'shot', order: si + 1, data: await asData(media.shots[si]) });
+        }
+      }
       await batch.commit();
       goStep(4);
     } catch (e) {
-      var t = (e && e.code === 'permission-denied')
+      var t = (e && e.code === 'permission-denied' && editing)
+        ? 'تعذّر إرسال التعديل: تأكد أن التطبيق مسجّل باسم حسابك وأن قواعد Firestore محدّثة (ملف firestore.rules.txt).'
+        : (e && e.code === 'permission-denied')
         ? 'تعذّر الإرسال: اسم الحزمة مستخدم مسبقًا في طلب آخر، أو لم تُضبط قواعد Firestore بعد. غيّر اسم الحزمة وحاول مجددًا.'
         : 'تعذّر الإرسال: ' + (e.message || e);
       msg('formMsg', t);

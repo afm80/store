@@ -15,12 +15,39 @@ service cloud.firestore {
       allow read: if isAdmin();
     }
 
+    // حجز أسماء المطورين: مستند واحد لكل اسم، فلا يتكرر الاسم بين مطورين
+    match /devNames/{key} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.uid == request.auth.uid;
+      allow delete: if isAdmin();
+    }
+
+    // حجز أسماء الحزم: يُنشأ مرة واحدة عند إرسال تطبيق جديد ولا يتغير بعدها
+    match /packages/{pkg} {
+      allow get: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if isAdmin();
+    }
+
     // طلبات النشر
     match /submissions/{id} {
-      // المطور ينشئ طلبه بحالة pending فقط
+      // طلب تعديل تطبيق منشور
+      function isUpdate() {
+        return request.resource.data.get('type', 'new') == 'update';
+      }
+      // لا يعدّل التطبيق إلا صاحب الحزمة المسجّلة باسمه
+      function ownsPackage() {
+        let pkg = request.resource.data.packageName.lower();
+        return exists(/databases/$(database)/documents/packages/$(pkg))
+          && get(/databases/$(database)/documents/packages/$(pkg)).data.uid == request.auth.uid;
+      }
+
+      // المطور ينشئ طلبه بحالة pending فقط (والتعديل لصاحب الحزمة فقط)
       allow create: if request.auth != null
         && request.resource.data.uid == request.auth.uid
-        && request.resource.data.status == 'pending';
+        && request.resource.data.status == 'pending'
+        && (!isUpdate() || ownsPackage());
       // المطور يقرأ طلباته، والمدير يقرأ الكل
       allow read: if request.auth != null && (resource.data.uid == request.auth.uid || isAdmin());
       // المدير فقط يغيّر الحالة (قبول/رفض) أو يحذف
