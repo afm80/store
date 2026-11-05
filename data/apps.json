@@ -10,16 +10,20 @@
     "version": "2.27",
     "whatsNew": "",
     "featured": false,
-    "icon": "",
+    "icon": "data/media/com.xalopex.riverraid2600/icon-mw3l6opz.png",
     "banner": "",
     "banners": [],
-    "screenshots": [],
+    "screenshots": [
+      "data/media/com.xalopex.riverraid2600/shot1-mw3l6opz.png",
+      "data/media/com.xalopex.riverraid2600/shot2-mw3l6opz.png",
+      "data/media/com.xalopex.riverraid2600/shot3-mw3l6opz.png"
+    ],
     "youtubeUrl": "",
     "apkUrl": "https://github.com/afm80/store/releases/download/com.xalopex.riverraid2600-v2.27/River.Raid_2.27.apk",
     "size": 14058626,
     "sha256": "20041f7100ddbe9faaa32016c12521741450070dd7d06a7691420ba7212bb63b",
     "createdAt": "2026-11-05T13:21:06.248Z",
-    "updatedAt": "2026-11-05T13:23:10.562Z"
+    "updatedAt": "2026-11-05T13:33:53.638Z"
   },
   {
     "developer": "Alfaham Net",
