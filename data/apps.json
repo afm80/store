@@ -14,15 +14,17 @@
     "banner": "",
     "banners": [],
     "screenshots": [
-      "data/media/app.tomandjerry.com/shot1-mw3oryak.jpg",
-      "data/media/app.tomandjerry.com/shot2-mw3oryak.jpg"
+      "data/media/app.tomandjerry.com/shot1-mw5g1yzr.png",
+      "data/media/app.tomandjerry.com/shot2-mw5g1yzr.png",
+      "data/media/app.tomandjerry.com/shot3-mw5g1yzr.png",
+      "data/media/app.tomandjerry.com/shot4-mw5g1yzr.png"
     ],
     "youtubeUrl": "https://www.youtube.com/watch?v=4fHKMCQot20",
     "apkUrl": "https://github.com/afm80/store/releases/download/app.tomandjerry.com-v1.0/Tom.and.Jerry.apk",
     "size": 35210964,
     "sha256": "1aef762b1c9d86f330cc1c4e5af2db4a2fbdc2dfd79826c6d1f1b250a01fa206",
     "createdAt": "2026-11-05T15:15:20.781Z",
-    "updatedAt": "2026-11-05T15:38:59.718Z"
+    "updatedAt": "2026-11-06T20:46:10.464Z"
   },
   {
     "developer": "FAPK",
