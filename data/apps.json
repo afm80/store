@@ -501,9 +501,6 @@
     "whatsNew": "",
     "featured": true,
     "developer": "Alfaham Net",
-    "ageRating": "الجميع",
-    "rating": 5,
-    "downloads": 1000000,
     "history": [],
     "icon": "data/media/app.alfaham.box/icon-mvsczzhq.png",
     "banner": "data/media/app.alfaham.box/banner-mvsczzhq.png",
@@ -518,8 +515,7 @@
     "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.box-v1.0.0/alfaham-box.apk",
     "size": 96224599,
     "sha256": "69ac9a8c9bcb81360193f802c74fc23e0a565e651482ba0de84ad324619a67ab",
-    "order": 5,
     "createdAt": "2026-10-28T16:59:00.212Z",
-    "updatedAt": "2026-11-08T21:58:43.758Z"
+    "updatedAt": "2026-11-08T21:58:52.140Z"
   }
 ]
