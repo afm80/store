@@ -433,9 +433,6 @@
     "whatsNew": "",
     "featured": true,
     "developer": "Alfaham Net",
-    "ageRating": "الجميع",
-    "rating": 5,
-    "downloads": 1000000,
     "history": [],
     "icon": "data/media/app.alfaham.sat/icon-mvsd635g.png",
     "banner": "data/media/app.alfaham.sat/banner-mvsd635g.png",
@@ -451,9 +448,8 @@
     "apkUrl": "https://github.com/afm80/store/releases/download/app.alfaham.sat-v1.0.0/alfaham-sat.apk",
     "size": 92912382,
     "sha256": "98b7ebaee766a5ad5ad0e9009ba03b9a90c4f1c96fc2add4980a69d8ed8325c6",
-    "order": 4,
     "createdAt": "2026-10-28T17:03:47.192Z",
-    "updatedAt": "2026-11-08T22:12:42.744Z"
+    "updatedAt": "2026-11-08T22:13:13.596Z"
   },
   {
     "packageName": "app.alfaham.tube",
