@@ -11,15 +11,24 @@
     "whatsNew": "",
     "featured": false,
     "icon": "data/media/com.nexstreaming.app.kinemasterfree/icon-mw8jmam3.png",
-    "banner": "",
-    "banners": [],
+    "banner": "data/media/com.nexstreaming.app.kinemasterfree/banner1-mw8jr2rv.jpg",
+    "banners": [
+      "data/media/com.nexstreaming.app.kinemasterfree/banner1-mw8jr2rv.jpg",
+      "data/media/com.nexstreaming.app.kinemasterfree/banner2-mw8jr2rv.jpg",
+      "data/media/com.nexstreaming.app.kinemasterfree/banner3-mw8jr2rv.jpg",
+      "data/media/com.nexstreaming.app.kinemasterfree/banner4-mw8jr2rv.jpg",
+      "data/media/com.nexstreaming.app.kinemasterfree/banner5-mw8jr2rv.jpg",
+      "data/media/com.nexstreaming.app.kinemasterfree/banner6-mw8jr2rv.jpg",
+      "data/media/com.nexstreaming.app.kinemasterfree/banner7-mw8jr2rv.jpg",
+      "data/media/com.nexstreaming.app.kinemasterfree/banner8-mw8jr2rv.jpg"
+    ],
     "screenshots": [],
     "youtubeUrl": "",
     "apkUrl": "https://github.com/afm80/store/releases/download/com.nexstreaming.app.kinemasterfree-v8.0.5.35816.GP/KineMaster_v8.0.5.35816.GP_Pro_.TraidMod.Net.apk",
     "size": 137747445,
     "sha256": "61203d9c21eb54fb161feec91fe9fe15d664e71984e9bcd1e75c4087737ab249",
     "createdAt": "2026-11-09T00:49:26.356Z",
-    "updatedAt": "2026-11-09T00:49:26.356Z"
+    "updatedAt": "2026-11-09T00:52:39.063Z"
   },
   {
     "developer": "Alfaham Net",
