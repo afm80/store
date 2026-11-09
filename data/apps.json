@@ -1,6 +1,28 @@
 [
   {
     "developer": "Alfaham Net",
+    "packageName": "com.nexstreaming.app.kinemasterfree",
+    "name": "KineMaster",
+    "category": "app",
+    "genre": "تعديل الفيديو",
+    "shortDescription": "",
+    "longDescription": "",
+    "version": "8.0.5.35816.GP",
+    "whatsNew": "",
+    "featured": false,
+    "icon": "data/media/com.nexstreaming.app.kinemasterfree/icon-mw8jmam3.png",
+    "banner": "",
+    "banners": [],
+    "screenshots": [],
+    "youtubeUrl": "",
+    "apkUrl": "https://github.com/afm80/store/releases/download/com.nexstreaming.app.kinemasterfree-v8.0.5.35816.GP/KineMaster_v8.0.5.35816.GP_Pro_.TraidMod.Net.apk",
+    "size": 137747445,
+    "sha256": "61203d9c21eb54fb161feec91fe9fe15d664e71984e9bcd1e75c4087737ab249",
+    "createdAt": "2026-11-09T00:49:26.356Z",
+    "updatedAt": "2026-11-09T00:49:26.356Z"
+  },
+  {
+    "developer": "Alfaham Net",
     "packageName": "com.instantbits.cast.webvideo",
     "name": "Web Video Caster",
     "category": "app",
