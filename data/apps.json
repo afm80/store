@@ -1,6 +1,28 @@
 [
   {
     "developer": "FAPK",
+    "packageName": "com.mojang.minecraftpe",
+    "name": "Minecraft",
+    "category": "game",
+    "genre": "",
+    "shortDescription": "لعبة ماين كرافت Minecraft Story Mode مهكرة ( ✔️ تهكير البقاء والخلود ) مجاناً",
+    "longDescription": "",
+    "version": "1.26.70.20",
+    "whatsNew": "",
+    "featured": false,
+    "icon": "data/media/com.mojang.minecraftpe/icon-mw8kaw5q.png",
+    "banner": "",
+    "banners": [],
+    "screenshots": [],
+    "youtubeUrl": "",
+    "apkUrl": "https://github.com/afm80/store/releases/download/com.mojang.minecraftpe-v1.26.70.20/Minecraft_v1.26.70.20_Immortality_.TraidMod.CoM._04-04-09.apk",
+    "size": 1073702869,
+    "sha256": "ddbb46baaa214cb5283c0c9e1960a01e8c6bce4836d5bff2362f46231c096824",
+    "createdAt": "2026-11-09T01:10:58.603Z",
+    "updatedAt": "2026-11-09T01:10:58.603Z"
+  },
+  {
+    "developer": "FAPK",
     "packageName": "com.nexstreaming.app.kinemasterfree",
     "name": "KineMaster",
     "category": "app",
