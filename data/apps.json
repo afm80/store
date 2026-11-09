@@ -248,7 +248,6 @@
     "whatsNew": "",
     "featured": false,
     "developer": "FAPK",
-    "ageRating": "الجميع",
     "history": [],
     "icon": "data/media/com.snaptube.premium/icon-mvsfq1q6.webp",
     "banner": "",
@@ -259,7 +258,7 @@
     "size": 30409307,
     "sha256": "c4dca70cf4be4cd9c3d850ebd14afbfad9920ddb810be453052ba4edc7a8710a",
     "createdAt": "2026-10-28T18:15:49.092Z",
-    "updatedAt": "2026-11-09T00:25:03.436Z"
+    "updatedAt": "2026-11-09T00:25:15.606Z"
   },
   {
     "packageName": "com.oscartv.app",
